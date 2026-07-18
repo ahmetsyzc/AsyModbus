@@ -1,0 +1,54 @@
+﻿body {
+}
+
+.ana-div {
+    margin: auto;
+   height: 700px;
+    width: 1200px;
+    background-color: #ffffff;
+    border-radius: 1%;
+    margin-block-start: 75px;
+}
+
+.tabloScroll {
+    height: 600px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+.panelBaslik {
+    margin-bottom: 20px;
+}
+
+    .panelBaslik h2 {
+        margin: 0;
+        font-size: 28px;
+        color: #1b1b1b;
+    }
+
+    .panelBaslik span {
+        color: #000000;
+        font-size: 14px;
+    }
+.personeltablo {
+    width: 100%;
+}
+
+    .personeltablo th {
+        padding: 10px;
+        position: sticky; /* Kaydırınca başlığı sabitler */
+        top: 0; /* En üst noktaya yapıştırır */
+        z-index: 2; /* Satırların önünde görünmesini sağlar */
+        margin: auto;
+        background-color: black;
+        color: white;
+    }
+
+    .personeltablo td {
+        text-align: center;
+        padding: 10px;
+        border-bottom-width: 5px; /* Kalınlık */
+        border-bottom-style: solid; /* Stil (solid, dashed, dotted vb.) */
+        border-bottom-color: black; /* Renk */
+    }
+

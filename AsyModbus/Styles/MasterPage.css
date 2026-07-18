@@ -1,0 +1,74 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    width: 100%;
+    height: 100vh;
+    background-color: #808080;
+}
+
+.anadiv {
+    display: flex;
+}
+
+.menüdiv {
+    position: relative; /* İçindeki absolute elemanların bu kutuya göre hizalanmasını sağlar */
+    background-color: #ffffff;
+    height: 100vh;
+    width: 14%;
+}
+
+.ortakdiv {
+    background-color: #808080;
+    height: 100vh;
+    width: 86%;
+}
+
+
+.menuicon {
+    width: 50px;
+    height: 25px;
+    font-size: large;
+    text-align: center;
+    margin-block-end: 7px;
+    padding: 2px;
+}
+
+.menucikis {
+    width: 200px;
+    height: 25px;
+    font-size: medium;
+    text-align: center;
+}
+
+.menuisim {
+    width: 200px;
+    height: 25px;
+    text-align: center;
+    margin-block-end: 7px;
+    padding: 7px;
+}
+
+.image {
+    display: block; /* Resmi bir blok elemana dönüştürür */
+    margin: 0 auto; /* Üst/alt 0, sağ/sol otomatik boşluk (ortalar) */
+    width: 175px;
+    height: 55px;
+    margin-block-start: 10px;
+    margin-block-end: 70px;
+}
+
+.menu-label {
+    font-weight: 600;
+    font-size: medium;
+}
+
+
+.cikis-div {
+    position: absolute; /* Normal akıştan çıkarıp istediğimiz yere konumlandırmamızı sağlar */
+    width: 100%;
+    height: 50px;
+    bottom: 0px;
+}

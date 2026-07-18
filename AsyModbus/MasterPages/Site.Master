@@ -1,0 +1,115 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="AsyModbus.MasterPages.Site" %>
+
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+    <title>Master Page</title>
+    <link href="../Styles/MasterPage.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet" />
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+
+        <div class="anadiv">
+
+            <div class="menüdiv">
+
+                <table>
+
+                    <tr>
+                        <td colspan="2">
+                            <asp:Image ImageUrl="~/Files/Images/Icons/logo.png" CssClass="image" runat="server" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="menuicon">
+                            <i class="fa-solid fa-house"></i>
+                        </td>
+                        <td class="menuisim">
+                            <a href="../Default.aspx">
+                                <asp:Label Text=" ANA SAYFA " CssClass="menu-label" runat="server" /></a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="menuicon">
+                            <i class="fa-solid fa-users"></i>
+                        </td>
+                        <td class="menuisim">
+                            <a href="../Pages/KullaniciListele.aspx">
+                            <asp:Label Text=" KULLANICI LİSTELE " CssClass="menu-label" runat="server" /></a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="menuicon">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </td>
+                        <td class="menuisim">
+                            <a href="../Pages/KullaniciEkle.aspx"> 
+                            <asp:Label Text=" KULLANICI EKLE " CssClass="menu-label" runat="server" /></a>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="menuicon">
+                            <i class="fa-solid fa-bars"></i>
+                        </td>
+                        <td class="menuisim">
+                            <asp:Label Text=" MAKİNE LİSTELE " CssClass="menu-label" runat="server" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="menuicon">
+                            <i class="fa-solid fa-plus"></i>
+                        </td>
+                        <td class="menuisim">
+                            <asp:Label Text=" MAKİNE EKLE " CssClass="menu-label" runat="server" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="menuicon">
+                            <i class="fa-solid fa-font-awesome"></i>
+                        </td>
+                        <td class="menuisim">
+                            <asp:Label Text=" LOG LİSTELE " CssClass="menu-label" runat="server" />
+                        </td>
+                    </tr>
+
+                </table>
+
+                <div class="cikis-div">
+                    <table>
+                        <tr>
+                            <td class="menuicon">
+                                <asp:LinkButton ID="btnCikis" runat="server" OnClick="btnCikis_Click">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                </asp:LinkButton>
+                            </td>
+                            <td class="menucikis">
+                                <asp:Label ID="lblAdSoyad" CssClass="menu-label" runat="server" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+
+            </div>
+
+            <div class="ortakdiv">
+
+                <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                </asp:ContentPlaceHolder>
+
+            </div>
+        </div>
+
+    </form>
+</body>
+</html>

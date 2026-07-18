@@ -1,0 +1,86 @@
+﻿body {
+}
+
+.kd-div {
+    margin: auto;
+    height: auto;
+    width: 450px;
+    background-color: #ffffff;
+    border-radius: 1%;
+    margin-block-start: 55px;
+}
+
+.baslik {
+    background-color: black;
+    color: white;
+    font-weight: bold;
+    border-radius: 1%;
+    text-align:center !important;
+}
+
+.kd-table {
+    width: 100%;
+    border-collapse: collapse; /* Hücreler arasındaki boşluğu yok eder */
+}
+
+    .kd-table td {
+        text-align: left;
+        padding:10px;
+        padding-left:25px !important;
+        margin-left:25px;
+    }
+
+
+    .kd-table input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="date"],
+    input[type="tel"],
+    input[type="number"] {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding-left: 12px;
+        font-size: 14px;
+        width: 250px;
+        height: 25px;
+    }
+
+.btnkaydet {
+    width: 150px;
+    height: 40px;
+    color: white;
+    background-color: #28a745;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+    .btnkaydet:hover {
+        background-color: #1f8a38;
+    }
+
+
+.btnsil {
+    width: 150px;
+    height: 40px;
+    color: white;
+    background-color: #dc3545;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+    .btnsil:hover {
+        background-color: #b02a37;
+    }
+
+.profilResim {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+}
+
+.lbluyari {
+    text-align: center !important;
+    color: darkred;
+    font-weight: bold;
+    font-size: medium;
+}

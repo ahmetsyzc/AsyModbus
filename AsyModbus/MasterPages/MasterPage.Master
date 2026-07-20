@@ -1,4 +1,4 @@
-﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="AsyModbus.MasterPages.Site" %>
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="MasterPage.Master.cs" Inherits="AsyModbus.MasterPages.Site" %>
 
 <!DOCTYPE html>
 

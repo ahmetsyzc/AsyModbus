@@ -26,8 +26,8 @@ namespace AsyModbus.Pages
                     SqlCommand sqlCommand = new SqlCommand("select * from Roller", sqlBaglanti.SqlBaglan());
                     SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                    DropDownList1.DataTextField = "rol_ad";
-                    DropDownList1.DataValueField = "rol_id";
+                    DropDownList1.DataTextField = "ad";
+                    DropDownList1.DataValueField = "id";
 
                     DropDownList1.DataSource = sqlDataReader;
                     DropDownList1.DataBind();
@@ -102,13 +102,13 @@ namespace AsyModbus.Pages
                 SqlConnection sqlConnection = sqlBaglanti.SqlBaglan();
 
                 //personel var mı kontrol ediyoruz
-                if (KayitVarMi(sqlConnection,"kullanici_mail",txtMail.Text))
+                if (KayitVarMi(sqlConnection,"mail",txtMail.Text))
                 {
                     lblUyari.Text = "Bu Mail Hesabı Sistemde Kayıtlı !";
                     sqlConnection.Close();
                     return;
                 }
-                if (KayitVarMi(sqlConnection, "kullanici_cep_no", txtMail.Text))
+                if (KayitVarMi(sqlConnection, "cep_no", txtMail.Text))
                 {
                     lblUyari.Text = "Bu Telefon Numarası Hesabı Sistemde Kayıtlı !";
                     sqlConnection.Close();
@@ -120,7 +120,7 @@ namespace AsyModbus.Pages
                 FileUpload1.SaveAs(Server.MapPath("~/Files/Images/Kullanicilar/") + dosyaAdi);
                 string resimYolu = "Files/Images/Kullanicilar/" + dosyaAdi;
 
-                SqlCommand komut = new SqlCommand("insert into kullanicilar (kullanici_sifre,kullanici_ad,kullanici_soyad,kullanici_tckno,kullanici_mail,kullanici_cep_no,kullanici_dogum_tarihi,kullanici_rol_id, kullanici_resim_yolu) values (@t1,@t2,@t3,@t4,@t5,@t6,@t7,@t8,@t9)", sqlConnection);
+                SqlCommand komut = new SqlCommand("insert into kullanicilar (sifre,ad,soyad,tckno,mail,cep_no,dogum_tarih,roller_id, resim_yol) values (@t1,@t2,@t3,@t4,@t5,@t6,@t7,@t8,@t9)", sqlConnection);
                 komut.Parameters.AddWithValue("@t1", txtSifre.Text);
                 komut.Parameters.AddWithValue("@t2", txtAd.Text);
                 komut.Parameters.AddWithValue("@t3", txtSoyad.Text);

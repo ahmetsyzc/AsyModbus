@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPages/Site.Master" AutoEventWireup="true" CodeBehind="KullaniciListele.aspx.cs" Inherits="AsyModbus.Pages.KullaniciListele" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPages/MasterPage.Master" AutoEventWireup="true" CodeBehind="KullaniciListele.aspx.cs" Inherits="AsyModbus.Pages.KullaniciListele" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="../Styles/KullaniciListele.css" rel="stylesheet" />
@@ -25,12 +25,12 @@
                 <asp:Repeater ID="Repeater1" runat="server">
                     <ItemTemplate>
                         <tr>
-                            <td><%# Eval("kullanici_id") %></td>
-                            <td><%# Eval("kullanici_ad") %></td>
-                            <td><%# Eval("kullanici_soyad") %></td>
-                            <td><%# Eval("kullanici_tckno") %></td>
+                            <td><%# Eval("id") %></td>
+                            <td><%# Eval("ad") %></td>
+                            <td><%# Eval("soyad") %></td>
+                            <td><%# Eval("tckno") %></td>
                             <td>
-                                <asp:Button ID="btnGuncelle" Text="Güncelle" runat="server" OnClick="btnGuncelle_Click" CommandArgument='<%# Eval("kullanici_id") %>' />
+                                <asp:Button ID="btnGuncelle" Text="Güncelle" runat="server" OnClick="btnGuncelle_Click" CommandArgument='<%# Eval("id") %>' />
                             </td>
                         </tr>
 

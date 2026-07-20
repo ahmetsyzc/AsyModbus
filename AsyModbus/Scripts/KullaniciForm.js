@@ -62,6 +62,19 @@ function KullaniciDogrula() {
         return false;
     }
 
+    if (tcNo.charAt(0) == "0") {
+        alert("TC Kimlik Numarası 0 ile başlayamaz.");
+        txtTcNo.focus();
+        return false;
+    }
+
+    // TC algoritma kontrolü
+    if (!TcKimlikDogrula(tcNo)) {
+        alert("Geçersiz TC Kimlik Numarası.");
+        txtTcNo.focus();
+        return false;
+    }
+
     if (telNo.length !== 10) {
         alert("Telefon numarası 10 haneli olmalıdır.");
         txtTelefon.focus();
@@ -75,4 +88,59 @@ function KullaniciDogrula() {
     }
 
     return true;
+};
+
+function TcKimlikDogrula(tcNo) {
+
+
+    let toplam = 0;
+    let toplamTek = 0;
+    let toplamCift = 0;
+
+    // İlk 10 hanenin toplamı:
+    // Bu toplam 11. haneyi hesaplamak için 
+    for (let i = 0; i < 10; i++) {
+
+        let rakam = parseInt(tcNo.charAt(i));
+
+        toplam += rakam;
+    }
+
+    // İlk 9 hanedeki tek ve çift sıralı rakamların toplamı:
+    // Bu toplamlar 10. haneyi hesaplamak için 
+    for (let i = 0; i < 9; i++) {
+
+        let rakam = parseInt(tcNo.charAt(i));
+
+        if (i % 2 === 0) {
+            toplamTek += rakam;
+        }
+        else {
+            toplamCift += rakam;
+        }
+    }
+
+    let onuncuHaneIslemi =
+        (toplamTek * 7) - toplamCift;
+
+    let hesaplananOnuncuHane =
+        ((onuncuHaneIslemi % 10) + 10) % 10;
+
+    let hesaplananOnBirinciHane =
+        toplam % 10;
+
+    let gercekOnuncuHane =
+        parseInt(tcNo.charAt(9));
+
+    let gercekOnBirinciHane =
+        parseInt(tcNo.charAt(10));
+
+    if (
+        hesaplananOnuncuHane === gercekOnuncuHane &&
+        hesaplananOnBirinciHane === gercekOnBirinciHane
+    ) {
+        return true;
+    }
+
+    return false;
 }

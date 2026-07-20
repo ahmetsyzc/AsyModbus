@@ -29,20 +29,20 @@ namespace AsyModbus.Pages
             }
             try
             {
-                SqlCommand sqlCommand = new SqlCommand("select kullanici_cep_no , kullanici_ad , kullanici_soyad from Kullanicilar where kullanici_mail=@p1", sqlBaglanti.SqlBaglan());
+                SqlCommand sqlCommand = new SqlCommand("select cep_no , ad , soyad from Kullanicilar where mail=@p1", sqlBaglanti.SqlBaglan());
                 sqlCommand.Parameters.AddWithValue("@p1", txtMail.Text);
                 SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
                 if (sqlDataReader.Read())
                 {
-                    if (sqlDataReader["kullanici_cep_no"].ToString() == txtCepNo.Text)
+                    if (sqlDataReader["cep_no"].ToString() == txtCepNo.Text)
                     {
                         Random random = new Random();
-                        yeniSifre= sqlDataReader["kullanici_ad"].ToString().Substring(0, 2) +
-                   sqlDataReader["kullanici_soyad"].ToString().Substring(0, 2) +
+                        yeniSifre= sqlDataReader["ad"].ToString().Substring(0, 2) +
+                   sqlDataReader["soyad"].ToString().Substring(0, 2) +
                    "@" +
                    random.Next(10000, 100000);
 
-                        SqlCommand sifreGüncelle = new SqlCommand("update kullanicilar set kullanici_sifre=@p1 where kullanici_mail=@p2", sqlBaglanti.SqlBaglan());
+                        SqlCommand sifreGüncelle = new SqlCommand("update kullanicilar set sifre=@p1 where mail=@p2", sqlBaglanti.SqlBaglan());
                         sifreGüncelle.Parameters.AddWithValue("@p1", yeniSifre);
                         sifreGüncelle.Parameters.AddWithValue("@p2", txtMail.Text);
                         sifreGüncelle.ExecuteNonQuery();

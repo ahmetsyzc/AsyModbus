@@ -29,28 +29,28 @@ namespace AsyModbus.Pages
                     SqlCommand sqlCommand = new SqlCommand("select * from Roller", sqlBaglanti.SqlBaglan());
                     SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
 
-                    DropDownList1.DataTextField = "rol_ad";
-                    DropDownList1.DataValueField = "rol_id";
+                    DropDownList1.DataTextField = "ad";
+                    DropDownList1.DataValueField = "id";
 
                     DropDownList1.DataSource = sqlDataReader;
                     DropDownList1.DataBind();
 
                     //Verileri Getirme
-                    SqlCommand sqlCommand1 = new SqlCommand("select * from kullanicilar where kullanici_id=@p1", sqlBaglanti.SqlBaglan());
+                    SqlCommand sqlCommand1 = new SqlCommand("select * from kullanicilar where id=@p1", sqlBaglanti.SqlBaglan());
                     sqlCommand1.Parameters.AddWithValue("@p1", id);
                     SqlDataReader sqlDataReader1 = sqlCommand1.ExecuteReader();
                     while (sqlDataReader1.Read())
                     {
-                        txtID.Text = sqlDataReader1["kullanici_id"].ToString();
-                        txtAd.Text = sqlDataReader1["kullanici_ad"].ToString();
-                        txtSoyad.Text = sqlDataReader1["kullanici_soyad"].ToString();
-                        txtTckno.Text = sqlDataReader1["kullanici_tckno"].ToString();
-                        txtMail.Text = sqlDataReader1["kullanici_mail"].ToString();
-                        txtSifre.Text = sqlDataReader1["kullanici_sifre"].ToString();
-                        txtCepNo.Text = sqlDataReader1["kullanici_cep_no"].ToString();
-                        txtDogumTarihi.Text = Convert.ToDateTime(sqlDataReader1["kullanici_dogum_tarihi"]).ToString("yyyy-MM-dd");
-                        imgProfil.ImageUrl = "~/" + sqlDataReader1["kullanici_resim_yolu"].ToString();
-                        DropDownList1.SelectedValue = sqlDataReader1["kullanici_rol_id"].ToString();
+                        txtID.Text = sqlDataReader1["id"].ToString();
+                        txtAd.Text = sqlDataReader1["ad"].ToString();
+                        txtSoyad.Text = sqlDataReader1["soyad"].ToString();
+                        txtTckno.Text = sqlDataReader1["tckno"].ToString();
+                        txtMail.Text = sqlDataReader1["mail"].ToString();
+                        txtSifre.Text = sqlDataReader1["sifre"].ToString();
+                        txtCepNo.Text = sqlDataReader1["cep_no"].ToString();
+                        txtDogumTarihi.Text = Convert.ToDateTime(sqlDataReader1["dogum_tarih"]).ToString("yyyy-MM-dd");
+                        imgProfil.ImageUrl = "~/" + sqlDataReader1["resim_yol"].ToString();
+                        DropDownList1.SelectedValue = sqlDataReader1["roller_id"].ToString();
                     }
                     sqlBaglanti.SqlBaglan().Close();
                 }
@@ -112,15 +112,15 @@ namespace AsyModbus.Pages
 
                 SqlCommand sqlCommand = new SqlCommand(
                     "Update Kullanicilar set " +
-                    "kullanici_ad=@p1, " +
-                    "kullanici_soyad=@p2, " +
-                    "kullanici_tckno=@p3, " +
-                    "kullanici_mail=@p4, " +
-                    "kullanici_cep_no=@p5, " +
-                    "kullanici_dogum_tarihi=@p6, " +
-                    "kullanici_rol_id=@p7, " +
-                    "kullanici_resim_yolu=@p8 " +
-                    "where kullanici_id=@p9", sqlBaglanti.SqlBaglan());
+                    "ad=@p1, " +
+                    "soyad=@p2, " +
+                    "tckno=@p3, " +
+                    "mail=@p4, " +
+                    "cep_no=@p5, " +
+                    "dogum_tarih=@p6, " +
+                    "roller_id=@p7, " +
+                    "resim_yol=@p8 " +
+                    "where id=@p9", sqlBaglanti.SqlBaglan());
 
                 sqlCommand.Parameters.AddWithValue("@p1", txtAd.Text);
                 sqlCommand.Parameters.AddWithValue("@p2", txtSoyad.Text);
@@ -152,7 +152,7 @@ namespace AsyModbus.Pages
 
                 // resim yolunu al
                 SqlCommand sqlCommand1 = new SqlCommand(
-                    "SELECT kullanici_resim_yolu FROM kullanicilar WHERE kullanici_id=@p1",
+                    "SELECT resim_yol FROM kullanicilar WHERE id=@p1",
                     sqlBaglanti.SqlBaglan());
 
                 sqlCommand1.Parameters.AddWithValue("@p1", id);
@@ -172,7 +172,7 @@ namespace AsyModbus.Pages
                     }
                 }
 
-                SqlCommand sqlCommand = new SqlCommand("delete from kullanicilar where kullanici_id=@p1", sqlBaglanti.SqlBaglan());
+                SqlCommand sqlCommand = new SqlCommand("delete from kullanicilar where id=@p1", sqlBaglanti.SqlBaglan());
                 sqlCommand.Parameters.AddWithValue("@p1", id);
                 sqlCommand.ExecuteNonQuery();
                 sqlBaglanti.SqlBaglan().Close();

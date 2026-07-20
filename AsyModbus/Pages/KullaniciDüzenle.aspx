@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPages/Site.Master" AutoEventWireup="true" CodeBehind="KullaniciDüzenle.aspx.cs" Inherits="AsyModbus.Pages.KullaniciDüzenle" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPages/MasterPage.Master" AutoEventWireup="true" CodeBehind="KullaniciDüzenle.aspx.cs" Inherits="AsyModbus.Pages.KullaniciDüzenle" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="../Styles/KullaniciForm.css" rel="stylesheet" />

@@ -17,7 +17,10 @@ namespace AsyModbus.Pages
 
         protected void Page_Load(object sender, EventArgs e)
         {
-           
+            if (Session["KullaniciID"] != null)
+            {
+                Response.Redirect("Default.aspx");
+            }
         }
 
         protected void btnGiris_Click(object sender, EventArgs e)
@@ -31,17 +34,17 @@ namespace AsyModbus.Pages
 
             try
             {
-                SqlCommand sqlCommand = new SqlCommand("select kullanici_id , kullanici_ad , kullanici_soyad , kullanici_sifre from kullanicilar where kullanici_mail=@p1", sqlBaglanti.SqlBaglan() );
+                SqlCommand sqlCommand = new SqlCommand("select id , ad , soyad , sifre from kullanicilar where mail=@p1", sqlBaglanti.SqlBaglan() );
                 sqlCommand.Parameters.AddWithValue("@p1", txtMail.Text); 
                 SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
                 if (sqlDataReader.Read())
                 {
-                    if (sqlDataReader["kullanici_sifre"].ToString()==txtSifre.Text)
+                    if (sqlDataReader["sifre"].ToString()==txtSifre.Text)
                     {
-                        Session["KullaniciID"] = sqlDataReader["kullanici_id"].ToString();
+                        Session["KullaniciID"] = sqlDataReader["id"].ToString();
 
-                        Session["AktifKullanici"] = sqlDataReader["kullanici_ad"].ToString() + " "
-                            + sqlDataReader["kullanici_soyad"].ToString();
+                        Session["AktifKullanici"] = sqlDataReader["ad"].ToString() + " "
+                            + sqlDataReader["soyad"].ToString();
 
                         Response.Redirect("~/Default.aspx",false);
                         Context.ApplicationInstance.CompleteRequest();

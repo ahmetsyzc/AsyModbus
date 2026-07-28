@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 using AsyModbus.AppCode;
-using System.Data.SqlClient;
+using System.Text.RegularExpressions;
 
 namespace AsyModbus.Pages
 {
     public partial class KullaniciDüzenle : System.Web.UI.Page
     {
-        SqlBaglanti sqlBaglanti = new SqlBaglanti();
         string id;
 
         protected void Page_Load(object sender, EventArgs e)
@@ -21,42 +16,44 @@ namespace AsyModbus.Pages
             if (Page.IsPostBack == false)
             {
                 txtDogumTarihi.Attributes["max"] = DateTime.Now.ToString("yyyy-MM-dd");
+                VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
 
                 try
                 {
+                    veritabaniIslemleri.Baslat();
 
                     //Rol Listele
-                    SqlCommand sqlCommand = new SqlCommand("select * from Roller", sqlBaglanti.SqlBaglan());
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                    DropDownList1.DataTextField = "ad";
-                    DropDownList1.DataValueField = "id";
-
-                    DropDownList1.DataSource = sqlDataReader;
-                    DropDownList1.DataBind();
+                    Rol rol = new Rol(veritabaniIslemleri);
+                    rol.Listele(DropDownList1);
 
                     //Verileri Getirme
-                    SqlCommand sqlCommand1 = new SqlCommand("select * from kullanicilar where id=@p1", sqlBaglanti.SqlBaglan());
-                    sqlCommand1.Parameters.AddWithValue("@p1", id);
-                    SqlDataReader sqlDataReader1 = sqlCommand1.ExecuteReader();
-                    while (sqlDataReader1.Read())
+                    Kullanici kullanici = new Kullanici(veritabaniIslemleri);
+                    kullanici.Id = Convert.ToInt16(id);
+                    if (kullanici.TekKayitGetir())
                     {
-                        txtID.Text = sqlDataReader1["id"].ToString();
-                        txtAd.Text = sqlDataReader1["ad"].ToString();
-                        txtSoyad.Text = sqlDataReader1["soyad"].ToString();
-                        txtTckno.Text = sqlDataReader1["tckno"].ToString();
-                        txtMail.Text = sqlDataReader1["mail"].ToString();
-                        txtSifre.Text = sqlDataReader1["sifre"].ToString();
-                        txtCepNo.Text = sqlDataReader1["cep_no"].ToString();
-                        txtDogumTarihi.Text = Convert.ToDateTime(sqlDataReader1["dogum_tarih"]).ToString("yyyy-MM-dd");
-                        imgProfil.ImageUrl = "~/" + sqlDataReader1["resim_yol"].ToString();
-                        DropDownList1.SelectedValue = sqlDataReader1["roller_id"].ToString();
+                        txtID.Text = kullanici.Id.ToString();
+                        txtAd.Text = kullanici.Ad;
+                        txtSoyad.Text = kullanici.Soyad;
+                        txtTckno.Text = kullanici.Tckno;
+                        txtMail.Text = kullanici.Mail;
+                        txtSifre.Text = kullanici.Sifre;
+                        txtCepNo.Text = kullanici.CepNo;
+                        txtDogumTarihi.Text = kullanici.DogumTarih.ToString("yyyy-MM-dd");
+                        imgProfil.ImageUrl = "~/" + kullanici.ResimYol;
+                        DropDownList1.SelectedValue = kullanici.RollerId.ToString();
                     }
-                    sqlBaglanti.SqlBaglan().Close();
+                    else
+                    {
+                        lblUyari.Text = "Kullanıcı bulunamadı.";
+                    }
                 }
                 catch (Exception ex)
                 {
                     lblUyari.Text = "Veriler Yüklenemedi " + ex.Message;
+                }
+                finally
+                {
+                    veritabaniIslemleri.Bitir();
                 }
             }
         }
@@ -79,8 +76,10 @@ namespace AsyModbus.Pages
                 return;
             }
 
+            VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
             try
             {
+                veritabaniIslemleri.Baslat();
 
                 // Eski resmi korumak için mevcut ImageUrl'i alıyoruz
                 string resimYolu = imgProfil.ImageUrl.Replace("~/", "");
@@ -98,7 +97,7 @@ namespace AsyModbus.Pages
 
                     imgProfil.ImageUrl = "~/" + resimYolu;
 
-                    if (!string.IsNullOrEmpty(resimYolu))
+                    if (!string.IsNullOrEmpty(eskiResimYolu))
                     {
                         string fizikselYol = Server.MapPath("~/" + eskiResimYolu);
 
@@ -109,79 +108,87 @@ namespace AsyModbus.Pages
                     }
 
                 }
+                string telefon = Regex.Replace(txtCepNo.Text, @"\D", "");
+                if (telefon.Length != 10)
+                {
+                    lblUyari.Text = "Telefon numarası 10 haneli olmalıdır!";
+                    return;
+                }
 
-                SqlCommand sqlCommand = new SqlCommand(
-                    "Update Kullanicilar set " +
-                    "ad=@p1, " +
-                    "soyad=@p2, " +
-                    "tckno=@p3, " +
-                    "mail=@p4, " +
-                    "cep_no=@p5, " +
-                    "dogum_tarih=@p6, " +
-                    "roller_id=@p7, " +
-                    "resim_yol=@p8 " +
-                    "where id=@p9", sqlBaglanti.SqlBaglan());
+                Kullanici kullanici = new Kullanici(veritabaniIslemleri);
+                kullanici.Id = Convert.ToInt16(txtID.Text.Trim());
+                kullanici.RollerId = Convert.ToInt16(DropDownList1.SelectedValue);
+                kullanici.Ad = txtAd.Text.Trim();
+                kullanici.Soyad = txtSoyad.Text.Trim();
+                kullanici.Tckno = txtTckno.Text.Trim();
+                kullanici.Mail = txtMail.Text.Trim();
+                kullanici.Sifre = txtSifre.Text.Trim();
+                kullanici.CepNo = telefon;
+                kullanici.DogumTarih = Convert.ToDateTime(txtDogumTarihi.Text);
+                kullanici.ResimYol = resimYolu;
+                if (kullanici.Guncelle())
+                {
+                    lblUyari.Text = "Personel bilgileri güncellendi.";
+                }
+                else
+                {
+                    lblUyari.Text = "Personel bilgileri güncellenemedi.";
+                }
 
-                sqlCommand.Parameters.AddWithValue("@p1", txtAd.Text);
-                sqlCommand.Parameters.AddWithValue("@p2", txtSoyad.Text);
-                sqlCommand.Parameters.AddWithValue("@p3", txtTckno.Text);
-                sqlCommand.Parameters.AddWithValue("@p4", txtMail.Text);
-                sqlCommand.Parameters.AddWithValue("@p5", txtCepNo.Text);
-                sqlCommand.Parameters.AddWithValue("@p6", Convert.ToDateTime(txtDogumTarihi.Text));
-                sqlCommand.Parameters.AddWithValue("@p7", DropDownList1.SelectedValue);
-                sqlCommand.Parameters.AddWithValue("@p8", resimYolu);
-                sqlCommand.Parameters.AddWithValue("@p9", id);
 
-                sqlCommand.ExecuteNonQuery();
-                sqlBaglanti.SqlBaglan().Close();
-
-                lblUyari.Text = "Personel bilgileri güncellendi.";
             }
             catch (Exception ex)
             {
                 lblUyari.Text = "Hata: " + ex.Message;
+            }
+            finally
+            {
+                veritabaniIslemleri.Bitir();
             }
         }
 
         protected void btnSil_Click(object sender, EventArgs e)
         {
-
-
+            VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
             try
             {
+                veritabaniIslemleri.Baslat();
+                Kullanici kullanici = new Kullanici(veritabaniIslemleri);
+                kullanici.Id = Convert.ToInt16(id);
 
-                // resim yolunu al
-                SqlCommand sqlCommand1 = new SqlCommand(
-                    "SELECT resim_yol FROM kullanicilar WHERE id=@p1",
-                    sqlBaglanti.SqlBaglan());
-
-                sqlCommand1.Parameters.AddWithValue("@p1", id);
-
-                string resimYolu = sqlCommand1.ExecuteScalar().ToString();
-
-                sqlBaglanti.SqlBaglan().Close();
-
-                // klasörden sil
-                if (!string.IsNullOrEmpty(resimYolu))
+                if (!kullanici.TekKayitGetir())
                 {
-                    string fizikselYol = Server.MapPath("~/" + resimYolu);
-
-                    if (System.IO.File.Exists(fizikselYol))
-                    {
-                        System.IO.File.Delete(fizikselYol);
-                    }
+                    lblUyari.Text = "Silinecek kullanıcı bulunamadı.";
+                    return;
                 }
 
-                SqlCommand sqlCommand = new SqlCommand("delete from kullanicilar where id=@p1", sqlBaglanti.SqlBaglan());
-                sqlCommand.Parameters.AddWithValue("@p1", id);
-                sqlCommand.ExecuteNonQuery();
-                sqlBaglanti.SqlBaglan().Close();
+                string resimYolu = kullanici.ResimYol;
 
-                Response.Redirect("~/Pages/KullaniciListele.aspx");
+                if (kullanici.Sil())
+                {
+                    if (!string.IsNullOrEmpty(resimYolu))
+                    {
+                        string fizikselYol = Server.MapPath("~/" + resimYolu);
+
+                        if (System.IO.File.Exists(fizikselYol))
+                        {
+                            System.IO.File.Delete(fizikselYol);
+                        }
+                    }
+                    Response.Redirect("~/Pages/KullaniciListele.aspx");
+                }
+                else
+                {
+                    lblUyari.Text = "Kullanıcı silinemedi.";
+                }
             }
             catch (Exception ex)
             {
                 lblUyari.Text = "Hata: " + ex.Message;
+            }
+            finally
+            {
+                veritabaniIslemleri.Bitir();
             }
         }
     }

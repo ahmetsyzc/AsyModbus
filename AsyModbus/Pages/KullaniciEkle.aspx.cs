@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 using AsyModbus.AppCode;
-using System.Data.SqlClient;
 using System.Text.RegularExpressions;
 
 namespace AsyModbus.Pages
 {
     public partial class KullaniciEkle : System.Web.UI.Page
     {
-        SqlBaglanti sqlBaglanti = new SqlBaglanti();
+        VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -23,39 +18,37 @@ namespace AsyModbus.Pages
                 try
                 {
                     //Rol Listele
-                    SqlCommand sqlCommand = new SqlCommand("select * from Roller", sqlBaglanti.SqlBaglan());
-                    SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-
-                    DropDownList1.DataTextField = "ad";
-                    DropDownList1.DataValueField = "id";
-
-                    DropDownList1.DataSource = sqlDataReader;
-                    DropDownList1.DataBind();
-
-                    sqlBaglanti.SqlBaglan().Close();
+                    veritabaniIslemleri.Baslat();
+                    Rol rol = new Rol(veritabaniIslemleri);
+                    rol.Listele(DropDownList1);
                 }
                 catch (Exception ex)
                 {
                     lblUyari.Text = "Sistemsel Hata " + ex.Message;
+                }
+                finally
+                {
+                    veritabaniIslemleri.Bitir();
                 }
             }
         }
 
         protected void btnKaydet_Click(object sender, EventArgs e)
         {
+
             if (string.IsNullOrWhiteSpace(txtAd.Text) ||
-   string.IsNullOrWhiteSpace(txtSoyad.Text) ||
-   string.IsNullOrWhiteSpace(txtTckno.Text) ||
-   string.IsNullOrWhiteSpace(txtMail.Text) ||
-   string.IsNullOrWhiteSpace(txtCepNo.Text) ||
-   string.IsNullOrWhiteSpace(txtDogumTarihi.Text) ||
-   !FileUpload1.HasFile)
+                string.IsNullOrWhiteSpace(txtSoyad.Text) ||
+                string.IsNullOrWhiteSpace(txtTckno.Text) ||
+                string.IsNullOrWhiteSpace(txtMail.Text) ||
+                string.IsNullOrWhiteSpace(txtCepNo.Text) ||
+                string.IsNullOrWhiteSpace(txtDogumTarihi.Text) ||
+                !FileUpload1.HasFile)
             {
                 lblUyari.Text = "Lütfen tüm alanları doldurunuz.";
                 return;
             }
 
-            if (txtTckno.Text.Trim().Length!=11)
+            if (txtTckno.Text.Trim().Length != 11)
             {
                 lblUyari.Text = "Tc Kimlik No 11 Hane Olmalıdır!";
                 return;
@@ -70,82 +63,77 @@ namespace AsyModbus.Pages
             string telefon = Regex.Replace(txtCepNo.Text, @"\D", "");
 
             // Telefon numarası sadece rakamlardan oluşacağı için
-            // uzunluğu tam 10 hane olmalıdır.
+            // uzunluğu 10 hane olmalıdır.
             if (telefon.Length != 10)
             {
                 lblUyari.Text = "Telefon numarası 10 haneli olmalıdır!";
                 return;
             }
-
-
-            //Şifre Belirleme
-            Random random = new Random();
-            string ad = txtAd.Text.Trim();
-            string soyad = txtSoyad.Text.Trim();
-            if (ad.Length >= 2 && soyad.Length >= 2)
-            {
-                string sifre =
-                    ad.Substring(0, 2) +
-                    soyad.Substring(0, 2) +
-                    "@" +
-                    random.Next(10000, 100000);
-                txtSifre.Text = sifre;
-            }
-            else
-            {
-                lblUyari.Text = "Ad ve Soyad en az 2 karakter olmalıdır.";
-                return;
-            }
-
+           
             try
             {
-                SqlConnection sqlConnection = sqlBaglanti.SqlBaglan();
+                veritabaniIslemleri.Baslat();
+                Kullanici kullanici = new Kullanici(veritabaniIslemleri);
 
-                //personel var mı kontrol ediyoruz
-                if (KayitVarMi(sqlConnection,"mail",txtMail.Text))
+                //Kullanıcı daha önce kayıtlı mı kontrol ediyoruz
+                if (kullanici.KayitVarMi("mail", txtMail.Text.Trim()))
                 {
                     lblUyari.Text = "Bu Mail Hesabı Sistemde Kayıtlı !";
-                    sqlConnection.Close();
                     return;
                 }
-                if (KayitVarMi(sqlConnection, "cep_no", txtMail.Text))
+                /*if (kullanici.KayitVarMi("tckno", txtTckno.Text.Trim()))
                 {
-                    lblUyari.Text = "Bu Telefon Numarası Hesabı Sistemde Kayıtlı !";
-                    sqlConnection.Close();
+                    lblUyari.Text = "Bu Tckno Sistemde Kayıtlı !";
+                    return;
+                } */
+                if (kullanici.KayitVarMi("cep_no", telefon))
+                {
+                    lblUyari.Text = "Bu Telefon Numarası Sistemde Kayıtlı !";
                     return;
                 }
+                if (txtAd.Text.Trim().Length < 2 || txtSoyad.Text.Trim().Length < 2)
+                {
+                    lblUyari.Text = "Ad ve Soyad en az 2 karakter olmalıdır.";
+                    return;
+                }
+
+                // Şifre oluştur
+                string sifre = kullanici.SifreOlustur(txtAd.Text.Trim(), txtSoyad.Text.Trim());
+                txtSifre.Text = sifre;
 
                 // Resmin adını al - Resmi proje klasörüne kaydet - Veritabanına kaydedilecek yol
                 string dosyaAdi = FileUpload1.FileName;
                 FileUpload1.SaveAs(Server.MapPath("~/Files/Images/Kullanicilar/") + dosyaAdi);
                 string resimYolu = "Files/Images/Kullanicilar/" + dosyaAdi;
 
-                SqlCommand komut = new SqlCommand("insert into kullanicilar (sifre,ad,soyad,tckno,mail,cep_no,dogum_tarih,roller_id, resim_yol) values (@t1,@t2,@t3,@t4,@t5,@t6,@t7,@t8,@t9)", sqlConnection);
-                komut.Parameters.AddWithValue("@t1", txtSifre.Text);
-                komut.Parameters.AddWithValue("@t2", txtAd.Text);
-                komut.Parameters.AddWithValue("@t3", txtSoyad.Text);
-                komut.Parameters.AddWithValue("@t4", txtTckno.Text);
-                komut.Parameters.AddWithValue("@t5", txtMail.Text);
-                komut.Parameters.AddWithValue("@t6", txtCepNo.Text);
-                komut.Parameters.AddWithValue("@t7", txtDogumTarihi.Text);
-                komut.Parameters.AddWithValue("@t8", DropDownList1.SelectedValue);
-                komut.Parameters.AddWithValue("@t9", resimYolu);
-                komut.ExecuteNonQuery();
-                sqlConnection.Close();
+                kullanici.RollerId = Convert.ToInt16(DropDownList1.SelectedValue);
+                kullanici.Ad = txtAd.Text.Trim();
+                kullanici.Soyad = txtSoyad.Text.Trim();
+                kullanici.Tckno = txtTckno.Text.Trim();
+                kullanici.Mail = txtMail.Text.Trim();
+                kullanici.Sifre = sifre;
+                kullanici.CepNo = telefon;
+                kullanici.DogumTarih = Convert.ToDateTime(txtDogumTarihi.Text);
+                kullanici.AktifMi = true;
+                kullanici.ResimYol = resimYolu;
 
-                Response.Redirect("~/Pages/KullaniciListele.aspx");
+                if (kullanici.Ekle())
+                {
+                    Response.Redirect("~/Pages/KullaniciListele.aspx");
+                }
+                else
+                {
+                    lblUyari.Text = "Kullanıcı eklenemedi.";
+                }
             }
             catch (Exception ex)
             {
                 lblUyari.Text = "Hata: " + ex.Message;
             }
-        }
-
-        bool KayitVarMi(SqlConnection sqlConnection, string alan, string deger)
-        {
-            SqlCommand sqlCommand = new SqlCommand("select COUNT(*) from kullanicilar where " + alan + " = @deger ", sqlConnection);
-            sqlCommand.Parameters.AddWithValue("@deger", deger);
-            return Convert.ToInt32(sqlCommand.ExecuteScalar()) > 0;
+            finally
+            {
+                veritabaniIslemleri.Bitir();
+            }
         }
     }
 }

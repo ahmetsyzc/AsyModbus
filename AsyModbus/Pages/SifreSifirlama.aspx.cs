@@ -11,8 +11,6 @@ namespace AsyModbus.Pages
 {
     public partial class SifreSifirlama : System.Web.UI.Page
     {
-        SqlBaglanti sqlBaglanti = new SqlBaglanti();
-        string yeniSifre;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -27,46 +25,54 @@ namespace AsyModbus.Pages
                 lblUyari.Text = "Mail ve Cep No boş bırakılamaz.";
                 return;
             }
+            VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
+            SqlDataReader sqlDataReader = null;
             try
             {
-                SqlCommand sqlCommand = new SqlCommand("select cep_no , ad , soyad from Kullanicilar where mail=@p1", sqlBaglanti.SqlBaglan());
-                sqlCommand.Parameters.AddWithValue("@p1", txtMail.Text);
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                veritabaniIslemleri.Baslat();
+                Kullanici kullanici = new Kullanici(veritabaniIslemleri);
+                kullanici.Mail = txtMail.Text.Trim();
+                kullanici.CepNo = txtCepNo.Text.Trim();
+
+                sqlDataReader = kullanici.MailCepNoKontrol();
+
                 if (sqlDataReader.Read())
                 {
-                    if (sqlDataReader["cep_no"].ToString() == txtCepNo.Text)
+                    kullanici.Id = Convert.ToInt16(sqlDataReader["id"]);
+                    string ad = sqlDataReader["ad"].ToString();
+                    string soyad = sqlDataReader["soyad"].ToString();
+
+                    sqlDataReader.Close();
+                    sqlDataReader = null;
+
+                    kullanici.Sifre = kullanici.SifreOlustur(ad, soyad);
+
+                    if (kullanici.SifreGuncelle())
                     {
-                        Random random = new Random();
-                        yeniSifre= sqlDataReader["ad"].ToString().Substring(0, 2) +
-                   sqlDataReader["soyad"].ToString().Substring(0, 2) +
-                   "@" +
-                   random.Next(10000, 100000);
-
-                        SqlCommand sifreGüncelle = new SqlCommand("update kullanicilar set sifre=@p1 where mail=@p2", sqlBaglanti.SqlBaglan());
-                        sifreGüncelle.Parameters.AddWithValue("@p1", yeniSifre);
-                        sifreGüncelle.Parameters.AddWithValue("@p2", txtMail.Text);
-                        sifreGüncelle.ExecuteNonQuery();
-                        sqlBaglanti.SqlBaglan().Close();
-
-                        lblUyari.Text = "Yeni şifreniz = "+yeniSifre;
+                        lblUyari.Text = "Yeni şifreniz = " + kullanici.Sifre;
                     }
                     else
                     {
-                        lblUyari.Text = "Kullanıcı Bulunamadı !";
+                        lblUyari.Text = "Şifre güncellenemedi.";
                     }
                 }
                 else
                 {
-                    lblUyari.Text = "Hatalı Mail !";
+                    lblUyari.Text = "Mail veya cep telefonu hatalı.";
                 }
-
-                sqlDataReader.Close();
-                sqlBaglanti.SqlBaglan().Close();
             }
             catch (Exception ex)
             {
 
                 lblUyari.Text="Sistemsel Hata "+ex.Message;
+            }
+            finally
+            {
+                if (sqlDataReader != null)
+                {
+                    sqlDataReader.Close();
+                }
+                veritabaniIslemleri.Bitir();
             }
         }
     }

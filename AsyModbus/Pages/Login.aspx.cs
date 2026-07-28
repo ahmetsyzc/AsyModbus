@@ -13,13 +13,13 @@ namespace AsyModbus.Pages
 {
     public partial class Login : System.Web.UI.Page
     {
-        SqlBaglanti sqlBaglanti = new SqlBaglanti();
-
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["KullaniciID"] != null)
             {
-                Response.Redirect("Default.aspx");
+                Response.Redirect("~/Default.aspx",false);
+                Context.ApplicationInstance.CompleteRequest();
+                return;
             }
         }
 
@@ -32,40 +32,41 @@ namespace AsyModbus.Pages
                 return;
             }
 
+            VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
+            SqlDataReader sqlDataReader = null;
             try
             {
-                SqlCommand sqlCommand = new SqlCommand("select id , ad , soyad , sifre from kullanicilar where mail=@p1", sqlBaglanti.SqlBaglan() );
-                sqlCommand.Parameters.AddWithValue("@p1", txtMail.Text); 
-                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                veritabaniIslemleri.Baslat();
+                Kullanici kullanici = new Kullanici(veritabaniIslemleri);
+
+                kullanici.Mail = txtMail.Text.Trim();
+                kullanici.Sifre = txtSifre.Text.Trim();
+                sqlDataReader = kullanici.SifreKontrol();
+
                 if (sqlDataReader.Read())
                 {
-                    if (sqlDataReader["sifre"].ToString()==txtSifre.Text)
-                    {
-                        Session["KullaniciID"] = sqlDataReader["id"].ToString();
-
-                        Session["AktifKullanici"] = sqlDataReader["ad"].ToString() + " "
-                            + sqlDataReader["soyad"].ToString();
-
-                        Response.Redirect("~/Default.aspx",false);
-                        Context.ApplicationInstance.CompleteRequest();
-                        return;
-                    }
-                    else
-                    {
-                        lblUyari.Text = "Hatalı Şifre !";
-                    }
+                    Session["KullaniciID"] = sqlDataReader["id"].ToString();
+                    Session["AktifKullanici"] = sqlDataReader["ad"].ToString() + " " + sqlDataReader["soyad"].ToString();
+                    Response.Redirect("~/Default.aspx",false);
+                    Context.ApplicationInstance.CompleteRequest();
+                    return;
                 }
                 else
                 {
-                    lblUyari.Text = "Kullanıcı Bulunamadı !";
+                    lblUyari.Text = "Mail veya şifre hatalı.";
                 }
-
-                sqlDataReader.Close();
-                sqlBaglanti.SqlBaglan().Close();
             }
             catch (Exception ex)
             {
                lblUyari.Text = "Sistemsel Hata ! " + ex.Message;
+            }
+            finally
+            {
+                if (sqlDataReader != null)
+                {
+                    sqlDataReader.Close();
+                }
+                veritabaniIslemleri.Bitir();
             }
         }
     }

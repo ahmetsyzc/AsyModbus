@@ -3,35 +3,45 @@
     TcKontrol();
 };
 
+function TelefonFormatla(txtTelefon) {
+
+    let telNo = txtTelefon.value;
+    telNo = telNo.replace(/\D/g, "");
+
+    let alanKodu = telNo.substring(0, 3);
+    let ilkUc = telNo.substring(3, 6);
+    let sonDort = telNo.substring(6, 10);
+
+    if (telNo.length <= 3) {
+
+    }
+    else if (telNo.length <= 6) {
+
+        telNo = "(" + alanKodu + ")-" + ilkUc;
+    }
+    else {
+
+        telNo = "(" + alanKodu + ")-" + ilkUc + "-" + sonDort;
+    }
+
+    txtTelefon.value = telNo;
+}
+
 function TelefonKontrol() {
 
     const txtTelefon = document.getElementById("txtCepNo");
+
+    TelefonFormatla(txtTelefon);
+
     txtTelefon.addEventListener("input", function () {
 
-        let telNo = txtTelefon.value;
-        telNo = telNo.replace(/\D/g, "");
-
-        let alanKodu = telNo.substring(0, 3);
-        let ilkUc = telNo.substring(3, 6);
-        let sonDort = telNo.substring(6, 10);
-
-        if (telNo.length <= 3) {
-
-        }
-        else if (telNo.length <= 6) {
-
-            telNo = "(" + alanKodu + ")-" + ilkUc;
-        }
-        else {
-
-            telNo = "(" + alanKodu + ")-" + ilkUc + "-" + sonDort;
-        }
-
-        txtTelefon.value = telNo;
-
+        TelefonFormatla(txtTelefon);
 
     });
+
+
 }
+
 
 function TcKontrol() {
 

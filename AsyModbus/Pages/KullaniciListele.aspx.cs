@@ -8,29 +8,22 @@ namespace AsyModbus.Pages
 {
     public partial class KullaniciListele : System.Web.UI.Page
     {
-        SqlBaglanti sqlBaglanti = new SqlBaglanti();
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Page.IsPostBack == false)
             {
-                VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
+                
                 try
                 {
-                    veritabaniIslemleri.Baslat();
-
-                    Kullanici kullanici = new Kullanici(veritabaniIslemleri);
-                    DataTable dataTable = kullanici.TumKayitGetir();
-                    Repeater1.DataSource = dataTable;
+                    VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
+                    Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
+                    Repeater1.DataSource = kullanicilar.TumKayitGetir();
                     Repeater1.DataBind();
                 }
                 catch (Exception)
                 {
-                    
-                }
-                finally
-                {
-                    veritabaniIslemleri.Bitir();
+                    throw;
                 }
             }
         }
@@ -41,7 +34,8 @@ namespace AsyModbus.Pages
 
             string id = button.CommandArgument;
 
-            Response.Redirect("~/Pages/KullaniciDüzenle.aspx?kullanici_id=" + id);
+            Response.Redirect("~/Pages/KullaniciDüzenle.aspx?kullanici_id=" + id , false);
+            Context.ApplicationInstance.CompleteRequest();
         }
     }
 }

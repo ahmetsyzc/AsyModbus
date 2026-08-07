@@ -154,3 +154,23 @@ function TcKimlikDogrula(tcNo) {
 
     return false;
 }
+
+function SifreSifirlamaDogrulama() {
+
+    const txtTelefon = document.getElementById("txtCepNo");
+    let telNo = txtTelefon.value.replace(/\D/g, "");
+
+    if (telNo.length !== 10) {
+        alert("Telefon numarası 10 haneli olmalıdır.");
+        txtTelefon.focus();
+        return false;
+    }
+
+    if (telNo.charAt(0) !== "5") {
+        alert("Telefon numarası 5 ile başlamalıdır.");
+        txtTelefon.focus();
+        return false;
+    }
+
+    return true;
+}

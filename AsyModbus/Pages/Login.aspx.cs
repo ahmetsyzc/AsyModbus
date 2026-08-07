@@ -7,12 +7,15 @@ using System.Web.UI.WebControls;
 using System.Configuration;
 using System.Data.SqlClient;
 using AsyModbus.AppCode;
+using System.Data;
 
 
 namespace AsyModbus.Pages
 {
     public partial class Login : System.Web.UI.Page
     {
+        
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["KullaniciID"] != null)
@@ -23,6 +26,7 @@ namespace AsyModbus.Pages
             }
         }
 
+
         protected void btnGiris_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtMail.Text) ||
@@ -31,22 +35,19 @@ namespace AsyModbus.Pages
                 lblUyari.Text = "Mail ve Şifre boş bırakılamaz.";
                 return;
             }
-
-            VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
-            SqlDataReader sqlDataReader = null;
             try
             {
-                veritabaniIslemleri.Baslat();
-                Kullanici kullanici = new Kullanici(veritabaniIslemleri);
+                VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
+                Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
 
-                kullanici.Mail = txtMail.Text.Trim();
-                kullanici.Sifre = txtSifre.Text.Trim();
-                sqlDataReader = kullanici.SifreKontrol();
+                kullanicilar.Mail = txtMail.Text.Trim();
+                kullanicilar.Sifre = txtSifre.Text.Trim();
+                DataRow dataRow = kullanicilar.SifreKontrol();
 
-                if (sqlDataReader.Read())
+                if (dataRow!=null)
                 {
-                    Session["KullaniciID"] = sqlDataReader["id"].ToString();
-                    Session["AktifKullanici"] = sqlDataReader["ad"].ToString() + " " + sqlDataReader["soyad"].ToString();
+                    Session["KullaniciId"] = dataRow[Kullanicilar.C_Sutun_id].ToString();
+                    Session["AktifKullanici"] = dataRow[Kullanicilar.C_Sutun_ad].ToString() + " " + dataRow[Kullanicilar.C_Sutun_soyad].ToString();
                     Response.Redirect("~/Default.aspx",false);
                     Context.ApplicationInstance.CompleteRequest();
                     return;
@@ -59,14 +60,6 @@ namespace AsyModbus.Pages
             catch (Exception ex)
             {
                lblUyari.Text = "Sistemsel Hata ! " + ex.Message;
-            }
-            finally
-            {
-                if (sqlDataReader != null)
-                {
-                    sqlDataReader.Close();
-                }
-                veritabaniIslemleri.Bitir();
             }
         }
     }

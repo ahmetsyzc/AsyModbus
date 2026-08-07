@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web.UI;
 using AsyModbus.AppCode;
-using System.Text.RegularExpressions;
 
 namespace AsyModbus.Pages
 {
@@ -20,27 +19,26 @@ namespace AsyModbus.Pages
 
                 try
                 {
-                    veritabaniIslemleri.Baslat();
-
                     //Rol Listele
-                    Rol rol = new Rol(veritabaniIslemleri);
+                    Roller rol = new Roller(veritabaniIslemleri);
                     rol.Listele(DropDownList1);
 
                     //Verileri Getirme
-                    Kullanici kullanici = new Kullanici(veritabaniIslemleri);
-                    kullanici.Id = Convert.ToInt16(id);
-                    if (kullanici.TekKayitGetir())
+                    Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
+                    kullanicilar.Id = Convert.ToInt32(id);
+
+                    if (kullanicilar.TekKayitGetir())
                     {
-                        txtID.Text = kullanici.Id.ToString();
-                        txtAd.Text = kullanici.Ad;
-                        txtSoyad.Text = kullanici.Soyad;
-                        txtTckno.Text = kullanici.Tckno;
-                        txtMail.Text = kullanici.Mail;
-                        txtSifre.Text = kullanici.Sifre;
-                        txtCepNo.Text = kullanici.CepNo;
-                        txtDogumTarihi.Text = kullanici.DogumTarih.ToString("yyyy-MM-dd");
-                        imgProfil.ImageUrl = "~/" + kullanici.ResimYol;
-                        DropDownList1.SelectedValue = kullanici.RollerId.ToString();
+                        txtID.Text = kullanicilar.Id.ToString();
+                        txtAd.Text = kullanicilar.Ad.ToString();
+                        txtSoyad.Text = kullanicilar.Soyad.ToString();
+                        txtTckno.Text = kullanicilar.Tckno.ToString();
+                        txtMail.Text = kullanicilar.Mail.ToString();
+                        txtSifre.Text = kullanicilar.Sifre.ToString();
+                        txtCepNo.Text = kullanicilar.CepNo.ToString();
+                        txtDogumTarihi.Text = kullanicilar.DogumTarih.ToString("yyyy-MM-dd");
+                        imgProfil.ImageUrl = "~/" + kullanicilar.ResimYol.ToString();
+                        DropDownList1.SelectedValue = kullanicilar.RollerId.ToString();
                     }
                     else
                     {
@@ -51,20 +49,16 @@ namespace AsyModbus.Pages
                 {
                     lblUyari.Text = "Veriler Yüklenemedi " + ex.Message;
                 }
-                finally
-                {
-                    veritabaniIslemleri.Bitir();
-                }
             }
         }
 
         protected void btnKaydet_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtAd.Text) ||
- string.IsNullOrWhiteSpace(txtSoyad.Text) ||
- string.IsNullOrWhiteSpace(txtTckno.Text) ||
- string.IsNullOrWhiteSpace(txtMail.Text) ||
- string.IsNullOrWhiteSpace(txtCepNo.Text))
+                string.IsNullOrWhiteSpace(txtSoyad.Text) ||
+                string.IsNullOrWhiteSpace(txtTckno.Text) ||
+                string.IsNullOrWhiteSpace(txtMail.Text) ||
+                string.IsNullOrWhiteSpace(txtCepNo.Text))
             {
                 lblUyari.Text = "Lütfen tüm alanları doldurunuz.";
                 return;
@@ -75,11 +69,17 @@ namespace AsyModbus.Pages
                 lblUyari.Text = "Ad ve Soyad en az 2 karakter olmalıdır.";
                 return;
             }
-
-            VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
             try
             {
-                veritabaniIslemleri.Baslat();
+                VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
+                Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
+
+                kullanicilar.CepNo = txtCepNo.Text.Trim();
+                if (kullanicilar.CepNo.Length != 10)
+                {
+                    lblUyari.Text = "Telefon numarası 10 haneli olmalıdır!";
+                    return;
+                }
 
                 // Eski resmi korumak için mevcut ImageUrl'i alıyoruz
                 string resimYolu = imgProfil.ImageUrl.Replace("~/", "");
@@ -89,12 +89,10 @@ namespace AsyModbus.Pages
                 {
                     string eskiResimYolu = resimYolu;
 
-                    string dosyaAdi = FileUpload1.FileName;
-
+                    string uzanti = System.IO.Path.GetExtension(FileUpload1.FileName);
+                    string dosyaAdi = Guid.NewGuid().ToString() + uzanti;
                     FileUpload1.SaveAs(Server.MapPath("~/Files/Images/Kullanicilar/") + dosyaAdi);
-
                     resimYolu = "Files/Images/Kullanicilar/" + dosyaAdi;
-
                     imgProfil.ImageUrl = "~/" + resimYolu;
 
                     if (!string.IsNullOrEmpty(eskiResimYolu))
@@ -108,25 +106,19 @@ namespace AsyModbus.Pages
                     }
 
                 }
-                string telefon = Regex.Replace(txtCepNo.Text, @"\D", "");
-                if (telefon.Length != 10)
-                {
-                    lblUyari.Text = "Telefon numarası 10 haneli olmalıdır!";
-                    return;
-                }
+                kullanicilar.ResimYol = resimYolu;
+                kullanicilar.Id = Convert.ToInt32(txtID.Text.Trim());
+                kullanicilar.RollerId = Convert.ToInt32(DropDownList1.SelectedValue);
+                kullanicilar.Ad = txtAd.Text.Trim();
+                kullanicilar.Soyad = txtSoyad.Text.Trim();
+                kullanicilar.Tckno = txtTckno.Text.Trim();
+                kullanicilar.Mail = txtMail.Text.Trim();
+                kullanicilar.Sifre = txtSifre.Text.Trim();
+                kullanicilar.DogumTarih = Convert.ToDateTime(txtDogumTarihi.Text);
+                kullanicilar.GuncelleyenId = Convert.ToInt32(Session["KullaniciId"]);
+                kullanicilar.GuncelleyenIp = Request.UserHostAddress;
 
-                Kullanici kullanici = new Kullanici(veritabaniIslemleri);
-                kullanici.Id = Convert.ToInt16(txtID.Text.Trim());
-                kullanici.RollerId = Convert.ToInt16(DropDownList1.SelectedValue);
-                kullanici.Ad = txtAd.Text.Trim();
-                kullanici.Soyad = txtSoyad.Text.Trim();
-                kullanici.Tckno = txtTckno.Text.Trim();
-                kullanici.Mail = txtMail.Text.Trim();
-                kullanici.Sifre = txtSifre.Text.Trim();
-                kullanici.CepNo = telefon;
-                kullanici.DogumTarih = Convert.ToDateTime(txtDogumTarihi.Text);
-                kullanici.ResimYol = resimYolu;
-                if (kullanici.Guncelle())
+                if (kullanicilar.Guncelle())
                 {
                     lblUyari.Text = "Personel bilgileri güncellendi.";
                 }
@@ -141,10 +133,6 @@ namespace AsyModbus.Pages
             {
                 lblUyari.Text = "Hata: " + ex.Message;
             }
-            finally
-            {
-                veritabaniIslemleri.Bitir();
-            }
         }
 
         protected void btnSil_Click(object sender, EventArgs e)
@@ -152,19 +140,18 @@ namespace AsyModbus.Pages
             VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
             try
             {
-                veritabaniIslemleri.Baslat();
-                Kullanici kullanici = new Kullanici(veritabaniIslemleri);
-                kullanici.Id = Convert.ToInt16(id);
+                Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
+                kullanicilar.Id = Convert.ToInt32(id);
 
-                if (!kullanici.TekKayitGetir())
+                if (!kullanicilar.TekKayitGetir())
                 {
                     lblUyari.Text = "Silinecek kullanıcı bulunamadı.";
                     return;
                 }
 
-                string resimYolu = kullanici.ResimYol;
+                string resimYolu = kullanicilar.ResimYol;
 
-                if (kullanici.Sil())
+                if (kullanicilar.Sil())
                 {
                     if (!string.IsNullOrEmpty(resimYolu))
                     {
@@ -175,7 +162,9 @@ namespace AsyModbus.Pages
                             System.IO.File.Delete(fizikselYol);
                         }
                     }
-                    Response.Redirect("~/Pages/KullaniciListele.aspx");
+                    Response.Redirect("~/Pages/KullaniciListele.aspx",false);
+                    Context.ApplicationInstance.CompleteRequest();
+                    return;
                 }
                 else
                 {
@@ -185,10 +174,6 @@ namespace AsyModbus.Pages
             catch (Exception ex)
             {
                 lblUyari.Text = "Hata: " + ex.Message;
-            }
-            finally
-            {
-                veritabaniIslemleri.Bitir();
             }
         }
     }

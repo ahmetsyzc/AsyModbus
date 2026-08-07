@@ -12,7 +12,7 @@ namespace AsyModbus.MasterPages
         protected void Page_Load(object sender, EventArgs e)
         {
 
-            if (Session["KullaniciID"] == null)
+            if (Session["KullaniciId"] == null)
             {
                 Response.Redirect("~/Pages/Login.aspx");
             }

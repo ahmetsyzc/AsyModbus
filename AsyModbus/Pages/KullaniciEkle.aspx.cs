@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web.UI;
 using AsyModbus.AppCode;
-using System.Text.RegularExpressions;
 
 namespace AsyModbus.Pages
 {
@@ -14,21 +13,15 @@ namespace AsyModbus.Pages
             if (Page.IsPostBack == false)
             {
                 txtDogumTarihi.Attributes["max"] = DateTime.Now.ToString("yyyy-MM-dd");
-
                 try
                 {
                     //Rol Listele
-                    veritabaniIslemleri.Baslat();
-                    Rol rol = new Rol(veritabaniIslemleri);
+                    Roller rol = new Roller(veritabaniIslemleri);
                     rol.Listele(DropDownList1);
                 }
                 catch (Exception ex)
                 {
                     lblUyari.Text = "Sistemsel Hata " + ex.Message;
-                }
-                finally
-                {
-                    veritabaniIslemleri.Bitir();
                 }
             }
         }
@@ -47,50 +40,44 @@ namespace AsyModbus.Pages
                 lblUyari.Text = "Lütfen tüm alanları doldurunuz.";
                 return;
             }
-
             if (txtTckno.Text.Trim().Length != 11)
             {
                 lblUyari.Text = "Tc Kimlik No 11 Hane Olmalıdır!";
                 return;
             }
 
-            //trim() sadece baştaki ve sondaki boşlukları siler
-            // Telefon numarasındaki rakam olmayan tüm karakterleri siler.
-            // Örnek:
-            // (532)-555-1234  →  5325551234
-            // \D = Rakam olmayan karakterler
-            // "" = Bulduğu rakam olmayan karakterleri siler.
-            string telefon = Regex.Replace(txtCepNo.Text, @"\D", "");
 
-            // Telefon numarası sadece rakamlardan oluşacağı için
-            // uzunluğu 10 hane olmalıdır.
-            if (telefon.Length != 10)
-            {
-                lblUyari.Text = "Telefon numarası 10 haneli olmalıdır!";
-                return;
-            }
-           
             try
             {
-                veritabaniIslemleri.Baslat();
-                Kullanici kullanici = new Kullanici(veritabaniIslemleri);
+                Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
+                
+                kullanicilar.CepNo = txtCepNo.Text.Trim();
+                if (kullanicilar.CepNo.Length != 10)
+                {
+                    lblUyari.Text = "Telefon numarası 10 haneli olmalıdır!";
+                    return;
+                }
+
+                kullanicilar.Tckno = txtTckno.Text.Trim();
+                kullanicilar.Mail = txtMail.Text.Trim();
 
                 //Kullanıcı daha önce kayıtlı mı kontrol ediyoruz
-                if (kullanici.KayitVarMi("mail", txtMail.Text.Trim()))
+                if (kullanicilar.MailVarMi()>0)
                 {
                     lblUyari.Text = "Bu Mail Hesabı Sistemde Kayıtlı !";
                     return;
                 }
-                /*if (kullanici.KayitVarMi("tckno", txtTckno.Text.Trim()))
-                {
-                    lblUyari.Text = "Bu Tckno Sistemde Kayıtlı !";
-                    return;
-                } */
-                if (kullanici.KayitVarMi("cep_no", telefon))
+                if (kullanicilar.CepNoVarMi() > 0)
                 {
                     lblUyari.Text = "Bu Telefon Numarası Sistemde Kayıtlı !";
                     return;
                 }
+                /*if (kullanicilar.TcknoVarMi()>0)
+                {
+                    lblUyari.Text = "Bu Tckno Sistemde Kayıtlı !";
+                    return;
+                }*/
+
                 if (txtAd.Text.Trim().Length < 2 || txtSoyad.Text.Trim().Length < 2)
                 {
                     lblUyari.Text = "Ad ve Soyad en az 2 karakter olmalıdır.";
@@ -98,41 +85,38 @@ namespace AsyModbus.Pages
                 }
 
                 // Şifre oluştur
-                string sifre = kullanici.SifreOlustur(txtAd.Text.Trim(), txtSoyad.Text.Trim());
+                string sifre = kullanicilar.SifreOlustur(txtAd.Text.Trim(), txtSoyad.Text.Trim());
                 txtSifre.Text = sifre;
 
                 // Resmin adını al - Resmi proje klasörüne kaydet - Veritabanına kaydedilecek yol
-                string dosyaAdi = FileUpload1.FileName;
+                string uzanti = System.IO.Path.GetExtension(FileUpload1.FileName);
+                string dosyaAdi = Guid.NewGuid().ToString() + uzanti;
                 FileUpload1.SaveAs(Server.MapPath("~/Files/Images/Kullanicilar/") + dosyaAdi);
                 string resimYolu = "Files/Images/Kullanicilar/" + dosyaAdi;
 
-                kullanici.RollerId = Convert.ToInt16(DropDownList1.SelectedValue);
-                kullanici.Ad = txtAd.Text.Trim();
-                kullanici.Soyad = txtSoyad.Text.Trim();
-                kullanici.Tckno = txtTckno.Text.Trim();
-                kullanici.Mail = txtMail.Text.Trim();
-                kullanici.Sifre = sifre;
-                kullanici.CepNo = telefon;
-                kullanici.DogumTarih = Convert.ToDateTime(txtDogumTarihi.Text);
-                kullanici.AktifMi = true;
-                kullanici.ResimYol = resimYolu;
+                kullanicilar.RollerId = Convert.ToInt32(DropDownList1.SelectedValue);
+                kullanicilar.Ad = txtAd.Text.Trim();
+                kullanicilar.Soyad = txtSoyad.Text.Trim();
+                kullanicilar.Sifre = sifre;
+                kullanicilar.DogumTarih = Convert.ToDateTime(txtDogumTarihi.Text);
+                kullanicilar.AktifMi = true;
+                kullanicilar.ResimYol = resimYolu;
+                kullanicilar.EkleyenId = Convert.ToInt32(Session["KullaniciId"]);
+                kullanicilar.EkleyenIp = Request.UserHostAddress;
 
-                if (kullanici.Ekle())
+
+                if (kullanicilar.Ekle())
                 {
-                    Response.Redirect("~/Pages/KullaniciListele.aspx");
+                    Response.Redirect("~/Pages/KullaniciListele.aspx", false);
+                    Context.ApplicationInstance.CompleteRequest();
+                    return;
                 }
-                else
-                {
-                    lblUyari.Text = "Kullanıcı eklenemedi.";
-                }
+
+                lblUyari.Text = "Kullanıcı eklenemedi.";
             }
             catch (Exception ex)
             {
                 lblUyari.Text = "Hata: " + ex.Message;
-            }
-            finally
-            {
-                veritabaniIslemleri.Bitir();
             }
         }
     }

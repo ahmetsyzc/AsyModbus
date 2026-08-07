@@ -4,8 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Data.SqlClient;
 using AsyModbus.AppCode;
+using System.Data;
 
 namespace AsyModbus.Pages
 {
@@ -26,30 +26,23 @@ namespace AsyModbus.Pages
                 return;
             }
             VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
-            SqlDataReader sqlDataReader = null;
             try
             {
-                veritabaniIslemleri.Baslat();
-                Kullanici kullanici = new Kullanici(veritabaniIslemleri);
-                kullanici.Mail = txtMail.Text.Trim();
-                kullanici.CepNo = txtCepNo.Text.Trim();
+                Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
+                kullanicilar.Mail = txtMail.Text.Trim();
+                kullanicilar.CepNo = txtCepNo.Text.Trim();
+                DataRow dataRow = kullanicilar.MailCepNoKontrol();
 
-                sqlDataReader = kullanici.MailCepNoKontrol();
-
-                if (sqlDataReader.Read())
+                if (dataRow != null)
                 {
-                    kullanici.Id = Convert.ToInt16(sqlDataReader["id"]);
-                    string ad = sqlDataReader["ad"].ToString();
-                    string soyad = sqlDataReader["soyad"].ToString();
+                    kullanicilar.Id = Convert.ToInt32(dataRow[Kullanicilar.C_Sutun_id]);
+                    string ad = dataRow[Kullanicilar.C_Sutun_ad].ToString();
+                    string soyad = dataRow[Kullanicilar.C_Sutun_soyad].ToString();
+                    kullanicilar.Sifre = kullanicilar.SifreOlustur(ad, soyad);
 
-                    sqlDataReader.Close();
-                    sqlDataReader = null;
-
-                    kullanici.Sifre = kullanici.SifreOlustur(ad, soyad);
-
-                    if (kullanici.SifreGuncelle())
+                    if (kullanicilar.SifreGuncelle())
                     {
-                        lblUyari.Text = "Yeni şifreniz = " + kullanici.Sifre;
+                        lblUyari.Text = "Yeni şifreniz = " + kullanicilar.Sifre;
                     }
                     else
                     {
@@ -65,14 +58,6 @@ namespace AsyModbus.Pages
             {
 
                 lblUyari.Text="Sistemsel Hata "+ex.Message;
-            }
-            finally
-            {
-                if (sqlDataReader != null)
-                {
-                    sqlDataReader.Close();
-                }
-                veritabaniIslemleri.Bitir();
             }
         }
     }

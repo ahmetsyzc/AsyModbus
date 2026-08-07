@@ -6,6 +6,7 @@
 <head runat="server">
     <title>Şifre Sıfırlama Sayfası</title>
     <link href="../Styles/Login.css" rel="stylesheet" />
+    <script src="../Scripts/KullaniciForm.js"></script>
 </head>
 <body>
     <form id="form1" runat="server">
@@ -38,13 +39,13 @@
 
                 <tr>
                     <td colspan="2">
-                        <asp:TextBox ID="txtCepNo" placeholder="Cep Telefonunuzu Giriniz" Style="margin: auto; width: 350px; height: 30px;" runat="server" />
+                        <asp:TextBox ID="txtCepNo" placeholder="(5__) ___-____" Style="margin: auto; width: 350px; height: 30px;" runat="server" TextMode="SingleLine" MaxLength="14" ClientIDMode="Static" />
                     </td>
                 </tr>
 
                 <tr>
                     <td>
-                        <asp:Button ID="btnSifreSifirla" Text="Sıfırla" CssClass="grsButon" runat="server" OnClick="btnSifreSifirla_Click" />
+                        <asp:Button ID="btnSifreSifirla" Text="Sıfırla" CssClass="grsButon" runat="server" OnClientClick="return SifreSifirlamaDogrulama();" OnClick="btnSifreSifirla_Click" />
                     </td>
                     <td>
                         <a href="Login.aspx">

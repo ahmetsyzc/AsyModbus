@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using AsyModbus.AppCode;
+using BusinessLayer.Work;
+using BusinessLayer.Entity;
 using System.Data;
 
 namespace AsyModbus.Pages

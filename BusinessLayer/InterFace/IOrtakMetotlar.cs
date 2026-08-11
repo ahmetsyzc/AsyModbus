@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace AsyModbus.AppCode
+namespace BusinessLayer.Interface
 {
     public interface IOrtakMetotlar
     {

@@ -1,22 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Data;
-using System.Data.SqlClient;
 using System.Web.UI.WebControls;
+using BusinessLayer.Interface;
+using BusinessLayer.Work;
 
-namespace AsyModbus.AppCode
+namespace BusinessLayer.Entity
 {
     public class Roller : OrtakAlanlar, IOrtakMetotlar
     {
         VeritabaniIslemleri veritabaniIslemleri;
 
-        #region Nesneler
-
-        public string Ad { get; set; }
-
-        #endregion
 
         #region Sabitler
 
@@ -27,6 +20,14 @@ namespace AsyModbus.AppCode
         public const string C_Sutun_ad = "ad";
 
         #endregion
+
+
+        #region Nesneler
+
+        public string Ad { get; set; }
+
+        #endregion
+
 
         #region Metotlar
 

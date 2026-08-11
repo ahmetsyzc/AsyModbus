@@ -1,43 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Data;
-using System.Data.SqlClient;
 using System.Text.RegularExpressions;
+using BusinessLayer.Interface;
+using BusinessLayer.Work;
 
-namespace AsyModbus.AppCode
+namespace BusinessLayer.Entity
 {
     public class Kullanicilar : OrtakAlanlar, IOrtakMetotlar
     {
         VeritabaniIslemleri veritabaniIslemleri;
-
-        #region Nesneler
-
-        public int RollerId { get; set; }
-        public string Ad { get; set; }
-        public string Soyad { get; set; }
-        public string Tckno { get; set; }
-        public string Mail { get; set; }
-        public string Sifre { get; set; }
-
-        private string cepNo;
-        public string CepNo
-        {
-            get
-            {
-                return cepNo;
-            }
-            set
-            {
-                cepNo = Regex.Replace(value, @"\D", "");
-            }
-        }
-
-        public DateTime DogumTarih { get; set; }
-        public string ResimYol { get; set; }
-
-        #endregion
 
         #region Sabitler
 
@@ -69,6 +40,35 @@ namespace AsyModbus.AppCode
 
 
         #endregion
+
+
+        #region Nesneler
+
+        public int RollerId { get; set; }
+        public string Ad { get; set; }
+        public string Soyad { get; set; }
+        public string Tckno { get; set; }
+        public string Mail { get; set; }
+        public string Sifre { get; set; }
+
+        private string cepNo;
+        public string CepNo
+        {
+            get
+            {
+                return cepNo;
+            }
+            set
+            {
+                cepNo = Regex.Replace(value, @"\D", "");
+            }
+        }
+
+        public DateTime DogumTarih { get; set; }
+        public string ResimYol { get; set; }
+
+        #endregion
+
 
         #region Metotlar
 

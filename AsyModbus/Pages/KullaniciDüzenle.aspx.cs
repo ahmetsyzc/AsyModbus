@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Web.UI;
-using AsyModbus.AppCode;
+using BusinessLayer.Work;
+using BusinessLayer.Entity;
+
 
 namespace AsyModbus.Pages
 {

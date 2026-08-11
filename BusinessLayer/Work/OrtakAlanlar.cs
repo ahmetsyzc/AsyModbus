@@ -1,14 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using BusinessLayer.Work;
 
-namespace AsyModbus.AppCode
+namespace BusinessLayer.Work
 {
     public class OrtakAlanlar
     {
+
+        #region Sabitler
+
+        public const string C_Sutun_id = "id";
+        public const string C_Sutun_ekleyen_id = "ekleyen_id";
+        public const string C_Sutun_ekleyen_ip = "ekleyen_ip";
+        public const string C_Sutun_eklenme_tarih = "eklenme_tarih";
+        public const string C_Sutun_guncelleyen_id = "guncelleyen_id";
+        public const string C_Sutun_guncelleyen_ip = "guncelleyen_ip";
+        public const string C_Sutun_guncellenme_tarih = "guncellenme_tarih";
+        public const string C_Sutun_aktif_mi = "aktif_mi";
+
+        #endregion
+
         #region Nesneler
-        
+
         private int id;
         public int Id { get { return id; } set { id = value; } }
 
@@ -28,19 +40,6 @@ namespace AsyModbus.AppCode
 
         private bool aktifMi;
         public bool AktifMi { get { return aktifMi; } set { aktifMi = value; } }
-
-        #endregion
-
-        #region SABİTLER
-
-        public const string C_Sutun_id = "id";
-        public const string C_Sutun_ekleyen_id = "ekleyen_id";
-        public const string C_Sutun_ekleyen_ip = "ekleyen_ip";
-        public const string C_Sutun_eklenme_tarih = "eklenme_tarih";
-        public const string C_Sutun_guncelleyen_id = "guncelleyen_id";
-        public const string C_Sutun_guncelleyen_ip = "guncelleyen_ip";
-        public const string C_Sutun_guncellenme_tarih = "guncellenme_tarih";
-        public const string C_Sutun_aktif_mi = "aktif_mi";
 
         #endregion
 

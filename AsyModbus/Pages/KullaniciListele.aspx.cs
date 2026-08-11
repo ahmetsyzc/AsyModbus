@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Data;
-using AsyModbus.AppCode;
+using BusinessLayer.Entity;
+using BusinessLayer.Work;
+
 
 namespace AsyModbus.Pages
 {

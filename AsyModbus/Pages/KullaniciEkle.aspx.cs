@@ -7,16 +7,18 @@ namespace AsyModbus.Pages
 {
     public partial class KullaniciEkle : System.Web.UI.Page
     {
-        VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
+        
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Page.IsPostBack == false)
             {
                 txtDogumTarihi.Attributes["max"] = DateTime.Now.ToString("yyyy-MM-dd");
+                VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
                 try
                 {
                     //Rol Listele
+                    veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
                     Roller rol = new Roller(veritabaniIslemleri);
                     rol.Listele(DropDownList1);
                 }
@@ -24,12 +26,16 @@ namespace AsyModbus.Pages
                 {
                     lblUyari.Text = "Sistemsel Hata " + ex.Message;
                 }
+                finally
+                {
+                    veritabaniIslemleri.Bitir();
+                }
             }
         }
 
         protected void btnKaydet_Click(object sender, EventArgs e)
         {
-
+             
             if (string.IsNullOrWhiteSpace(txtAd.Text) ||
                 string.IsNullOrWhiteSpace(txtSoyad.Text) ||
                 string.IsNullOrWhiteSpace(txtTckno.Text) ||
@@ -47,9 +53,11 @@ namespace AsyModbus.Pages
                 return;
             }
 
-
+            VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
+            string resimYolu="";
             try
             {
+                veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
                 Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
                 
                 kullanicilar.CepNo = txtCepNo.Text.Trim();
@@ -87,13 +95,12 @@ namespace AsyModbus.Pages
 
                 // Şifre oluştur
                 string sifre = kullanicilar.SifreOlustur(txtAd.Text.Trim(), txtSoyad.Text.Trim());
-                txtSifre.Text = sifre;
 
                 // Resmin adını al - Resmi proje klasörüne kaydet - Veritabanına kaydedilecek yol
                 string uzanti = System.IO.Path.GetExtension(FileUpload1.FileName);
                 string dosyaAdi = Guid.NewGuid().ToString() + uzanti;
                 FileUpload1.SaveAs(Server.MapPath("~/Files/Images/Kullanicilar/") + dosyaAdi);
-                string resimYolu = "Files/Images/Kullanicilar/" + dosyaAdi;
+                resimYolu = "Files/Images/Kullanicilar/" + dosyaAdi;
 
                 kullanicilar.RollerId = Convert.ToInt32(DropDownList1.SelectedValue);
                 kullanicilar.Ad = txtAd.Text.Trim();
@@ -106,18 +113,55 @@ namespace AsyModbus.Pages
                 kullanicilar.EkleyenIp = Request.UserHostAddress;
 
 
+                veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMLI);
                 if (kullanicilar.Ekle())
                 {
-                    Response.Redirect("~/Pages/KullaniciListele.aspx", false);
-                    Context.ApplicationInstance.CompleteRequest();
-                    return;
+                    kullanicilar.KullaniciKodHesapla();
+
+                    if (kullanicilar.KullaniciKodOlustur())
+                    {
+                        veritabaniIslemleri.Uygula();
+
+                        Response.Redirect("~/Pages/KullaniciListele.aspx", false);
+                        Context.ApplicationInstance.CompleteRequest();
+                        return;
+                    }
+                    else
+                    {
+                        veritabaniIslemleri.GeriAl();
+                        ResimSil(resimYolu);
+                    }
+                }
+                else
+                {
+                    veritabaniIslemleri.GeriAl();
+                    ResimSil(resimYolu);
                 }
 
                 lblUyari.Text = "Kullanıcı eklenemedi.";
             }
             catch (Exception ex)
             {
+                veritabaniIslemleri.GeriAl();
+                ResimSil(resimYolu);
                 lblUyari.Text = "Hata: " + ex.Message;
+            }
+            finally
+            {
+                veritabaniIslemleri.Bitir();
+            }
+        }
+
+        private void ResimSil(string resimYolu)
+        {
+            if (!string.IsNullOrEmpty(resimYolu))
+            {
+                string fizikselYol = Server.MapPath("~/" + resimYolu);
+
+                if (System.IO.File.Exists(fizikselYol))
+                {
+                    System.IO.File.Delete(fizikselYol);
+                }
             }
         }
     }

@@ -14,10 +14,10 @@ namespace AsyModbus.Pages
         {
             if (Page.IsPostBack == false)
             {
-                
+                VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
                 try
                 {
-                    VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
+                    veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
                     Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
                     Repeater1.DataSource = kullanicilar.TumKayitGetir();
                     Repeater1.DataBind();
@@ -25,6 +25,10 @@ namespace AsyModbus.Pages
                 catch (Exception)
                 {
                     throw;
+                }
+                finally
+                {
+                    veritabaniIslemleri.Bitir();
                 }
             }
         }

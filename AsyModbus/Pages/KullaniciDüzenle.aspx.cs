@@ -18,10 +18,10 @@ namespace AsyModbus.Pages
             {
                 txtDogumTarihi.Attributes["max"] = DateTime.Now.ToString("yyyy-MM-dd");
                 VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
-
                 try
                 {
                     //Rol Listele
+                    veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
                     Roller rol = new Roller(veritabaniIslemleri);
                     rol.Listele(DropDownList1);
 
@@ -32,6 +32,7 @@ namespace AsyModbus.Pages
                     if (kullanicilar.TekKayitGetir())
                     {
                         txtID.Text = kullanicilar.Id.ToString();
+                        txtKullanıcıKod.Text = kullanicilar.KullaniciKod.ToString();
                         txtAd.Text = kullanicilar.Ad.ToString();
                         txtSoyad.Text = kullanicilar.Soyad.ToString();
                         txtTckno.Text = kullanicilar.Tckno.ToString();
@@ -51,6 +52,10 @@ namespace AsyModbus.Pages
                 {
                     lblUyari.Text = "Veriler Yüklenemedi " + ex.Message;
                 }
+                finally
+                {
+                    veritabaniIslemleri.Bitir();
+                }
             }
         }
 
@@ -66,14 +71,18 @@ namespace AsyModbus.Pages
                 return;
             }
 
-            if (txtAd.Text.Trim().Length <= 2 || txtSoyad.Text.Trim().Length <= 2)
+            if (txtAd.Text.Trim().Length < 2 || txtSoyad.Text.Trim().Length < 2)
             {
                 lblUyari.Text = "Ad ve Soyad en az 2 karakter olmalıdır.";
                 return;
             }
+
+            VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
+            string yeniResimYolu = "";
+
             try
             {
-                VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
+                veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
                 Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
 
                 kullanicilar.CepNo = txtCepNo.Text.Trim();
@@ -83,32 +92,21 @@ namespace AsyModbus.Pages
                     return;
                 }
 
-                // Eski resmi korumak için mevcut ImageUrl'i alıyoruz
-                string resimYolu = imgProfil.ImageUrl.Replace("~/", "");
+                // Mevcut resim yolu
+                string eskiResimYolu = imgProfil.ImageUrl.Replace("~/", "");
+                // Varsayılan olarak eski resim korunur
+                string resimYolu = eskiResimYolu;
 
-                // Eğer kullanıcı yeni fotoğraf seçtiyse
+                // Yeni resim seçildiyse kaydet
                 if (FileUpload1.HasFile)
                 {
-                    string eskiResimYolu = resimYolu;
-
                     string uzanti = System.IO.Path.GetExtension(FileUpload1.FileName);
                     string dosyaAdi = Guid.NewGuid().ToString() + uzanti;
                     FileUpload1.SaveAs(Server.MapPath("~/Files/Images/Kullanicilar/") + dosyaAdi);
-                    resimYolu = "Files/Images/Kullanicilar/" + dosyaAdi;
-                    imgProfil.ImageUrl = "~/" + resimYolu;
-
-                    if (!string.IsNullOrEmpty(eskiResimYolu))
-                    {
-                        string fizikselYol = Server.MapPath("~/" + eskiResimYolu);
-
-                        if (System.IO.File.Exists(fizikselYol))
-                        {
-                            System.IO.File.Delete(fizikselYol);
-                        }
-                    }
-
+                    yeniResimYolu = "Files/Images/Kullanicilar/" + dosyaAdi;
+                    resimYolu = yeniResimYolu;
                 }
-                kullanicilar.ResimYol = resimYolu;
+
                 kullanicilar.Id = Convert.ToInt32(txtID.Text.Trim());
                 kullanicilar.RollerId = Convert.ToInt32(DropDownList1.SelectedValue);
                 kullanicilar.Ad = txtAd.Text.Trim();
@@ -116,24 +114,47 @@ namespace AsyModbus.Pages
                 kullanicilar.Tckno = txtTckno.Text.Trim();
                 kullanicilar.Mail = txtMail.Text.Trim();
                 kullanicilar.Sifre = txtSifre.Text.Trim();
+                kullanicilar.ResimYol = resimYolu;
                 kullanicilar.DogumTarih = Convert.ToDateTime(txtDogumTarihi.Text);
                 kullanicilar.GuncelleyenId = Convert.ToInt32(Session["KullaniciId"]);
                 kullanicilar.GuncelleyenIp = Request.UserHostAddress;
 
                 if (kullanicilar.Guncelle())
                 {
+                    // Yeni resim seçildiyse artık eski resmi silebiliriz
+                    if (!string.IsNullOrEmpty(yeniResimYolu))
+                    {
+                        ResimSil(eskiResimYolu);
+                        imgProfil.ImageUrl = "~/" + yeniResimYolu;
+                    }
+
                     lblUyari.Text = "Personel bilgileri güncellendi.";
                 }
                 else
                 {
+                    // DB güncellenmediyse yeni yüklenen resmi sil
+                    if (!string.IsNullOrEmpty(yeniResimYolu))
+                    {
+                        ResimSil(yeniResimYolu);
+                    }
+
                     lblUyari.Text = "Personel bilgileri güncellenemedi.";
                 }
-
 
             }
             catch (Exception ex)
             {
+                // Resim kaydedilmiş fakat sonrasında hata oluşmuş olabilir
+                if (!string.IsNullOrEmpty(yeniResimYolu))
+                {
+                    ResimSil(yeniResimYolu);
+                }
+
                 lblUyari.Text = "Hata: " + ex.Message;
+            }
+            finally
+            {
+                veritabaniIslemleri.Bitir();
             }
         }
 
@@ -142,29 +163,31 @@ namespace AsyModbus.Pages
             VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
             try
             {
+                veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
                 Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
                 kullanicilar.Id = Convert.ToInt32(id);
-
                 if (!kullanicilar.TekKayitGetir())
                 {
                     lblUyari.Text = "Silinecek kullanıcı bulunamadı.";
                     return;
                 }
-
-                string resimYolu = kullanicilar.ResimYol;
-
+                kullanicilar.GuncelleyenId = Convert.ToInt32(Session["KullaniciId"]);
+                kullanicilar.GuncelleyenIp = Request.UserHostAddress;
                 if (kullanicilar.Sil())
                 {
-                    if (!string.IsNullOrEmpty(resimYolu))
-                    {
-                        string fizikselYol = Server.MapPath("~/" + resimYolu);
+                    int aktifKullaniciId = Convert.ToInt32(Session["KullaniciId"]);
 
-                        if (System.IO.File.Exists(fizikselYol))
-                        {
-                            System.IO.File.Delete(fizikselYol);
-                        }
+                    if (kullanicilar.Id == aktifKullaniciId)
+                    {
+                        Session.Clear();
+                        Session.Abandon();
+
+                        Response.Redirect("~/Pages/Login.aspx", false);
+                        Context.ApplicationInstance.CompleteRequest();
+                        return;
                     }
-                    Response.Redirect("~/Pages/KullaniciListele.aspx",false);
+
+                    Response.Redirect("~/Pages/KullaniciListele.aspx", false);
                     Context.ApplicationInstance.CompleteRequest();
                     return;
                 }
@@ -176,6 +199,24 @@ namespace AsyModbus.Pages
             catch (Exception ex)
             {
                 lblUyari.Text = "Hata: " + ex.Message;
+            }
+            finally
+            {
+                veritabaniIslemleri.Bitir();
+            }
+        }
+
+        private void ResimSil(string resimYolu)
+        {
+            if (!string.IsNullOrEmpty(resimYolu))
+            {
+                string fizikselYol =
+                    Server.MapPath("~/" + resimYolu);
+
+                if (System.IO.File.Exists(fizikselYol))
+                {
+                    System.IO.File.Delete(fizikselYol);
+                }
             }
         }
     }

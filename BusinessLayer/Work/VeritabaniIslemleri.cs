@@ -11,13 +11,47 @@ namespace BusinessLayer.Work
 
         SqlConnection sqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["SqlBaglanti"].ConnectionString);
         private List<SqlParameter> parametreler = new List<SqlParameter>();
+        private SqlTransaction sqlTransaction;
 
         #region Metotlar
 
-        public SqlConnection Baslat()
+        public enum IslemTip
         {
-            sqlConnection.Open();
+            BAGIMSIZ,
+            BAGIMLI
+        }
+
+        public SqlConnection Baslat(IslemTip islemTip)
+        {
+            if (sqlConnection.State == ConnectionState.Closed)
+            {
+                sqlConnection.Open();
+            }
+
+            if (islemTip == IslemTip.BAGIMLI && sqlTransaction == null)
+            {
+                sqlTransaction = sqlConnection.BeginTransaction();
+            }
+
             return sqlConnection;
+        }
+
+        public void Uygula()
+        {
+            if (sqlTransaction != null)
+            {
+                sqlTransaction.Commit();
+                sqlTransaction = null;
+            }
+        }
+
+        public void GeriAl()
+        {
+            if (sqlTransaction != null)
+            {
+                sqlTransaction.Rollback();
+                sqlTransaction = null;
+            }
         }
 
         public void Bitir()
@@ -34,6 +68,11 @@ namespace BusinessLayer.Work
             {
                 SqlCommand sqlCommand = new SqlCommand(spAdi, sqlConnection);
                 sqlCommand.CommandType = CommandType.StoredProcedure;
+
+                if (sqlTransaction != null)
+                {
+                    sqlCommand.Transaction = sqlTransaction;
+                }
 
                 foreach (SqlParameter sqlParameter in parametreler)
                 {
@@ -56,21 +95,32 @@ namespace BusinessLayer.Work
 
         public DataTable TabloGetir(string spAdi)
         {
-            SqlCommand sqlCommand = new SqlCommand(spAdi, sqlConnection);
-            sqlCommand.CommandType = CommandType.StoredProcedure;
-
-            foreach (SqlParameter sqlParameter in parametreler)
+            try
             {
-                sqlCommand.Parameters.Add(sqlParameter);
+                SqlCommand sqlCommand = new SqlCommand(spAdi, sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+
+                if (sqlTransaction != null)
+                {
+                    sqlCommand.Transaction = sqlTransaction;
+                }
+
+                foreach (SqlParameter sqlParameter in parametreler)
+                {
+                    sqlCommand.Parameters.Add(sqlParameter);
+                }
+
+                SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand);
+                DataTable dataTable = new DataTable();
+                sqlDataAdapter.Fill(dataTable);
+
+                return dataTable;
             }
-
-            SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand);
-            DataTable dataTable = new DataTable();
-            sqlDataAdapter.Fill(dataTable);
-
-            parametreler.Clear();
-
-            return dataTable;
+            finally
+            {
+                parametreler.Clear();
+            }
+            
         }
 
         public DataRow SatirGetir(string spAdi)
@@ -87,20 +137,32 @@ namespace BusinessLayer.Work
 
         public object DegerGetir(string spAdi)
         {
-            SqlCommand sqlCommand = new SqlCommand(spAdi, sqlConnection);
-            sqlCommand.CommandType = CommandType.StoredProcedure;
-
-            foreach (SqlParameter sqlParameter in parametreler)
+            try
             {
-                sqlCommand.Parameters.Add(sqlParameter);
+                SqlCommand sqlCommand = new SqlCommand(spAdi, sqlConnection);
+                sqlCommand.CommandType = CommandType.StoredProcedure;
+
+                if (sqlTransaction != null)
+                {
+                    sqlCommand.Transaction = sqlTransaction;
+                }
+
+                foreach (SqlParameter sqlParameter in parametreler)
+                {
+                    sqlCommand.Parameters.Add(sqlParameter);
+                }
+
+                object deger = sqlCommand.ExecuteScalar();
+
+                return deger;
             }
-
-            object deger = sqlCommand.ExecuteScalar();
-
-            parametreler.Clear();
-
-            return deger;
+            finally
+            {
+                parametreler.Clear();
+            }
         }
+
+
 
         #endregion
     }

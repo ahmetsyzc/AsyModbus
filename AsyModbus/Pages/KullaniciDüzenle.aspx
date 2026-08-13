@@ -26,6 +26,15 @@
                 </td>
             </tr>
 
+             <tr>
+                <td>
+                    <asp:Label Text="Kullanıcı Kodu :" runat="server" />
+                </td>
+                <td>
+                    <asp:TextBox ID="txtKullanıcıKod" runat="server" Enabled="false" />
+                </td>
+            </tr>
+
             <tr>
                 <td>
                     <asp:Label Text="Ad :" runat="server" />

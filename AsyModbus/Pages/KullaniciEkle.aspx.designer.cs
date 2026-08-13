@@ -24,6 +24,15 @@ namespace AsyModbus.Pages
         protected global::System.Web.UI.WebControls.TextBox txtID;
 
         /// <summary>
+        /// txtKullaniciKod control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtKullaniciKod;
+
+        /// <summary>
         /// txtAd control.
         /// </summary>
         /// <remarks>

@@ -12,7 +12,7 @@ namespace AsyModbus.Pages
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["KullaniciID"] != null)
+            if (Session["KullaniciId"] != null)
             {
                 Response.Redirect("~/Default.aspx",false);
                 Context.ApplicationInstance.CompleteRequest();
@@ -29,9 +29,10 @@ namespace AsyModbus.Pages
                 lblUyari.Text = "Mail ve Şifre boş bırakılamaz.";
                 return;
             }
+            VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
             try
             {
-                VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
+                veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
                 Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
 
                 kullanicilar.Mail = txtMail.Text.Trim();
@@ -54,6 +55,10 @@ namespace AsyModbus.Pages
             catch (Exception ex)
             {
                lblUyari.Text = "Sistemsel Hata ! " + ex.Message;
+            }
+            finally
+            {
+                veritabaniIslemleri.Bitir();
             }
         }
     }

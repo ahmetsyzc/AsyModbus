@@ -26,6 +26,15 @@
                 </td>
             </tr>
 
+             <tr>
+                <td>
+                    <asp:Label Text="Kullanıcı Kodu :" runat="server" />
+                </td>
+                <td>
+                    <asp:TextBox ID="txtKullaniciKod" runat="server" placeholder="Kullanıcı Kodu Otomatik Belirlenir" Enabled="false" />
+                </td>
+            </tr>
+
             <tr>
                 <td>
                     <asp:Label Text="Ad :" runat="server" />

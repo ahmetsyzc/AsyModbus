@@ -31,7 +31,7 @@ namespace BusinessLayer.Entity
 
         #region Metotlar
 
-        
+
         public Roller(VeritabaniIslemleri veritabaniIslemleri)
         {
             this.veritabaniIslemleri = veritabaniIslemleri;
@@ -52,19 +52,7 @@ namespace BusinessLayer.Entity
 
         public DataTable TumKayitGetir()
         {
-            try
-            {
-                veritabaniIslemleri.Baslat();
-                return veritabaniIslemleri.TabloGetir(C_Sp_TumKayitGetir);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                veritabaniIslemleri.Bitir();
-            }
+            return veritabaniIslemleri.TabloGetir(C_Sp_TumKayitGetir);
         }
 
         public void Listele(DropDownList dropDownList)

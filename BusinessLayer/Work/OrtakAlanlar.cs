@@ -21,25 +21,17 @@ namespace BusinessLayer.Work
 
         #region Nesneler
 
-        private int id;
-        public int Id { get { return id; } set { id = value; } }
+        public int Id { get; set; }
 
-        private int ekleyenId;
-        public int EkleyenId { get { return ekleyenId; } set { ekleyenId = value; } }
-        private string ekleyenIp;
-        public string EkleyenIp { get { return ekleyenIp; } set { ekleyenIp = value; } }
-        private DateTime eklenmeTarih;
-        public DateTime EklenmeTarih { get { return eklenmeTarih; } set { eklenmeTarih = value; } }
+        public int EkleyenId { get; set; }
+        public string EkleyenIp { get; set; }
+        public DateTime EklenmeTarih { get; set; }
 
-        private int guncelleyenId;
-        public int GuncelleyenId { get { return guncelleyenId; } set { guncelleyenId = value; } }
-        private string guncelleyenIp;
-        public string GuncelleyenIp { get { return guncelleyenIp; } set { guncelleyenIp = value; } }
-        private DateTime guncellenmeTarih;
-        public DateTime GuncellenmeTarih { get { return guncellenmeTarih; } set { guncellenmeTarih = value; } }
+        public int GuncelleyenId { get; set; }
+        public string GuncelleyenIp { get; set; }
+        public DateTime GuncellenmeTarih { get; set; }
 
-        private bool aktifMi;
-        public bool AktifMi { get { return aktifMi; } set { aktifMi = value; } }
+        public bool AktifMi { get; set; }
 
         #endregion
 

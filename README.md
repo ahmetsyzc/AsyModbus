@@ -75,7 +75,9 @@ The project is continuously updated as I learn and implement new concepts.
 
 ## 📄 Documentation
 
-Detailed project analysis and planning documentation will be added to the `docs` directory.
+Detailed project requirements and analysis are available in Turkish.
+
+- [Proje Analizi (Türkçe)](docs/Proje-Analizi.md)
 
 ## 🎯 Purpose
 

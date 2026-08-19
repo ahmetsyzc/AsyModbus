@@ -1,7 +1,4 @@
 ﻿using System;
-using BusinessLayer.Work;
-using BusinessLayer.Entity;
-using System.Data;
 
 namespace AsyModbus.Pages
 {
@@ -16,24 +13,29 @@ namespace AsyModbus.Pages
         protected void btnSifreSifirla_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtMail.Text) ||
-                string.IsNullOrWhiteSpace(txtCepNo.Text))
+                string.IsNullOrWhiteSpace(ucCepNo.Text))
             {
                 lblUyari.Text = "Mail ve Cep No boş bırakılamaz.";
+                return;
+            }
+            if (!ucCepNo.CepNoUygunMu())
+            {
+                lblUyari.Text = "Telefon numarası 10 haneli olmalıdır.";
                 return;
             }
             VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
             try
             {
+                veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
                 Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
                 kullanicilar.Mail = txtMail.Text.Trim();
-                kullanicilar.CepNo = txtCepNo.Text.Trim();
-                DataRow dataRow = kullanicilar.MailCepNoKontrol();
+                kullanicilar.CepNo = ucCepNo.CepNoAl();
 
-                if (dataRow != null)
+                if (kullanicilar.MailCepNoKontrol() != null)
                 {
-                    kullanicilar.Id = Convert.ToInt32(dataRow[Kullanicilar.C_Sutun_id]);
-                    string ad = dataRow[Kullanicilar.C_Sutun_ad].ToString();
-                    string soyad = dataRow[Kullanicilar.C_Sutun_soyad].ToString();
+                    kullanicilar.Id = Convert.ToInt32(kullanicilar.VeriSatiri[Kullanicilar.C_Sutun_id]);
+                    string ad = kullanicilar.VeriSatiri[Kullanicilar.C_Sutun_ad].ToString();
+                    string soyad = kullanicilar.VeriSatiri[Kullanicilar.C_Sutun_soyad].ToString();
                     kullanicilar.Sifre = kullanicilar.SifreOlustur(ad, soyad);
 
                     if (kullanicilar.SifreGuncelle())
@@ -54,6 +56,10 @@ namespace AsyModbus.Pages
             {
 
                 lblUyari.Text="Sistemsel Hata "+ex.Message;
+            }
+            finally
+            {
+                veritabaniIslemleri.Bitir();
             }
         }
     }

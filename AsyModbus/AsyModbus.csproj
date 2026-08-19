@@ -84,6 +84,8 @@
     <Content Include="Styles\KullaniciListele.css" />
     <Content Include="Styles\Login.css" />
     <Content Include="Styles\MasterPage.css" />
+    <Content Include="Styles\ucCepNo.css" />
+    <Content Include="UserControls\ucCepNo.ascx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +146,13 @@
       <DependentUpon>SifreSifirlama.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserControls\ucCepNo.ascx.cs">
+      <DependentUpon>ucCepNo.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UserControls\ucCepNo.ascx.designer.cs">
+      <DependentUpon>ucCepNo.ascx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="MasterPages\MasterPage.Master" />

@@ -1,4 +1,7 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPages/MasterPage.Master" AutoEventWireup="true" CodeBehind="KullaniciEkle.aspx.cs" Inherits="AsyModbus.Pages.KullaniciEkle" %>
+<%@ Register Src="~/UserControls/ucCepNo.ascx"
+    TagPrefix="uc"
+    TagName="CepNo" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="../Styles/KullaniciForm.css" rel="stylesheet" />
     <script src="../Scripts/KullaniciForm.js"></script>
@@ -85,7 +88,7 @@
                     <asp:Label Text="Cep No :" runat="server" />
                 </td>
                 <td>
-                    <asp:TextBox ID="txtCepNo" runat="server" TextMode="SingleLine" MaxLength="14" ClientIDMode="Static" placeholder="(5__) ___-____"/>
+                    <uc:CepNo ID="ucCepNo" runat="server" />
                 </td>
             </tr>
 

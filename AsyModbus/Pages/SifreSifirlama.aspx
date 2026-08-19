@@ -1,11 +1,16 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="SifreSifirlama.aspx.cs" Inherits="AsyModbus.Pages.SifreSifirlama" %>
 
+<%@ Register Src="~/UserControls/ucCepNo.ascx"
+    TagPrefix="uc"
+    TagName="CepNo" %>
+
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title>Şifre Sıfırlama Sayfası</title>
     <link href="../Styles/Login.css" rel="stylesheet" />
+    <link href="../Styles/ucCepNo.css" rel="stylesheet" />
     <script src="../Scripts/KullaniciForm.js"></script>
 </head>
 <body>
@@ -39,7 +44,7 @@
 
                 <tr>
                     <td colspan="2">
-                        <asp:TextBox ID="txtCepNo" placeholder="(5__) ___-____" Style="margin: auto; width: 350px; height: 30px;" runat="server" TextMode="SingleLine" MaxLength="14" ClientIDMode="Static" />
+                        <uc:CepNo ID="ucCepNo" runat="server" CssClass="uc-cep-no-sifresifirlama" />
                     </td>
                 </tr>
 

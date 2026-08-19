@@ -12,30 +12,26 @@ namespace AsyModbus.MasterPages
         protected void Page_Load(object sender, EventArgs e)
         {
 
-            if (Session["KullaniciId"] == null)
+            Sessionlar sessionlar = new Sessionlar();
+            CurrentInfo currentInfo = sessionlar.Current._CurrentInfo;
+            if (currentInfo == null || currentInfo.LoginYapildiMi == false)
             {
-                Response.Redirect("~/Pages/Login.aspx");
-            }
-
-
-            if (Session["AktifKullanici"]!=null)
-            {
-                lblAdSoyad.Text = Session["AktifKullanici"].ToString();
-            }
-            else
-            {
-                Response.Redirect("~/Pages/Login.aspx",false);
+                Response.Redirect("~/Pages/Login.aspx", false);
                 Context.ApplicationInstance.CompleteRequest();
                 return;
             }
+            lblAdSoyad.Text = currentInfo.Ad + " " + currentInfo.Soyad;
         }
 
         protected void btnCikis_Click(object sender, EventArgs e)
         {
+            Sessionlar sessionlar = new Sessionlar();
+            sessionlar.Current._CurrentInfo = null;
             Session.Clear();
             Session.Abandon();
 
-            Response.Redirect("~/Pages/Login.aspx");
+            Response.Redirect("~/Pages/Login.aspx", false);
+            Context.ApplicationInstance.CompleteRequest();
         }
     }
 }

@@ -31,6 +31,10 @@ function TelefonKontrol() {
 
     const txtTelefon = document.getElementById("txtCepNo");
 
+    if (txtTelefon == null) {
+        return;
+    }
+
     TelefonFormatla(txtTelefon);
 
     txtTelefon.addEventListener("input", function () {
@@ -47,6 +51,10 @@ function TcKontrol() {
 
     //Tc Kontrol
     const txtTcNo = document.getElementById("txtTckno");
+
+    if (txtTcNo == null) {
+        return;
+    }
 
     txtTcNo.addEventListener("input", function () {
 

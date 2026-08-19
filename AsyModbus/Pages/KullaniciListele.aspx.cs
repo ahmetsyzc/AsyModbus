@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using BusinessLayer.Entity;
-using BusinessLayer.Work;
 
 
 namespace AsyModbus.Pages
@@ -19,7 +17,7 @@ namespace AsyModbus.Pages
                 {
                     veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
                     Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
-                    Repeater1.DataSource = kullanicilar.TumKayitGetir();
+                    Repeater1.DataSource = kullanicilar.TumunuGetir();
                     Repeater1.DataBind();
                 }
                 catch (Exception)

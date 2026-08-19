@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Web.UI;
-using BusinessLayer.Work;
-using BusinessLayer.Entity;
 
 
 namespace AsyModbus.Pages
@@ -29,7 +27,7 @@ namespace AsyModbus.Pages
                     Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
                     kullanicilar.Id = Convert.ToInt32(id);
 
-                    if (kullanicilar.TekKayitGetir())
+                    if (kullanicilar.Doldur())
                     {
                         txtID.Text = kullanicilar.Id.ToString();
                         txtKullanıcıKod.Text = kullanicilar.KullaniciKod.ToString();
@@ -38,7 +36,7 @@ namespace AsyModbus.Pages
                         txtTckno.Text = kullanicilar.Tckno.ToString();
                         txtMail.Text = kullanicilar.Mail.ToString();
                         txtSifre.Text = kullanicilar.Sifre.ToString();
-                        txtCepNo.Text = kullanicilar.CepNo.ToString();
+                        ucCepNo.Text = kullanicilar.CepNo.ToString();
                         txtDogumTarihi.Text = kullanicilar.DogumTarih.ToString("yyyy-MM-dd");
                         imgProfil.ImageUrl = "~/" + kullanicilar.ResimYol.ToString();
                         DropDownList1.SelectedValue = kullanicilar.RollerId.ToString();
@@ -61,49 +59,44 @@ namespace AsyModbus.Pages
 
         protected void btnKaydet_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtAd.Text) ||
-                string.IsNullOrWhiteSpace(txtSoyad.Text) ||
-                string.IsNullOrWhiteSpace(txtTckno.Text) ||
-                string.IsNullOrWhiteSpace(txtMail.Text) ||
-                string.IsNullOrWhiteSpace(txtCepNo.Text))
+            if (!AlanlarUygunMu())
             {
-                lblUyari.Text = "Lütfen tüm alanları doldurunuz.";
                 return;
             }
 
-            if (txtAd.Text.Trim().Length < 2 || txtSoyad.Text.Trim().Length < 2)
-            {
-                lblUyari.Text = "Ad ve Soyad en az 2 karakter olmalıdır.";
-                return;
-            }
-
+            Sessionlar sessionlar = new Sessionlar();
+            CurrentInfo currentInfo = sessionlar.Current._CurrentInfo;
             VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
+            DosyaIslemleri dosyaIslemleri = new DosyaIslemleri();
             string yeniResimYolu = "";
+            string silinecekResimYolu = "";
+            bool sonuc = false;
 
             try
             {
                 veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
                 Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
 
-                kullanicilar.CepNo = txtCepNo.Text.Trim();
-                if (kullanicilar.CepNo.Length != 10)
+                if (!ucCepNo.CepNoUygunMu())
                 {
                     lblUyari.Text = "Telefon numarası 10 haneli olmalıdır!";
                     return;
                 }
+                kullanicilar.CepNo = ucCepNo.CepNoAl();
 
                 // Mevcut resim yolu
                 string eskiResimYolu = imgProfil.ImageUrl.Replace("~/", "");
                 // Varsayılan olarak eski resim korunur
                 string resimYolu = eskiResimYolu;
-
                 // Yeni resim seçildiyse kaydet
                 if (FileUpload1.HasFile)
                 {
-                    string uzanti = System.IO.Path.GetExtension(FileUpload1.FileName);
-                    string dosyaAdi = Guid.NewGuid().ToString() + uzanti;
-                    FileUpload1.SaveAs(Server.MapPath("~/Files/Images/Kullanicilar/") + dosyaAdi);
-                    yeniResimYolu = "Files/Images/Kullanicilar/" + dosyaAdi;
+                    if (!dosyaIslemleri.ResimUzantisiGecerliMi(FileUpload1.FileName))
+                    {
+                        lblUyari.Text = "Sadece JPG, JPEG veya PNG dosyası yükleyebilirsiniz.";
+                        return;
+                    }
+                    yeniResimYolu = dosyaIslemleri.ResimKaydet(DosyaIslemleri.C_Klasor_Kullanicilar, FileUpload1.PostedFile);
                     resimYolu = yeniResimYolu;
                 }
 
@@ -116,44 +109,40 @@ namespace AsyModbus.Pages
                 kullanicilar.Sifre = txtSifre.Text.Trim();
                 kullanicilar.ResimYol = resimYolu;
                 kullanicilar.DogumTarih = Convert.ToDateTime(txtDogumTarihi.Text);
-                kullanicilar.GuncelleyenId = Convert.ToInt32(Session["KullaniciId"]);
-                kullanicilar.GuncelleyenIp = Request.UserHostAddress;
+                kullanicilar.GuncelleyenId = currentInfo.KullaniciId;
+                kullanicilar.GuncelleyenIp = currentInfo.Ip;
+                sonuc = kullanicilar.Guncelle();
 
-                if (kullanicilar.Guncelle())
+                if (sonuc)
                 {
-                    // Yeni resim seçildiyse artık eski resmi silebiliriz
                     if (!string.IsNullOrEmpty(yeniResimYolu))
                     {
-                        ResimSil(eskiResimYolu);
+                        // Yeni resim seçildiyse artık eski resmi silebiliriz
+                        silinecekResimYolu = eskiResimYolu;
                         imgProfil.ImageUrl = "~/" + yeniResimYolu;
                     }
-
                     lblUyari.Text = "Personel bilgileri güncellendi.";
                 }
                 else
                 {
-                    // DB güncellenmediyse yeni yüklenen resmi sil
-                    if (!string.IsNullOrEmpty(yeniResimYolu))
-                    {
-                        ResimSil(yeniResimYolu);
-                    }
-
+                    // DB başarısızsa yeni yüklenen resim gereksiz.
+                    silinecekResimYolu = yeniResimYolu;
                     lblUyari.Text = "Personel bilgileri güncellenemedi.";
                 }
 
             }
             catch (Exception ex)
             {
-                // Resim kaydedilmiş fakat sonrasında hata oluşmuş olabilir
-                if (!string.IsNullOrEmpty(yeniResimYolu))
-                {
-                    ResimSil(yeniResimYolu);
-                }
-
+                // Yeni resim kaydedildi ama devamında hata olduysa yeni resmi temizle.
+                silinecekResimYolu = yeniResimYolu;
                 lblUyari.Text = "Hata: " + ex.Message;
             }
             finally
             {
+                if (!string.IsNullOrEmpty(silinecekResimYolu))
+                {
+                    dosyaIslemleri.ResimSil(silinecekResimYolu);
+                }
                 veritabaniIslemleri.Bitir();
             }
         }
@@ -163,22 +152,26 @@ namespace AsyModbus.Pages
             VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
             try
             {
+                Sessionlar sessionlar = new Sessionlar();
+                CurrentInfo currentInfo = sessionlar.Current._CurrentInfo;
                 veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
                 Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
                 kullanicilar.Id = Convert.ToInt32(id);
-                if (!kullanicilar.TekKayitGetir())
+
+                if (!kullanicilar.Doldur())
                 {
                     lblUyari.Text = "Silinecek kullanıcı bulunamadı.";
                     return;
                 }
-                kullanicilar.GuncelleyenId = Convert.ToInt32(Session["KullaniciId"]);
-                kullanicilar.GuncelleyenIp = Request.UserHostAddress;
+                kullanicilar.GuncelleyenId = currentInfo.KullaniciId;
+                kullanicilar.GuncelleyenIp = currentInfo.Ip;
                 if (kullanicilar.Sil())
                 {
-                    int aktifKullaniciId = Convert.ToInt32(Session["KullaniciId"]);
+                    int aktifKullaniciId = currentInfo.KullaniciId;
 
                     if (kullanicilar.Id == aktifKullaniciId)
                     {
+                        sessionlar.Current._CurrentInfo = null;
                         Session.Clear();
                         Session.Abandon();
 
@@ -206,18 +199,59 @@ namespace AsyModbus.Pages
             }
         }
 
-        private void ResimSil(string resimYolu)
+        private bool AlanlarUygunMu()
         {
-            if (!string.IsNullOrEmpty(resimYolu))
-            {
-                string fizikselYol =
-                    Server.MapPath("~/" + resimYolu);
+            bool sonuc = true;
+            string mesaj = "";
 
-                if (System.IO.File.Exists(fizikselYol))
-                {
-                    System.IO.File.Delete(fizikselYol);
-                }
+            if (txtAd.Text.Trim().Length == 0)
+            {
+                mesaj += " Ad";
+                sonuc = false;
             }
+            else if (txtAd.Text.Trim().Length < 2)
+            {
+                lblUyari.Text = "Ad en az 2 karakter olmalıdır.";
+                return false;
+            }
+
+            if (txtSoyad.Text.Trim().Length == 0)
+            {
+                mesaj += " Soyad";
+                sonuc = false;
+            }
+            else if (txtSoyad.Text.Trim().Length < 2)
+            {
+                lblUyari.Text = "Soyad en az 2 karakter olmalıdır.";
+                return false;
+            }
+
+            if (txtTckno.Text.Trim().Length == 0)
+            {
+                mesaj += " TCKNO";
+                sonuc = false;
+            }
+            if (txtMail.Text.Trim().Length == 0)
+            {
+                mesaj += " Mail";
+                sonuc = false;
+            }
+            if (string.IsNullOrWhiteSpace(ucCepNo.Text))
+            {
+                mesaj += " Cep No";
+                sonuc = false;
+            }
+            if (txtDogumTarihi.Text.Trim().Length == 0)
+            {
+                mesaj += " Doğum Tarihi";
+                sonuc = false;
+            }
+            if (mesaj != "")
+            {
+                lblUyari.Text = mesaj + " Bilgisi/Bilgileri Zorunludur.";
+            }
+            return sonuc;
         }
-    }
+
+    }      
 }

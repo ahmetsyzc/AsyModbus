@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace BusinessLayer.Interface
+
+public interface IOrtakMetotlar
 {
-    public interface IOrtakMetotlar
-    {
 
-        bool Ekle();
+    bool Ekle();
 
-        bool Sil();
+    bool Sil();
 
-        bool Guncelle();
+    bool Guncelle();
 
-    
-    }
 
 }

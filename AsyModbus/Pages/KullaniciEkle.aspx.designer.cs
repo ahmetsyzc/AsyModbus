@@ -78,13 +78,13 @@ namespace AsyModbus.Pages
         protected global::System.Web.UI.WebControls.TextBox txtSifre;
 
         /// <summary>
-        /// txtCepNo control.
+        /// ucCepNo control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtCepNo;
+        protected global::AsyModbus.UserControls.ucCepNo ucCepNo;
 
         /// <summary>
         /// txtDogumTarihi control.

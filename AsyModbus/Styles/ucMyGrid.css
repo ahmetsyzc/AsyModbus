@@ -1,0 +1,91 @@
+﻿/* Tablonun tamamı */
+.my-grid 
+{
+    width:100%;
+}
+
+/* Başlık hücreleri */
+.my-grid th
+{
+    background-color:black;
+    color:white;
+    text-align:center;
+    font-weight:bold;
+    font-size:20px;
+    height:40px;
+}
+
+/* Veri hücreleri */
+    .my-grid td {
+        text-align: center;
+        font-weight: 200;
+        font-size: 20px;
+        height: 30px;
+    }
+
+/* Satırlar */
+    .my-grid tr {
+        background-color: #e1e1e1;
+        height: 40px;
+    }
+
+/* Mouse satırın üzerindeyken */
+    .my-grid tr:hover {
+        background-color: #f7f7f7;
+    }
+
+/* Grid içerisindeki linkler/butonlarımız */
+    .my-grid a {
+        text-decoration: none; /* Alt çizgiyi kaldırır */
+        color: white; /* Yazıyı koyu gri yapar */
+        background-color: black;
+        border: 1px solid #d1d5db; /* İnce çerçeve ekler */
+        padding: 4px 8px; /* İç boşluk verir */
+        margin-block: 3px;
+        margin-bottom: 3px;
+        border-radius: 6px; /* Köşeleri hafif yuvarlatır */
+        display: inline-block; /* Linki buton gibi davranır hale getirir */
+        font-size: 13px; /* Yazı boyutunu ayarlar */
+        font-weight: 500; /* Yazıyı hafif kalınlaştırır */
+        cursor: pointer; /* Mouse'u el işaretine çevirir */
+        transition: 0.2s; /* Hover geçişini yumuşatır */
+    }
+
+        .my-grid a:hover {
+            background-color: #3c3c3c; /* Üzerine gelince hafif gri olur */
+            border-color: #9ca3af; /* Çerçeveyi belirginleştirir */
+        }
+
+
+.my-grid-header {
+    display: flex; /* Elemanları yan yana dizer */
+    justify-content: space-between; /* Birini sola, diğerini sağa yaslar */
+    align-items: center; /* Dikey olarak ortalar */
+    width: 100%; /* Alanın tamamını kaplar */
+    margin-bottom: 15px; /* Grid ile arasına boşluk bırakır */
+}
+
+.my-grid-search {
+    display: flex; /* Bul yazısı ve textbox yan yana */
+    align-items: center; /* Dikey olarak ortalar */
+    gap: 8px; /* Aralarına boşluk bırakır */
+}
+
+    .my-grid-search input {
+        width: 150px; /* Arama kutusunun genişliği */
+        height: 24px; /* Arama kutusunun yüksekliği */
+        padding-left:3px; /* Yazı ile kenarlar arasındaki boşluk */
+        margin-right: 7px;/*Sağ dış boşluk*/
+        border: 2px solid #b8b8b8; /* Kenarlığı kalınlaştırır */
+        border-color: #555;
+        border-radius: 6px; /* Köşeleri hafif yuvarlatır */
+        font-size: 14px; /* Yazı boyutunu ayarlar */
+        outline: none; /* Tıklanınca varsayılan dış çizgiyi kaldırır */
+        box-sizing: border-box; /* Boyut hesabının taşmasını engeller */
+        transition: 0.2s; /* Geçişleri yumuşatır */
+    }
+
+        .my-grid-search input:focus {
+            border-color: black; /* Yazarken kenarlığı koyulaştırır */
+            box-shadow: 0 0 0 2px #eeeeee; /* Hafif dış vurgu verir */
+        }

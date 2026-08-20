@@ -1,5 +1,9 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPages/MasterPage.Master" AutoEventWireup="true" CodeBehind="KullaniciListele.aspx.cs" Inherits="AsyModbus.Pages.KullaniciListele" %>
 
+<%@ Register Src="~/UserControls/ucMyGrid.ascx"
+    TagPrefix="uc"
+    TagName="MyGrid" %>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="../Styles/KullaniciListele.css" rel="stylesheet" />
 </asp:Content>
@@ -14,32 +18,13 @@
 
         <div class="tabloScroll">
             <table class="personeltablo">
-                <tr>
-                    <th>Kullanıcı ID</th>
-                    <th>Kullanıcı Ad</th>
-                    <th>Kullanıcı Soyad</th>
-                    <th>Kullanıcı TCKNO</th>
-                    <th>Düzenle</th>
-                </tr>
 
-                <asp:Repeater ID="Repeater1" runat="server">
-                    <ItemTemplate>
-                        <tr>
-                            <td><%# Eval("id") %></td>
-                            <td><%# Eval("ad") %></td>
-                            <td><%# Eval("soyad") %></td>
-                            <td><%# Eval("tckno") %></td>
-                            <td>
-                                <asp:Button ID="btnGuncelle" Text="Güncelle" runat="server" OnClick="btnGuncelle_Click" CommandArgument='<%# Eval("id") %>' />
-                            </td>
-                        </tr>
-
-                    </ItemTemplate>
-
-                </asp:Repeater>
+                <uc:MyGrid
+                ID="ucMyGrid1"
+                runat="server"
+                OnButonaBasildi="ucMyGrid1_ButonaBasildi" />
 
             </table>
-
         </div>
     </div>
 

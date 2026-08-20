@@ -6,6 +6,7 @@
 <head runat="server">
     <title>Master Page</title>
     <link href="../Styles/MasterPage.css" rel="stylesheet" />
+    <link href="../Styles/ucMyGrid.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet" />
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>

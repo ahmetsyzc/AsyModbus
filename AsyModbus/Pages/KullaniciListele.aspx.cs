@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-
+using System.Data;
+using AsyModbus.UserControls;
 
 namespace AsyModbus.Pages
 {
@@ -10,35 +11,28 @@ namespace AsyModbus.Pages
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Page.IsPostBack == false)
+            ucMyGrid1.DetayURL = "~/Pages/KullaniciDüzenle.aspx?kullanici_id=";
+
+            ucMyGrid1.KolonEkle(Kullanicilar.C_Sutun_id, "Kullanıcı ID");
+            ucMyGrid1.KolonEkle(Kullanicilar.C_Sutun_ad, "Kullanıcı Ad");
+            ucMyGrid1.KolonEkle(Kullanicilar.C_Sutun_soyad, "Kullanıcı Soyad");
+            ucMyGrid1.KolonEkle(Kullanicilar.C_Sutun_tckno, "Kullanıcı TCKNO");
+
+            VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
+            try
             {
-                VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
-                try
-                {
-                    veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
-                    Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
-                    Repeater1.DataSource = kullanicilar.TumunuGetir();
-                    Repeater1.DataBind();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-                finally
-                {
-                    veritabaniIslemleri.Bitir();
-                }
+                veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
+                Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
+                ucMyGrid1.VeriBagla(kullanicilar.TumunuGetir());
             }
-        }
-
-        protected void btnGuncelle_Click(object sender, EventArgs e)
-        {
-            Button button = (Button)sender;
-
-            string id = button.CommandArgument;
-
-            Response.Redirect("~/Pages/KullaniciDüzenle.aspx?kullanici_id=" + id , false);
-            Context.ApplicationInstance.CompleteRequest();
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                veritabaniIslemleri.Bitir();
+            }
         }
     }
 }

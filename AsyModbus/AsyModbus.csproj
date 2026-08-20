@@ -80,12 +80,15 @@
     <Content Include="Pages\Login.aspx" />
     <Content Include="Pages\SifreSifirlama.aspx" />
     <Content Include="Scripts\KullaniciForm.js" />
+    <Content Include="Scripts\ucMyGrid.js" />
     <Content Include="Styles\KullaniciForm.css" />
     <Content Include="Styles\KullaniciListele.css" />
     <Content Include="Styles\Login.css" />
     <Content Include="Styles\MasterPage.css" />
     <Content Include="Styles\ucCepNo.css" />
+    <Content Include="Styles\ucMyGrid.css" />
     <Content Include="UserControls\ucCepNo.ascx" />
+    <Content Include="UserControls\ucMyGrid.ascx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -152,6 +155,13 @@
     </Compile>
     <Compile Include="UserControls\ucCepNo.ascx.designer.cs">
       <DependentUpon>ucCepNo.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ucMyGrid.ascx.cs">
+      <DependentUpon>ucMyGrid.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UserControls\ucMyGrid.ascx.designer.cs">
+      <DependentUpon>ucMyGrid.ascx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

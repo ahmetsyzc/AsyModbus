@@ -2,11 +2,35 @@
 
 <div class="my-grid-header">
 
-    <asp:Label ID="lblKayitSayisi" runat="server"></asp:Label>
 
-    <div class="my-grid-search">
-        <span>Bul:</span>
-        <asp:TextBox ID="txtBul" runat="server" ClientIDMode="Static"></asp:TextBox>
+    
+<div class="my-grid-count">
+    <asp:Label ID="lblKayitSayisi" runat="server"></asp:Label>
+</div>
+
+
+    <div class="my-grid-tools">
+
+        <div class="my-grid-page-size">
+            <span>Göster:</span>
+
+            <asp:DropDownList ID="ddlKayitSayisi" runat="server" ClientIDMode="Static">
+                <asp:ListItem Text="5" Value="5"></asp:ListItem>
+                <asp:ListItem Text="10" Value="10" Selected="True"></asp:ListItem>
+                <asp:ListItem Text="20" Value="20"></asp:ListItem>
+                <asp:ListItem Text="50" Value="50"></asp:ListItem>
+                <asp:ListItem Text="100" Value="100"></asp:ListItem>
+                <asp:ListItem Text="Tümü" Value="-1"></asp:ListItem>
+            </asp:DropDownList>
+
+            <span>Kayıt</span>
+        </div>
+
+        <div class="my-grid-search">
+            <span>Bul:</span>
+            <asp:TextBox ID="txtBul" runat="server" ClientIDMode="Static"></asp:TextBox>
+        </div>
+
     </div>
 
 </div>
@@ -34,5 +58,11 @@
         </asp:TemplateField>
     </Columns>
 </asp:GridView>
+
+
+<div id="gridSayfalama" class="my-grid-pagination"></div>
+
+
+
 
 <script src="../Scripts/ucMyGrid.js"></script>

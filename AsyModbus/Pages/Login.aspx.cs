@@ -23,52 +23,61 @@ namespace AsyModbus.Pages
 
         protected void btnGiris_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtMail.Text) ||
-                string.IsNullOrWhiteSpace(txtSifre.Text))
+            Captcha1.ValidateCaptcha(txtCaptcha.Text.Trim());
+            if (Captcha1.UserValidated)
             {
-                lblUyari.Text = "Mail ve Şifre boş bırakılamaz.";
-                return;
-            }
-            VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
-            try
-            {
-                veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
-                Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
-
-                kullanicilar.Mail = txtMail.Text.Trim();
-                kullanicilar.Sifre = txtSifre.Text.Trim();
-
-                if (kullanicilar.SifreKontrol())
+                if (string.IsNullOrWhiteSpace(txtMail.Text) ||
+                    string.IsNullOrWhiteSpace(txtSifre.Text))
                 {
-                    Sessionlar sessionlar = new Sessionlar();
-                    CurrentInfo currentInfo = new CurrentInfo();
-
-                    currentInfo.KullaniciId = Convert.ToInt32(kullanicilar.VeriSatiri[Kullanicilar.C_Sutun_id]);
-                    currentInfo.Ad = kullanicilar.VeriSatiri[Kullanicilar.C_Sutun_ad].ToString();
-                    currentInfo.Soyad = kullanicilar.VeriSatiri[Kullanicilar.C_Sutun_soyad].ToString();
-                    currentInfo.RolId = Convert.ToInt32(kullanicilar.VeriSatiri[Kullanicilar.C_Sutun_roller_id]);
-                    currentInfo.KullaniciKod = kullanicilar.VeriSatiri[Kullanicilar.C_Sutun_kullanici_kod].ToString();
-                    currentInfo.Ip = Request.UserHostAddress;
-                    currentInfo.LoginYapildiMi = true;
-                    sessionlar.Current._CurrentInfo = currentInfo;
-
-                    Response.Redirect("~/Default.aspx", false);
-                    Context.ApplicationInstance.CompleteRequest();
+                    lblUyari.Text = "Mail ve Şifre boş bırakılamaz.";
                     return;
                 }
-                else
+                VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
+                try
                 {
-                    lblUyari.Text =
-                        "Mail veya şifre hatalı.";
+                    veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
+                    Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
+
+                    kullanicilar.Mail = txtMail.Text.Trim();
+                    kullanicilar.Sifre = txtSifre.Text.Trim();
+
+                    if (kullanicilar.SifreKontrol())
+                    {
+                        Sessionlar sessionlar = new Sessionlar();
+                        CurrentInfo currentInfo = new CurrentInfo();
+
+                        currentInfo.KullaniciId = Convert.ToInt32(kullanicilar.VeriSatiri[Kullanicilar.C_Sutun_id]);
+                        currentInfo.Ad = kullanicilar.VeriSatiri[Kullanicilar.C_Sutun_ad].ToString();
+                        currentInfo.Soyad = kullanicilar.VeriSatiri[Kullanicilar.C_Sutun_soyad].ToString();
+                        currentInfo.RolId = Convert.ToInt32(kullanicilar.VeriSatiri[Kullanicilar.C_Sutun_roller_id]);
+                        currentInfo.KullaniciKod = kullanicilar.VeriSatiri[Kullanicilar.C_Sutun_kullanici_kod].ToString();
+                        currentInfo.Ip = Request.UserHostAddress;
+                        currentInfo.LoginYapildiMi = true;
+                        sessionlar.Current._CurrentInfo = currentInfo;
+
+                        Response.Redirect("~/Default.aspx", false);
+                        Context.ApplicationInstance.CompleteRequest();
+                        return;
+                    }
+                    else
+                    {
+                        lblUyari.Text =
+                            "Mail veya şifre hatalı.";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    lblUyari.Text = "Sistemsel Hata ! " + ex.Message;
+                }
+                finally
+                {
+                    veritabaniIslemleri.Bitir();
                 }
             }
-            catch (Exception ex)
+            else
             {
-                lblUyari.Text = "Sistemsel Hata ! " + ex.Message;
-            }
-            finally
-            {
-                veritabaniIslemleri.Bitir();
+                lblUyari.Text = "Güvenlik Kodu Hatalı.";
+                return;
             }
         }
     }

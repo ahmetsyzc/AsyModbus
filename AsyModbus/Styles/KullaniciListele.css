@@ -11,13 +11,14 @@
 }
 
 .tabloScroll {
-    height: 600px;
+    height: 580px;
     overflow-y: auto;
     width: 100%;
 }
 
 .panelBaslik {
     margin-bottom: 20px;
+    padding:10px;
 }
 
     .panelBaslik h2 {

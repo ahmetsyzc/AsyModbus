@@ -42,6 +42,24 @@ namespace AsyModbus.Pages
         protected global::System.Web.UI.WebControls.TextBox txtSifre;
 
         /// <summary>
+        /// txtCaptcha control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtCaptcha;
+
+        /// <summary>
+        /// Captcha1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::MSCaptcha.CaptchaControl Captcha1;
+
+        /// <summary>
         /// btnGiris control.
         /// </summary>
         /// <remarks>

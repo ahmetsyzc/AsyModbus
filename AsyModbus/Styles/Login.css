@@ -12,6 +12,11 @@
     background-color: #808080;
 }
 
+.table{
+    width:350px;
+    margin:auto;
+}
+
 .image{
     height:65px;
     width:300px;
@@ -45,6 +50,21 @@ td {
 }
 .lblSifreSifirlama{
    font-size:small;
+}
+
+.CaptchaControl {
+    width: max-content;
+    height: max-content;
+    float: right;
+    margin-bottom:10px;
+    margin-right:2px;
+}
+
+.txtCaptcha {
+    margin-bottom:10px; /*üstten boşluk bırak*/
+    width: 193px;
+    height: 30px;
+    float: left;
 }
 
 

@@ -24,6 +24,15 @@ namespace AsyModbus.UserControls
         protected global::System.Web.UI.WebControls.Label lblKayitSayisi;
 
         /// <summary>
+        /// ddlKayitSayisi control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlKayitSayisi;
+
+        /// <summary>
         /// txtBul control.
         /// </summary>
         /// <remarks>

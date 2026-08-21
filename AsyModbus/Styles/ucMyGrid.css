@@ -57,25 +57,53 @@
         }
 
 
+/* Grid üst alanı */
 .my-grid-header {
-    display: flex; /* Elemanları yan yana dizer */
-    justify-content: space-between; /* Birini sola, diğerini sağa yaslar */
-    align-items: center; /* Dikey olarak ortalar */
-    width: 100%; /* Alanın tamamını kaplar */
-    margin-bottom: 15px; /* Grid ile arasına boşluk bırakır */
 }
 
+
+    /* Toplam kayıt yazısı */
+    .my-grid-header > span:first-child {
+    }
+
+
+/* Göster - kayıt sayısı alanı */
+.my-grid-page-size {
+    float: left;
+    height: 30px;
+    margin:5px;
+}
+
+    .my-grid-page-size select {
+        width: 50px; /* Arama kutusunun genişliği */
+        height: 24px; /* Arama kutusunun yüksekliği */
+        padding-left: 3px; /* Yazı ile kenarlar arasındaki boşluk */
+        margin-right: 7px; /*Sağ dış boşluk*/
+        border: 2px solid #b8b8b8; /* Kenarlığı kalınlaştırır */
+        border-color: #555;
+        border-radius: 6px; /* Köşeleri hafif yuvarlatır */
+        font-size: 14px; /* Yazı boyutunu ayarlar */
+        outline: none; /* Tıklanınca varsayılan dış çizgiyi kaldırır */
+        box-sizing: border-box; /* Boyut hesabının taşmasını engeller */
+        transition: 0.2s; /* Geçişleri yumuşatır */
+    }
+
+        .my-grid-page-size select:focus {
+        }
+
+
+/* Bul alanı */
 .my-grid-search {
-    display: flex; /* Bul yazısı ve textbox yan yana */
-    align-items: center; /* Dikey olarak ortalar */
-    gap: 8px; /* Aralarına boşluk bırakır */
+    float: right;
+    height: 30px;
+    margin: 5px;
 }
 
     .my-grid-search input {
         width: 150px; /* Arama kutusunun genişliği */
         height: 24px; /* Arama kutusunun yüksekliği */
-        padding-left:3px; /* Yazı ile kenarlar arasındaki boşluk */
-        margin-right: 7px;/*Sağ dış boşluk*/
+        padding-left: 3px; /* Yazı ile kenarlar arasındaki boşluk */
+        margin-right: 7px; /*Sağ dış boşluk*/
         border: 2px solid #b8b8b8; /* Kenarlığı kalınlaştırır */
         border-color: #555;
         border-radius: 6px; /* Köşeleri hafif yuvarlatır */
@@ -87,5 +115,44 @@
 
         .my-grid-search input:focus {
             border-color: black; /* Yazarken kenarlığı koyulaştırır */
-            box-shadow: 0 0 0 2px #eeeeee; /* Hafif dış vurgu verir */
         }
+
+
+/* Sayfalama alanı */
+.my-grid-pagination {
+    text-align:center;
+}
+
+
+    /* Sayfa numarası butonları */
+    .my-grid-pagination button {
+        height:20px;
+        width:20px;
+        margin-right:5px;
+
+    }
+
+
+        /* Sayfa butonunun üzerine gelince */
+        .my-grid-pagination button:hover {
+            background-color:#808080;
+        }
+
+
+        /* Aktif sayfa */
+        .my-grid-pagination button.aktif {
+            background-color:black;
+            color:white;
+        }
+
+
+.my-grid-count{
+    background-color:#000000;
+    border-radius:5px;
+    color:white;
+    margin:10px;
+    font-size:large;
+    padding:10px;
+    font-weight:bold;
+
+}

@@ -1,6 +1,13 @@
-﻿body {
+﻿/* =========================
+   KULLANICI LİSTELE
+   BOOTSTRAP'E GEÇİŞ NOTLARI
+   ========================= */
+
+.arkaplan {
+    background-color: #e1e1e1;
 }
 
+/*
 .ana-div {
     margin: auto;
     height: 700px;
@@ -10,46 +17,100 @@
     margin-block-start: 75px;
 }
 
+Sayfanın ana dış yapısı artık Bootstrap:
+container
+card
+card-header
+card-body
+ile yönetiliyor.
+*/
+
+
+/*
 .tabloScroll {
     height: 580px;
     overflow-y: auto;
     width: 100%;
 }
 
+Scroll işlemi artık KullaniciListele sayfasında değil,
+tekrar kullanılabilir ucMyGrid içinde yönetiliyor.
+
+Bootstrap:
+overflow-auto
+
+Özel CSS:
+my-grid-scroll > max-height
+*/
+
+
+/*
 .panelBaslik {
     margin-bottom: 20px;
-    padding:10px;
+    padding: 10px;
 }
 
-    .panelBaslik h2 {
-        margin: 0;
-        font-size: 28px;
-        color: #1b1b1b;
-    }
+.panelBaslik h2 {
+    margin: 0;
+    font-size: 28px;
+    color: #1b1b1b;
+}
 
-    .panelBaslik span {
-        color: #000000;
-        font-size: 14px;
-    }
+.panelBaslik span {
+    color: #000000;
+    font-size: 14px;
+}
+
+Sayfa başlığı artık Bootstrap card-header
+ve hazır text / spacing classları ile yönetiliyor.
+*/
+
+
+/*
 .personeltablo {
     width: 100%;
 }
 
-    .personeltablo th {
-        padding: 10px;
-        position: sticky; /* Kaydırınca başlığı sabitler */
-        top: 0; /* En üst noktaya yapıştırır */
-        z-index: 2; /* Satırların önünde görünmesini sağlar */
-        margin: auto;
-        background-color: black;
-        color: white;
-    }
+Grid artık doğrudan ucMyGrid içerisindeki
+Bootstrap table yapısıyla yönetiliyor.
+*/
 
-    .personeltablo td {
-        text-align: center;
-        padding: 10px;
-        border-bottom-width: 5px; /* Kalınlık */
-        border-bottom-style: solid; /* Stil (solid, dashed, dotted vb.) */
-        border-bottom-color: black; /* Renk */
-    }
 
+/*
+.personeltablo th {
+    padding: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    margin: auto;
+    background-color: black;
+    color: white;
+}
+
+Sticky header işlemi ucMyGrid.css dosyasına taşındı.
+
+Başlık rengi:
+Bootstrap table-dark
+
+Sabit başlık:
+.my-grid th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+*/
+
+
+/*
+.personeltablo td {
+    text-align: center;
+    padding: 10px;
+    border-bottom-width: 5px;
+    border-bottom-style: solid;
+    border-bottom-color: black;
+}
+
+Grid hücre görünümü artık ucMyGrid içerisindeki
+Bootstrap table, text-center ve align-middle
+classları ile yönetiliyor.
+*/

@@ -1,90 +1,161 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="AsyModbus.Pages.Login" %>
 
 <%@ Register Assembly="MSCaptcha" Namespace="MSCaptcha" TagPrefix="cc1" %>
+
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head runat="server">
     <title>Login Sayfası</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="../Styles/Login.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 </head>
+
 <body>
+
     <form id="form1" runat="server">
-        <div class="ortadiv">
-            <table class="table">
 
-                <tr>
-                    <td colspan="2">
-                        <asp:Image CssClass="image"
-                            ImageUrl="~/Files/Images/Icons/logo.png"
-                            runat="server" />
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <asp:Label Text="Modbus Kullanıcı Giriş Paneli" CssClass="girispanelyazisi" runat="server" />
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <asp:TextBox ID="txtMail" placeholder="Mail Adresinizi Giriniz" TextMode="Email" CssClass="txtbox" runat="server" />
-                    </td>
-                </tr>
+        <div style="display: none;">
+            <asp:Label ID="lbl_success" runat="server" ClientIDMode="Static" />
+            <asp:Label ID="lbl_warning" runat="server" ClientIDMode="Static" />
+            <asp:Label ID="lbl_info" runat="server" ClientIDMode="Static" />
+            <asp:Label ID="lbl_error" runat="server" ClientIDMode="Static" />
+        </div>
 
-                <tr>
-                    <td colspan="2">
-                        <asp:TextBox ID="txtSifre" placeholder="Şifrenizi Giriniz" TextMode="Password" CssClass="txtbox" runat="server" />
-                    </td>
-                </tr>
+        <div class="container min-vh-100 d-flex align-items-center justify-content-center">
 
-                <tr>
-                    <td>
-                        <asp:TextBox ID="txtCaptcha" runat="server" placeholder="Güvenlik Kodu" CssClass="txtCaptcha"></asp:TextBox>
-                    </td>
+            <div class="row w-100 justify-content-center">
 
-                    <td>
-                        <cc1:CaptchaControl
-                            CssClass="CaptchaControl"
-                            ID="Captcha1"
-                            runat="server"
-                            CaptchaLength="5"
-                            CaptchaHeight="40"
-                            CaptchaWidth="150"
-                            CaptchaLineNoise="None"
-                            CaptchaMinTimeout="2"
-                            CaptchaMaxTimeout="240"
-                            ErrorInputTooFast="Güvenlik kodu çok hızlı girildi."
-                            ErrorInputTooSlow="Güvenlik kodunun süresi doldu." />
-                    </td>
-                </tr>
+                <div class="col-12 col-md-7 col-lg-5 col-xl-4">
 
-                <tr>
-                    <td>
-                        <asp:Button ID="btnGiris" Text="Giriş Yap" CssClass="grsButon" runat="server" OnClick="btnGiris_Click" />
-                    </td>
-                    <td>
-                        <a href="SifreSifirlama.aspx">
-                            <asp:Label ID="lblSifreSifirlama" Text="Şifremi Unuttum" CssClass="lblSifreSifirlama" runat="server" /></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <asp:Label ID="lblUyari" ForeColor="DarkRed" runat="server" />
-                    </td>
-                </tr>
+                    <div class="card shadow-sm">
+
+                        <div class="card-body p-4">
+
+                            <div class="text-center mb-4">
+
+                                <asp:Image
+                                    ImageUrl="~/Files/Images/Icons/logo.png"
+                                    CssClass="img-fluid mb-3"
+                                    runat="server" />
+
+                                <div class="fw-bold fs-4">
+                                    Modbus Kullanıcı Giriş Paneli
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <asp:TextBox
+                                    ID="txtMail"
+                                    runat="server"
+                                    TextMode="Email"
+                                    CssClass="form-control"
+                                    placeholder="Mail Adresinizi Giriniz" />
+                            </div>
+
+                            <div class="mb-3">
+                                <asp:TextBox
+                                    ID="txtSifre"
+                                    runat="server"
+                                    TextMode="Password"
+                                    CssClass="form-control"
+                                    placeholder="Şifrenizi Giriniz" />
+                            </div>
+
+                            <div class="row mb-3 align-items-center">
+
+                                <div class="col-12 col-md-6 mb-2 mb-md-0">
+                                    <asp:TextBox
+                                        ID="txtCaptcha"
+                                        runat="server"
+                                        CssClass="form-control"
+                                        placeholder="Güvenlik Kodu">
+                                    </asp:TextBox>
+                                </div>
+
+                                <div class="col-12 col-md-6 text-center">
+                                    <cc1:CaptchaControl
+                                        ID="Captcha1"
+                                        runat="server"
+                                        CaptchaLength="5"
+                                        CaptchaHeight="40"
+                                        CaptchaWidth="150"
+                                        CaptchaLineNoise="None"
+                                        CaptchaMinTimeout="2"
+                                        CaptchaMaxTimeout="240"
+                                        ErrorInputTooFast="Güvenlik kodu çok hızlı girildi."
+                                        ErrorInputTooSlow="Güvenlik kodunun süresi doldu." />
+                                </div>
+                            </div>
 
 
-            </table>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <asp:Button
+                                    ID="btnGiris"
+                                    runat="server"
+                                    Text="Giriş Yap"
+                                    CssClass="btn btn-dark px-4"
+                                    OnClick="btnGiris_Click" />
 
+                                <a href="SifreSifirlama.aspx"
+                                    class="text-dark text-decoration-none small">Şifremi Unuttum
+                                </a>
+                            </div>
 
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
+
+        <script>
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-full-width",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
+            var successMesaji = document.getElementById("lbl_success").innerText;
+            var warningMesaji = document.getElementById("lbl_warning").innerText;
+            var infoMesaji = document.getElementById("lbl_info").innerText;
+            var errorMesaji = document.getElementById("lbl_error").innerText;
+            if (successMesaji != "") {
+                toastr.success(successMesaji);
+            }
+            if (warningMesaji != "") {
+                toastr.warning(warningMesaji);
+            }
+            if (infoMesaji != "") {
+                toastr.info(infoMesaji);
+            }
+            if (errorMesaji != "") {
+                toastr.error(errorMesaji);
+            }
+        </script>
+
     </form>
+
 </body>
+
 </html>

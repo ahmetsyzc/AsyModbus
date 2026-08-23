@@ -1,4 +1,5 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPages/MasterPage.Master" AutoEventWireup="true" CodeBehind="KullaniciEkle.aspx.cs" Inherits="AsyModbus.Pages.KullaniciEkle" %>
+
 <%@ Register Src="~/UserControls/ucCepNo.ascx"
     TagPrefix="uc"
     TagName="CepNo" %>
@@ -9,131 +10,229 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
-      <div class="kd-div">
-        <table class="kd-table">
-            <tr>
-                <td colspan="2" class="baslik">
-                    <span>Modbus Kullanıcı Ekleme Paneli </span>
-                </td>
-            </tr>
-            <tr style="height: 10px;">
-                <td></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>
-                    <asp:Label Text="ID :" runat="server" />
-                </td>
-                <td>
-                    <asp:TextBox ID="txtID" runat="server" placeholder="ID Otomatik Belirlenir" Enabled="false" />
-                </td>
-            </tr>
+    <div class="container mt-5">
 
-             <tr>
-                <td>
-                    <asp:Label Text="Kullanıcı Kodu :" runat="server" />
-                </td>
-                <td>
-                    <asp:TextBox ID="txtKullaniciKod" runat="server" placeholder="Kullanıcı Kodu Otomatik Belirlenir" Enabled="false" />
-                </td>
-            </tr>
+        <div class="row justify-content-center">
 
-            <tr>
-                <td>
-                    <asp:Label Text="Ad :" runat="server" />
-                </td>
-                <td>
-                    <asp:TextBox ID="txtAd" runat="server" />
-                </td>
-            </tr>
+            <div class="col-12 col-md-10 col-lg-7 col-xl-6">
 
-            <tr>
-                <td>
-                    <asp:Label Text="Soyad :" runat="server" />
-                </td>
-                <td>
-                    <asp:TextBox ID="txtSoyad" runat="server" />
-                </td>
-            </tr>
+                <div class="card">
 
-            <tr>
-                <td>
-                    <asp:Label Text="TCKNO :" runat="server" />
-                </td>
-                <td>
-                    <asp:TextBox ID="txtTckno" runat="server" TextMode="SingleLine" MaxLength="11" ClientIDMode="Static" />
-                </td>
-            </tr>
+                    <div class="card-header text-center fw-bold bg-dark text-white">
+                        Modbus Kullanıcı Ekleme Paneli
+                    </div>
 
-            <tr>
-                <td>
-                    <asp:Label Text="Mail :" runat="server" />
-                </td>
-                <td>
-                    <asp:TextBox ID="txtMail" runat="server" TextMode="Email" />
-                </td>
-            </tr>
+                    <div class="arkaplan card-body">
 
-            <tr>
-                <td>
-                    <asp:Label Text="Şifre :" runat="server" />
-                </td>
-                <td>
-                    <asp:TextBox ID="txtSifre" runat="server" placeholder="Şifre Otomatik Belirlenir" Enabled="false" />
-                </td>
-            </tr>
+                        <div class="row mb-3">
 
-            <tr>
-                <td>
-                    <asp:Label Text="Cep No :" runat="server" />
-                </td>
-                <td>
-                    <uc:CepNo ID="ucCepNo" runat="server" />
-                </td>
-            </tr>
+                            <div class="col-12 col-md-3">
+                                <asp:Label Text="ID :" runat="server" />
+                            </div>
 
-            <tr>
-                <td>
-                    <asp:Label Text="Doğum Tarihi :" runat="server" />
-                </td>
-                <td>
-                    <asp:TextBox ID="txtDogumTarihi" runat="server" TextMode="Date" />
-                </td>
-            </tr>
+                            <div class="col-12 col-md-9">
+                                <asp:TextBox
+                                    ID="txtID"
+                                    runat="server"
+                                    CssClass="form-control"
+                                    placeholder="ID Otomatik Belirlenir"
+                                    Enabled="false" />
+                            </div>
 
-            <tr>
-                <td>
-                    <asp:Label Text="Rol Seçimi :" runat="server" />
-                </td>
-                <td>
-                    <asp:DropDownList ID="DropDownList1" runat="server"></asp:DropDownList>
-                </td>
-            </tr>
-
-            <tr>
-                <td>
-                    <asp:Label Text="Profil Resmi :" runat="server" />
-                </td>
-                <td>
-                    <asp:FileUpload ID="FileUpload1" runat="server" />
-                </td>
-            </tr>
+                        </div>
 
 
+                        <div class="row mb-3">
 
-            <tr>
-                <td colspan="2" style="text-align: center;">
-                    <asp:Button ID="btnKaydet" CssClass="btnkaydet" Text="Kaydet" runat="server"  OnClientClick="return KullaniciDogrula();" OnClick="btnKaydet_Click" />
-                </td>
-            </tr>
+                            <div class="col-12 col-md-3">
+                                <asp:Label Text="Kullanıcı Kodu :" runat="server" />
+                            </div>
 
-            <tr>
-                <td colspan="2" class="lbluyari" >
-                    <asp:Label ID="lblUyari" runat="server" />
-                </td>
-            </tr>
+                            <div class="col-12 col-md-9">
+                                <asp:TextBox
+                                    ID="txtKullaniciKod"
+                                    runat="server"
+                                    CssClass="form-control"
+                                    placeholder="Kullanıcı Kodu Otomatik Belirlenir"
+                                    Enabled="false" />
+                            </div>
 
-        </table>
+                        </div>
+
+
+                        <div class="row mb-3">
+
+                            <div class="col-12 col-md-3">
+                                <asp:Label Text="Ad :" runat="server" />
+                            </div>
+
+                            <div class="col-12 col-md-9">
+                                <asp:TextBox
+                                    ID="txtAd"
+                                    runat="server"
+                                    CssClass="form-control" />
+                            </div>
+
+                        </div>
+
+
+                        <div class="row mb-3">
+
+                            <div class="col-12 col-md-3">
+                                <asp:Label Text="Soyad :" runat="server" />
+                            </div>
+
+                            <div class="col-12 col-md-9">
+                                <asp:TextBox
+                                    ID="txtSoyad"
+                                    runat="server"
+                                    CssClass="form-control" />
+                            </div>
+
+                        </div>
+
+
+                        <div class="row mb-3">
+
+                            <div class="col-12 col-md-3">
+                                <asp:Label Text="TCKNO :" runat="server" />
+                            </div>
+
+                            <div class="col-12 col-md-9">
+                                <asp:TextBox
+                                    ID="txtTckno"
+                                    runat="server"
+                                    CssClass="form-control"
+                                    TextMode="SingleLine"
+                                    MaxLength="11"
+                                    ClientIDMode="Static" />
+                            </div>
+
+                        </div>
+
+
+                        <div class="row mb-3">
+
+                            <div class="col-12 col-md-3">
+                                <asp:Label Text="Mail :" runat="server" />
+                            </div>
+
+                            <div class="col-12 col-md-9">
+                                <asp:TextBox
+                                    ID="txtMail"
+                                    runat="server"
+                                    CssClass="form-control"
+                                    TextMode="Email" />
+                            </div>
+
+                        </div>
+
+
+                        <div class="row mb-3">
+
+                            <div class="col-12 col-md-3">
+                                <asp:Label Text="Şifre :" runat="server" />
+                            </div>
+
+                            <div class="col-12 col-md-9">
+                                <asp:TextBox
+                                    ID="txtSifre"
+                                    runat="server"
+                                    CssClass="form-control"
+                                    placeholder="Şifre Otomatik Belirlenir"
+                                    Enabled="false" />
+                            </div>
+
+                        </div>
+
+
+                        <div class="row mb-3">
+
+                            <div class="col-12 col-md-3">
+                                <asp:Label Text="Cep No :" runat="server" />
+                            </div>
+
+                            <div class="col-12 col-md-9">
+                                <uc:CepNo ID="ucCepNo" runat="server" CssClass="form-control" />
+                            </div>
+
+                        </div>
+
+
+                        <div class="row mb-3">
+
+                            <div class="col-12 col-md-3">
+                                <asp:Label Text="Doğum Tarihi :" runat="server" />
+                            </div>
+
+                            <div class="col-12 col-md-9">
+                                <asp:TextBox
+                                    ID="txtDogumTarihi"
+                                    runat="server"
+                                    TextMode="Date"
+                                    CssClass="form-control"
+                                     />
+                            </div>
+
+                        </div>
+
+
+                        <div class="row mb-3">
+
+                            <div class="col-12 col-md-3">
+                                <asp:Label Text="Rol Seçimi :" runat="server" />
+                            </div>
+
+                            <div class="col-12 col-md-9">
+                                <asp:DropDownList
+                                    ID="DropDownList1"
+                                    runat="server"
+                                    CssClass="form-select">
+                                </asp:DropDownList>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row mb-3">
+
+                            <div class="col-12 col-md-3">
+                                <asp:Label Text="Profil Resmi :" runat="server" />
+                            </div>
+
+                            <div class="col-12 col-md-9">
+                                <asp:FileUpload
+                                    ID="FileUpload1"
+                                    runat="server"
+                                    CssClass="form-control" />
+                            </div>
+
+                        </div>
+
+
+                        <div class="row mb-3">
+
+                            <div class="col-12 text-center">
+                                <asp:Button
+                                    ID="btnKaydet"
+                                    runat="server"
+                                    Text="Kaydet"
+                                    CssClass="btn btn-success mt-2 px-5"
+                                    OnClientClick="return KullaniciDogrula();"
+                                    OnClick="btnKaydet_Click" />
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+
 
 </asp:Content>

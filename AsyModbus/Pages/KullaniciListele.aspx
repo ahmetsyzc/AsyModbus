@@ -9,22 +9,22 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
-    <div class="ana-div">
+    <div class="container mt-5">
 
-        <div class="panelBaslik">
-            <h2>Kullanıcı Listesi</h2>
-            <span>MODBUS kullanıcı yönetimi</span>
-        </div>
+        <div class="card">
 
-        <div class="tabloScroll">
-            <table class="personeltablo">
+            <div class="arkaplan card-header">
+                <h4 class="mb-0">Kullanıcı Listesi</h4>
+                <span class="text-muted">MODBUS kullanıcı yönetimi</span>
+            </div>
 
-                <uc:MyGrid
-                ID="ucMyGrid1"
-                runat="server"
-                OnButonaBasildi="ucMyGrid1_ButonaBasildi" />
+            <div class="arkaplan card-body">
+                    <uc:MyGrid
+                        ID="ucMyGrid1"
+                        runat="server"
+                        OnButonaBasildi="ucMyGrid1_ButonaBasildi" />
+            </div>
 
-            </table>
         </div>
     </div>
 

@@ -1,9 +1,21 @@
-﻿body {
+﻿/* =========================
+   KULLANILAN CSS KODLARI
+   ========================= */
+
+body {
     width: 100%;
-    height: 100%;
+    min-height: 100vh;
     background-color: #808080;
 }
 
+
+/* =========================
+   BOOTSTRAP'E GEÇİŞTE
+   DEVRE DIŞI KALAN KODLAR
+   ========================= */
+
+
+/*
 .ortadiv {
     margin: auto;
     margin-top: 200px;
@@ -12,15 +24,44 @@
     background-color: #808080;
 }
 
-.table{
-    width:350px;
-    margin:auto;
+Login ve Şifre Sıfırlama sayfalarının
+konumlandırılması artık Bootstrap:
+
+container
+min-vh-100
+d-flex
+align-items-center
+justify-content-center
+
+ile yönetiliyor.
+*/
+
+
+/*
+.table {
+    width: 350px;
+    margin: auto;
 }
 
-.image{
-    height:65px;
-    width:300px;
+Form yerleşiminde table, tr ve td kaldırıldı.
+Yerleşim artık Bootstrap div ve flex/grid
+yapılarıyla yönetiliyor.
+*/
+
+
+/*
+.image {
+    height: 65px;
+    width: 300px;
 }
+
+Logo artık Bootstrap:
+img-fluid
+ile responsive olarak yönetiliyor.
+*/
+
+
+/*
 .girispanelyazisi {
     font-size: 23px;
     font-family: 'Syne', sans-serif;
@@ -28,43 +69,102 @@
     font-weight: bold;
 }
 
-.txtbox{
+Panel başlığı artık Bootstrap:
+fw-bold
+fs-4
+text-center
+ile yönetiliyor.
+*/
+
+
+/*
+.txtbox {
     margin: auto;
     width: 350px;
     height: 30px;
 }
 
+Mail ve şifre alanları artık Bootstrap:
+form-control
+ile yönetiliyor.
+*/
+
+
+/*
 td {
     margin: auto;
     margin-top: 10px;
-    text-align:center;
+    text-align: center;
     width: 350px;
     height: 35px;
 }
 
-.grsButon{
-    width:170px;
-    height:25px;
-    font-weight:bold;
-    
-}
-.lblSifreSifirlama{
-   font-size:small;
+Table yapısı kaldırıldığı için artık kullanılmıyor.
+Hizalama ve boşluklar Bootstrap:
+text-center
+mb-*
+p-*
+d-flex
+row / col
+ile yönetiliyor.
+*/
+
+
+/*
+.grsButon {
+    width: 170px;
+    height: 25px;
+    font-weight: bold;
 }
 
+Giriş ve Şifre Sıfırla butonları artık Bootstrap:
+btn
+btn-dark
+px-4
+ile yönetiliyor.
+*/
+
+
+/*
+.lblSifreSifirlama {
+    font-size: small;
+}
+
+Şifremi Unuttum / Geri Dön linkleri artık Bootstrap:
+small
+text-dark
+text-decoration-none
+ile yönetiliyor.
+*/
+
+
+/*
 .CaptchaControl {
     width: max-content;
     height: max-content;
     float: right;
-    margin-bottom:10px;
-    margin-right:2px;
+    margin-bottom: 10px;
+    margin-right: 2px;
 }
 
+Captcha yerleşimi artık Bootstrap:
+row
+col-md-6
+text-center
+align-items-center
+ile yönetiliyor.
+*/
+
+
+/*
 .txtCaptcha {
-    margin-bottom:10px; /*üstten boşluk bırak*/
+    margin-bottom: 10px;
     width: 193px;
     height: 30px;
     float: left;
 }
 
-
+Captcha TextBox artık Bootstrap:
+form-control
+ile yönetiliyor.
+*/

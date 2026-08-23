@@ -1,7 +1,6 @@
-﻿* {
-    margin: 0;
-    padding: 0;
-}
+﻿/* =========================
+   KULLANILAN CSS KODLARI
+   ========================= */
 
 body {
     width: 100%;
@@ -9,51 +8,20 @@ body {
     background-color: #808080;
 }
 
-.anadiv {
-    display: flex;
-}
-
 .menüdiv {
-    position: relative; /* İçindeki absolute elemanların bu kutuya göre hizalanmasını sağlar */
+    position: relative; /* Çıkış alanının sidebar'ın altına göre konumlanması için */
     background-color: #e1e1e1;
     height: 100vh;
-    width: 14%;
 }
 
 .ortakdiv {
     background-color: #808080;
     height: 100vh;
-    width: 86%;
-}
-
-
-.menuicon {
-    width: 50px;
-    height: 25px;
-    font-size: large;
-    text-align: center;
-    margin-block-end: 7px;
-    padding: 2px;
-}
-
-.menucikis {
-    width: 200px;
-    height: 25px;
-    font-size: medium;
-    text-align: center;
-}
-
-.menuisim {
-    width: 200px;
-    height: 25px;
-    text-align: center;
-    margin-block-end: 7px;
-    padding: 7px;
 }
 
 .image {
-    display: block; /* Resmi bir blok elemana dönüştürür */
-    margin: 0 auto; /* Üst/alt 0, sağ/sol otomatik boşluk (ortalar) */
+    display: block;
+    margin-left: 0;
     width: 175px;
     height: 55px;
     margin-block-start: 10px;
@@ -65,10 +33,116 @@ body {
     font-size: medium;
 }
 
-
 .cikis-div {
-    position: absolute; /* Normal akıştan çıkarıp istediğimiz yere konumlandırmamızı sağlar */
+    position: absolute; /* Kullanıcı/çıkış alanını sidebar'ın altında tutar */
     width: 100%;
     height: 50px;
-    bottom: 0px;
+    bottom: 0;
 }
+
+.menu-link {
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+    .menu-link:hover {
+        background-color: #d3d3d3;
+    }
+
+
+/* =========================
+   BOOTSTRAP'E GEÇİŞTE
+   DEVRE DIŞI KALAN KODLAR
+   ========================= */
+
+/*
+* {
+    margin: 0;
+    padding: 0;
+}
+
+Bootstrap kendi reset yapısını kullandığı için kaldırıldı.
+*/
+
+
+/*
+.anadiv {
+    display: flex;
+}
+
+Ana yerleşim artık Bootstrap:
+container-fluid > row > col
+yapısıyla yönetiliyor.
+*/
+
+
+/*
+.menüdiv {
+    width: 14%;
+}
+
+Sidebar genişliği artık Bootstrap:
+col-12 col-md-2
+ile yönetiliyor.
+*/
+
+
+/*
+.ortakdiv {
+    width: 86%;
+}
+
+İçerik genişliği artık Bootstrap:
+col-12 col-md-10
+ile yönetiliyor.
+*/
+
+
+/*
+.menuicon {
+    width: 50px;
+    height: 25px;
+    font-size: large;
+    text-align: center;
+    margin-block-end: 7px;
+    padding: 2px;
+}
+
+İkon ve yazı hizalama işlemleri artık Bootstrap:
+d-flex
+align-items-center
+gap-3
+px-3
+py-2
+ile yapılıyor.
+*/
+
+
+/*
+.menuisim {
+    width: 200px;
+    height: 25px;
+    text-align: center;
+    margin-block-end: 7px;
+    padding: 7px;
+}
+
+Menü yazılarının yerleşimi artık Bootstrap flex
+ve spacing classları ile yönetiliyor.
+*/
+
+
+/*
+.menucikis {
+    width: 200px;
+    height: 25px;
+    font-size: medium;
+    text-align: center;
+}
+
+Çıkış alanındaki ikon ve kullanıcı adı artık Bootstrap:
+d-flex
+align-items-center
+gap-3
+ile hizalanıyor.
+*/

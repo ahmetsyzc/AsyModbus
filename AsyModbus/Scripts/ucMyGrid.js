@@ -121,47 +121,132 @@
 
     function SayfalamaOlustur(toplamKayit, kayitSayisi) {
 
-        // Önceden oluşturulmuş sayfa butonlarını temizliyoruz
+        // Eski sayfalama butonlarını temizliyoruz
         gridSayfalama.innerHTML = "";
 
-        // Toplam kaç sayfa gerektiğini hesaplıyoruz
+        // Toplam sayfa sayısını hesaplıyoruz
         var toplamSayfa = Math.ceil(toplamKayit / kayitSayisi);
 
-        // Aktif sayfa artık mevcut değilse ilk sayfaya dönüyoruz
-        if (aktifSayfa > toplamSayfa) {
-            aktifSayfa = 1;
+        // Hiç kayıt yoksa sayfalama oluşturmuyoruz
+        if (toplamSayfa <= 0) {
+            return;
         }
 
-        // Her sayfa için bir buton oluşturuyoruz
-        for (var i = 1; i <= toplamSayfa; i++) {
+        // Aktif sayfa artık mevcut değilse son geçerli sayfaya alıyoruz
+        if (aktifSayfa > toplamSayfa) {
+            aktifSayfa = toplamSayfa;
+        }
 
-            // Yeni HTML button oluşturuyoruz
-            var buton = document.createElement("button");
 
-            // Formu submit etmesini engelliyoruz
-            buton.type = "button";
+        // -------------------- GERİ BUTONU --------------------
 
-            // Butonun üzerinde sayfa numarasını gösteriyoruz
-            buton.textContent = i;
+        var geriButon = document.createElement("button");
 
-            // Bulunduğumuz sayfanın butonuna "aktif" class'ı veriyoruz
-            if (i == aktifSayfa) {
-                buton.classList.add("aktif");
+        geriButon.type = "button";
+        geriButon.textContent = "‹";
+        geriButon.className = "btn btn-sm btn-outline-dark";
+
+        // İlk sayfadaysak geri butonunu pasif yapıyoruz
+        if (aktifSayfa == 1) {
+            geriButon.disabled = true;
+        }
+
+        geriButon.addEventListener("click", function () {
+
+            if (aktifSayfa > 1) {
+                aktifSayfa--;
+                KayitSayisiUygula();
             }
 
-            // Sayfa butonuna tıklandığında çalışacak event
+        });
+
+        gridSayfalama.appendChild(geriButon);
+
+
+        // -------------------- GÖRÜNECEK SAYFALAR --------------------
+
+        var baslangicSayfa;
+        var bitisSayfa;
+
+        // İlk sayfadaysak 1 - 2 - 3 gösteriyoruz
+        if (aktifSayfa == 1) {
+
+            baslangicSayfa = 1;
+            bitisSayfa = Math.min(3, toplamSayfa);
+
+        }
+
+        // Son sayfadaysak son 3 sayfayı gösteriyoruz
+        else if (aktifSayfa == toplamSayfa) {
+
+            baslangicSayfa = Math.max(1, toplamSayfa - 2);
+            bitisSayfa = toplamSayfa;
+
+        }
+
+        // Ortadaki sayfalarda önceki - aktif - sonraki gösteriliyor
+        else {
+
+            baslangicSayfa = aktifSayfa - 1;
+            bitisSayfa = aktifSayfa + 1;
+
+        }
+
+
+        // -------------------- SAYFA BUTONLARI --------------------
+
+        for (var i = baslangicSayfa; i <= bitisSayfa; i++) {
+
+            var buton = document.createElement("button");
+
+            buton.type = "button";
+            buton.textContent = i;
+
+            // Aktif sayfa siyah
+            if (i == aktifSayfa) {
+                buton.className = "btn btn-sm btn-dark active";
+            }
+
+            // Diğer sayfalar outline
+            else {
+                buton.className = "btn btn-sm btn-outline-dark";
+            }
+
             buton.addEventListener("click", function () {
 
-                // Tıklanan butonun numarasını aktif sayfa yapıyoruz
                 aktifSayfa = parseInt(this.textContent);
 
-                // Yeni sayfanın kayıtlarını gösteriyoruz
                 KayitSayisiUygula();
+
             });
 
-            // Oluşturulan butonu sayfalama alanına ekliyoruz
             gridSayfalama.appendChild(buton);
         }
+
+
+        // -------------------- İLERİ BUTONU --------------------
+
+        var ileriButon = document.createElement("button");
+
+        ileriButon.type = "button";
+        ileriButon.textContent = "›";
+        ileriButon.className = "btn btn-sm btn-outline-dark";
+
+        // Son sayfadaysak ileri butonunu pasif yapıyoruz
+        if (aktifSayfa == toplamSayfa) {
+            ileriButon.disabled = true;
+        }
+
+        ileriButon.addEventListener("click", function () {
+
+            if (aktifSayfa < toplamSayfa) {
+                aktifSayfa++;
+                KayitSayisiUygula();
+            }
+
+        });
+
+        gridSayfalama.appendChild(ileriButon);
     }
 
 

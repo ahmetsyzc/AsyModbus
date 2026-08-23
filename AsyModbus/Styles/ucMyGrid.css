@@ -1,158 +1,244 @@
-﻿/* Tablonun tamamı */
-.my-grid 
-{
-    width:100%;
+﻿/* =========================
+   KULLANILAN CSS KODLARI
+   ========================= */
+
+/* Grid'e özel ek ayar gerekiyorsa burada tutulur */
+.my-grid-container {
+    min-height: 688px;
+    background-color: #e1e1e1;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Başlık hücreleri */
-.my-grid th
-{
-    background-color:black;
+#gridSayfalama .btn-outline-dark:hover {
+    background-color: #555;
+    border-color: #000;
+}
+
+#gridSayfalama .btn-dark.active {
+    background-color: #000;
+    border-color: #000;
     color:white;
-    text-align:center;
-    font-weight:bold;
-    font-size:20px;
-    height:40px;
 }
 
-/* Veri hücreleri */
-    .my-grid td {
-        text-align: center;
-        font-weight: 200;
-        font-size: 20px;
-        height: 30px;
-    }
-
-/* Satırlar */
-    .my-grid tr {
-        background-color: #e1e1e1;
-        height: 40px;
-    }
-
-/* Mouse satırın üzerindeyken */
-    .my-grid tr:hover {
-        background-color: #f7f7f7;
-    }
-
-/* Grid içerisindeki linkler/butonlarımız */
-    .my-grid a {
-        text-decoration: none; /* Alt çizgiyi kaldırır */
-        color: white; /* Yazıyı koyu gri yapar */
-        background-color: black;
-        border: 1px solid #d1d5db; /* İnce çerçeve ekler */
-        padding: 4px 8px; /* İç boşluk verir */
-        margin-block: 3px;
-        margin-bottom: 3px;
-        border-radius: 6px; /* Köşeleri hafif yuvarlatır */
-        display: inline-block; /* Linki buton gibi davranır hale getirir */
-        font-size: 13px; /* Yazı boyutunu ayarlar */
-        font-weight: 500; /* Yazıyı hafif kalınlaştırır */
-        cursor: pointer; /* Mouse'u el işaretine çevirir */
-        transition: 0.2s; /* Hover geçişini yumuşatır */
-    }
-
-        .my-grid a:hover {
-            background-color: #3c3c3c; /* Üzerine gelince hafif gri olur */
-            border-color: #9ca3af; /* Çerçeveyi belirginleştirir */
-        }
-
-
-/* Grid üst alanı */
-.my-grid-header {
+.my-grid-scroll {
+    max-height: 538px;
 }
 
+.my-grid {
+    --bs-table-bg: #e1e1e1;
+}
 
-    /* Toplam kayıt yazısı */
-    .my-grid-header > span:first-child {
+    .my-grid th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
     }
 
+/* ====================
+===
+   BOOTSTRAP'E GEÇİŞTE
+   DEVRE DIŞI KALAN KODLAR
+   ========================= */
 
-/* Göster - kayıt sayısı alanı */
+/*
+.my-grid th {
+    background-color: black;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px;
+    height: 40px;
+}
+
+Grid başlığı artık Bootstrap:
+table-dark
+ile yönetiliyor.
+*/
+
+
+/*
+.my-grid td {
+    text-align: center;
+    font-weight: 200;
+    font-size: 20px;
+    height: 30px;
+}
+
+Hücre hizalama ve görünüm artık Bootstrap:
+text-center
+align-middle
+table
+ile yönetiliyor.
+*/
+
+
+/*
+.my-grid tr {
+    background-color: #e1e1e1;
+    height: 40px;
+}
+
+Satır görünümü artık Bootstrap table sınıfıyla yönetiliyor.
+*/
+
+
+/*
+.my-grid tr:hover {
+    background-color: #f7f7f7;
+}
+
+Satır hover efekti artık Bootstrap:
+table-hover
+ile yönetiliyor.
+*/
+
+
+/*
+.my-grid a {
+    text-decoration: none;
+    color: white;
+    background-color: black;
+    border: 1px solid #d1d5db;
+    padding: 4px 8px;
+    margin-block: 3px;
+    margin-bottom: 3px;
+    border-radius: 6px;
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.my-grid a:hover {
+    background-color: #3c3c3c;
+    border-color: #9ca3af;
+}
+
+Grid içerisindeki Aç butonu artık Bootstrap:
+btn
+btn-dark
+btn-sm
+ile yönetiliyor.
+*/
+
+
+/*
 .my-grid-page-size {
     float: left;
     height: 30px;
-    margin:5px;
+    margin: 5px;
 }
 
-    .my-grid-page-size select {
-        width: 50px; /* Arama kutusunun genişliği */
-        height: 24px; /* Arama kutusunun yüksekliği */
-        padding-left: 3px; /* Yazı ile kenarlar arasındaki boşluk */
-        margin-right: 7px; /*Sağ dış boşluk*/
-        border: 2px solid #b8b8b8; /* Kenarlığı kalınlaştırır */
-        border-color: #555;
-        border-radius: 6px; /* Köşeleri hafif yuvarlatır */
-        font-size: 14px; /* Yazı boyutunu ayarlar */
-        outline: none; /* Tıklanınca varsayılan dış çizgiyi kaldırır */
-        box-sizing: border-box; /* Boyut hesabının taşmasını engeller */
-        transition: 0.2s; /* Geçişleri yumuşatır */
-    }
+.my-grid-page-size select {
+    width: 50px;
+    height: 24px;
+    padding-left: 3px;
+    margin-right: 7px;
+    border: 2px solid #555;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+    transition: 0.2s;
+}
 
-        .my-grid-page-size select:focus {
-        }
+Kayıt sayısı alanı artık Bootstrap:
+d-flex
+align-items-center
+gap-2
+form-select
+form-select-sm
+ile yönetiliyor.
+*/
 
 
-/* Bul alanı */
+/*
 .my-grid-search {
     float: right;
     height: 30px;
     margin: 5px;
 }
 
-    .my-grid-search input {
-        width: 150px; /* Arama kutusunun genişliği */
-        height: 24px; /* Arama kutusunun yüksekliği */
-        padding-left: 3px; /* Yazı ile kenarlar arasındaki boşluk */
-        margin-right: 7px; /*Sağ dış boşluk*/
-        border: 2px solid #b8b8b8; /* Kenarlığı kalınlaştırır */
-        border-color: #555;
-        border-radius: 6px; /* Köşeleri hafif yuvarlatır */
-        font-size: 14px; /* Yazı boyutunu ayarlar */
-        outline: none; /* Tıklanınca varsayılan dış çizgiyi kaldırır */
-        box-sizing: border-box; /* Boyut hesabının taşmasını engeller */
-        transition: 0.2s; /* Geçişleri yumuşatır */
-    }
+.my-grid-search input {
+    width: 150px;
+    height: 24px;
+    padding-left: 3px;
+    margin-right: 7px;
+    border: 2px solid #555;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+    transition: 0.2s;
+}
 
-        .my-grid-search input:focus {
-            border-color: black; /* Yazarken kenarlığı koyulaştırır */
-        }
+.my-grid-search input:focus {
+    border-color: black;
+}
+
+Arama alanı artık Bootstrap:
+d-flex
+align-items-center
+gap-2
+form-control
+form-control-sm
+ile yönetiliyor.
+*/
 
 
-/* Sayfalama alanı */
+/*
 .my-grid-pagination {
-    text-align:center;
+    text-align: center;
 }
 
-
-    /* Sayfa numarası butonları */
-    .my-grid-pagination button {
-        height:20px;
-        width:20px;
-        margin-right:5px;
-
-    }
-
-
-        /* Sayfa butonunun üzerine gelince */
-        .my-grid-pagination button:hover {
-            background-color:#808080;
-        }
-
-
-        /* Aktif sayfa */
-        .my-grid-pagination button.aktif {
-            background-color:black;
-            color:white;
-        }
-
-
-.my-grid-count{
-    background-color:#000000;
-    border-radius:5px;
-    color:white;
-    margin:10px;
-    font-size:large;
-    padding:10px;
-    font-weight:bold;
-
+.my-grid-pagination button {
+    height: 20px;
+    width: 20px;
+    margin-right: 5px;
 }
+
+.my-grid-pagination button:hover {
+    background-color: #808080;
+}
+
+.my-grid-pagination button.aktif {
+    background-color: black;
+    color: white;
+}
+
+Sayfalama artık Bootstrap:
+d-flex
+justify-content-center
+gap-1
+mt-3
+btn
+btn-sm
+btn-dark
+btn-outline-dark
+ile yönetiliyor.
+*/
+
+
+/*
+.my-grid-count {
+    background-color: #000000;
+    border-radius: 5px;
+    color: white;
+    margin: 10px;
+    font-size: large;
+    padding: 10px;
+    font-weight: bold;
+}
+
+Toplam kayıt alanı artık Bootstrap:
+bg-dark
+text-white
+fw-bold
+px-3
+py-2
+rounded
+w-100
+ile yönetiliyor.
+*/

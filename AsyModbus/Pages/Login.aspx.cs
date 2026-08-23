@@ -23,13 +23,18 @@ namespace AsyModbus.Pages
 
         protected void btnGiris_Click(object sender, EventArgs e)
         {
+            if (txtCaptcha.Text == "")
+            {
+                Mesaj.Ver(Mesajlar.KullaniciGirisCaptchaBos, Mesaj.MesajTurleri.WARNING, this);
+                return;
+            }
             Captcha1.ValidateCaptcha(txtCaptcha.Text.Trim());
             if (Captcha1.UserValidated)
             {
                 if (string.IsNullOrWhiteSpace(txtMail.Text) ||
                     string.IsNullOrWhiteSpace(txtSifre.Text))
                 {
-                    lblUyari.Text = "Mail ve Şifre boş bırakılamaz.";
+                    Mesaj.Ver(Mesajlar.KullaniciGirisAlanlarBos, Mesaj.MesajTurleri.WARNING, this);
                     return;
                 }
                 VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
@@ -61,13 +66,12 @@ namespace AsyModbus.Pages
                     }
                     else
                     {
-                        lblUyari.Text =
-                            "Mail veya şifre hatalı.";
+                        Mesaj.Ver(Mesajlar.KullaniciGirisHataliGiris, Mesaj.MesajTurleri.FAIL, this);
                     }
                 }
                 catch (Exception ex)
                 {
-                    lblUyari.Text = "Sistemsel Hata ! " + ex.Message;
+                    Mesaj.Ver(Mesajlar.SistemselHata(ex.Message), Mesaj.MesajTurleri.FAIL, this);
                 }
                 finally
                 {
@@ -76,7 +80,7 @@ namespace AsyModbus.Pages
             }
             else
             {
-                lblUyari.Text = "Güvenlik Kodu Hatalı.";
+                Mesaj.Ver(Mesajlar.KullaniciGirisCaptchaHatali, Mesaj.MesajTurleri.WARNING, this);
                 return;
             }
         }

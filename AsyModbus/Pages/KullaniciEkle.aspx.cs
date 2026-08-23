@@ -5,7 +5,7 @@ namespace AsyModbus.Pages
 {
     public partial class KullaniciEkle : System.Web.UI.Page
     {
-        
+
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -22,7 +22,7 @@ namespace AsyModbus.Pages
                 }
                 catch (Exception ex)
                 {
-                    lblUyari.Text = "Sistemsel Hata " + ex.Message;
+                    Mesaj.Ver(Mesajlar.SistemselHata(ex.Message), Mesaj.MesajTurleri.FAIL, Master);
                 }
                 finally
                 {
@@ -43,7 +43,7 @@ namespace AsyModbus.Pages
             Sessionlar sessionlar = new Sessionlar();
             CurrentInfo currentInfo = sessionlar.Current._CurrentInfo;
             DosyaIslemleri dosyaIslemleri = new DosyaIslemleri();
-            string resimYolu="";
+            string resimYolu = "";
             bool resimSilinsinMi = false;
             try
             {
@@ -53,7 +53,7 @@ namespace AsyModbus.Pages
                 kullanicilar.CepNo = ucCepNo.CepNoAl();
                 if (!ucCepNo.CepNoUygunMu())
                 {
-                    lblUyari.Text = "Telefon numarası 10 haneli olmalıdır!";
+                    Mesaj.Ver(Mesajlar.TelefonHatali, Mesaj.MesajTurleri.WARNING, Master);
                     return;
                 }
 
@@ -61,19 +61,19 @@ namespace AsyModbus.Pages
                 kullanicilar.Mail = txtMail.Text.Trim();
 
                 //Kullanıcı daha önce kayıtlı mı kontrol ediyoruz
-                if (kullanicilar.MailVarMi()>0)
+                if (kullanicilar.MailVarMi() > 0)
                 {
-                    lblUyari.Text = "Bu Mail Hesabı Sistemde Kayıtlı !";
+                    Mesaj.Ver(Mesajlar.KullaniciKayitli, Mesaj.MesajTurleri.WARNING, Master);
                     return;
                 }
                 if (kullanicilar.CepNoVarMi() > 0)
                 {
-                    lblUyari.Text = "Bu Telefon Numarası Sistemde Kayıtlı !";
+                    Mesaj.Ver(Mesajlar.KullaniciKayitli, Mesaj.MesajTurleri.WARNING, Master);
                     return;
                 }
                 /*if (kullanicilar.TcknoVarMi()>0)
                 {
-                    lblUyari.Text = "Bu Tckno Sistemde Kayıtlı !";
+                    Mesaj.Ver(Mesajlar.KullaniciKayitli, Mesaj.MesajTurleri.WARNING, Master);
                     return;
                 }*/
 
@@ -83,7 +83,7 @@ namespace AsyModbus.Pages
                 // Resmin adını al - Resmi proje klasörüne kaydet - Veritabanına kaydedilecek yol
                 if (!dosyaIslemleri.ResimUzantisiGecerliMi(FileUpload1.FileName))
                 {
-                    lblUyari.Text = "Sadece JPG, JPEG veya PNG dosyası yükleyebilirsiniz.";
+                    Mesaj.Ver(Mesajlar.ProfilResmiDosyaTipiYanlis, Mesaj.MesajTurleri.WARNING, Master);
                     return;
                 }
                 resimYolu = dosyaIslemleri.ResimKaydet(DosyaIslemleri.C_Klasor_Kullanicilar, FileUpload1.PostedFile);
@@ -126,13 +126,13 @@ namespace AsyModbus.Pages
                     resimSilinsinMi = true;
                 }
 
-                lblUyari.Text = "Kullanıcı eklenemedi.";
+                Mesaj.Ver(Mesajlar.KayitEklemeIslemiBasarisiz, Mesaj.MesajTurleri.FAIL, Master);
             }
             catch (Exception ex)
             {
                 veritabaniIslemleri.GeriAl();
                 resimSilinsinMi = true;
-                lblUyari.Text = "Hata: " + ex.Message;
+                Mesaj.Ver(Mesajlar.SistemselHata(ex.Message), Mesaj.MesajTurleri.FAIL, Master);
             }
             finally
             {
@@ -156,10 +156,9 @@ namespace AsyModbus.Pages
             }
             else if (txtAd.Text.Trim().Length < 2)
             {
-                lblUyari.Text = "Ad en az 2 karakter olmalıdır.";
+                Mesaj.Ver(Mesajlar.KullaniciAdEnAzIkiKarakter, Mesaj.MesajTurleri.WARNING, Master);
                 return false;
             }
-
             if (txtSoyad.Text.Trim().Length == 0)
             {
                 mesaj += " Soyad";
@@ -167,10 +166,9 @@ namespace AsyModbus.Pages
             }
             else if (txtSoyad.Text.Trim().Length < 2)
             {
-                lblUyari.Text = "Soyad en az 2 karakter olmalıdır.";
+                Mesaj.Ver(Mesajlar.KullaniciSoyadEnAzIkiKarakter, Mesaj.MesajTurleri.WARNING, Master);
                 return false;
             }
-
             if (txtTckno.Text.Trim().Length == 0)
             {
                 mesaj += " TCKNO";
@@ -178,40 +176,33 @@ namespace AsyModbus.Pages
             }
             else if (txtTckno.Text.Trim().Length != 11)
             {
-                lblUyari.Text = "Tc Kimlik No 11 Hane Olmalıdır!";
+                Mesaj.Ver(Mesajlar.KullaniciTcKimlikNoOnBirHane, Mesaj.MesajTurleri.WARNING, Master);
                 return false;
             }
-
             if (txtMail.Text.Trim().Length == 0)
             {
                 mesaj += " Mail";
                 sonuc = false;
             }
-
             if (string.IsNullOrWhiteSpace(ucCepNo.Text))
             {
                 mesaj += " Cep No";
                 sonuc = false;
             }
-
             if (txtDogumTarihi.Text.Trim().Length == 0)
             {
                 mesaj += " Doğum Tarihi";
                 sonuc = false;
             }
-
             if (!FileUpload1.HasFile)
             {
                 mesaj += " Profil Resmi";
                 sonuc = false;
             }
-
             if (mesaj != "")
             {
-                lblUyari.Text =
-                    mesaj + " Bilgisi/Bilgileri Zorunludur.";
+                Mesaj.Ver(Mesajlar.ZorunluAlanlar(mesaj), Mesaj.MesajTurleri.WARNING, Master);
             }
-
             return sonuc;
         }
     }

@@ -1,6 +1,24 @@
-﻿body {
+﻿/* =========================
+   KULLANILAN CSS KODLARI
+   ========================= */
+
+.profilResim {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
 }
 
+.arkaplan{
+    background-color:#e1e1e1;
+}
+
+/* =========================
+   BOOTSTRAP'E GEÇİŞTE
+   DEVRE DIŞI KALAN KODLAR
+   ========================= */
+
+
+/*
 .kd-div {
     margin: auto;
     height: auto;
@@ -10,41 +28,75 @@
     margin-block-start: 55px;
 }
 
+Formun dış yerleşimi artık Bootstrap:
+container > row > col > card
+yapısıyla yönetiliyor.
+*/
+
+
+/*
 .baslik {
     background-color: black;
     color: white;
     font-weight: bold;
     border-radius: 1%;
-    text-align:center !important;
+    text-align: center !important;
 }
 
+Form başlığı artık Bootstrap:
+card-header
+text-center
+fw-bold
+bg-dark
+text-white
+ile yönetiliyor.
+*/
+
+
+/*
 .kd-table {
     width: 100%;
-    border-collapse: collapse; /* Hücreler arasındaki boşluğu yok eder */
+    border-collapse: collapse;
 }
 
-    .kd-table td {
-        text-align: left;
-        padding:10px;
-        padding-left:25px !important;
-        margin-left:25px;
-    }
+.kd-table td {
+    text-align: left;
+    padding: 10px;
+    padding-left: 25px !important;
+    margin-left: 25px;
+}
+
+Form yerleşiminde table, tr ve td kaldırıldı.
+Yerleşim artık Bootstrap:
+row
+col-12
+col-md-3
+col-md-9
+ile yönetiliyor.
+*/
 
 
-    .kd-table input[type="text"],
-    input[type="password"],
-    input[type="email"],
-    input[type="date"],
-    input[type="tel"],
-    input[type="number"] {
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        padding-left: 12px;
-        font-size: 14px;
-        width: 250px;
-        height: 25px;
-    }
+/*
+.kd-table input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="date"],
+input[type="tel"],
+input[type="number"] {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding-left: 12px;
+    font-size: 14px;
+    width: 250px;
+    height: 25px;
+}
 
+TextBox tasarımı ve responsive genişliği artık
+Bootstrap form-control ile yönetiliyor.
+*/
+
+
+/*
 .btnkaydet {
     width: 150px;
     height: 40px;
@@ -54,11 +106,19 @@
     font-weight: 600;
 }
 
-    .btnkaydet:hover {
-        background-color: #1f8a38;
-    }
+.btnkaydet:hover {
+    background-color: #1f8a38;
+}
+
+Kaydet butonu artık Bootstrap:
+btn
+btn-success
+px-5
+ile yönetiliyor.
+*/
 
 
+/*
 .btnsil {
     width: 150px;
     height: 40px;
@@ -68,19 +128,29 @@
     font-weight: 600;
 }
 
-    .btnsil:hover {
-        background-color: #b02a37;
-    }
-
-.profilResim {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
+.btnsil:hover {
+    background-color: #b02a37;
 }
 
+Sil butonu artık Bootstrap:
+btn
+btn-danger
+px-5
+ile yönetiliyor.
+*/
+
+
+/*
 .lbluyari {
     text-align: center !important;
     color: darkred;
     font-weight: bold;
     font-size: medium;
 }
+
+Uyarı mesajı artık Bootstrap:
+text-center
+text-danger
+fw-bold
+ile yönetiliyor.
+*/

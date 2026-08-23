@@ -17,8 +17,7 @@ public class Sessionlar
     {
         get
         {
-            Sessionlar session =
-                (Sessionlar)HttpContext.Current.Session["__Sessionlar__"];
+            Sessionlar session = (Sessionlar)HttpContext.Current.Session["__Sessionlar__"];
 
             if (session == null)
             {

@@ -43,12 +43,12 @@ namespace AsyModbus.Pages
                     }
                     else
                     {
-                        lblUyari.Text = "Kullanıcı bulunamadı.";
+                        Mesaj.Ver(Mesajlar.KullaniciBulunamadi, Mesaj.MesajTurleri.FAIL, Master);
                     }
                 }
                 catch (Exception ex)
                 {
-                    lblUyari.Text = "Veriler Yüklenemedi " + ex.Message;
+                    Mesaj.Ver(Mesajlar.SistemselHata(ex.Message), Mesaj.MesajTurleri.FAIL, Master);
                 }
                 finally
                 {
@@ -79,7 +79,7 @@ namespace AsyModbus.Pages
 
                 if (!ucCepNo.CepNoUygunMu())
                 {
-                    lblUyari.Text = "Telefon numarası 10 haneli olmalıdır!";
+                    Mesaj.Ver(Mesajlar.TelefonHatali, Mesaj.MesajTurleri.WARNING, Master);
                     return;
                 }
                 kullanicilar.CepNo = ucCepNo.CepNoAl();
@@ -88,12 +88,20 @@ namespace AsyModbus.Pages
                 string eskiResimYolu = imgProfil.ImageUrl.Replace("~/", "");
                 // Varsayılan olarak eski resim korunur
                 string resimYolu = eskiResimYolu;
+
+                // Eski resim yoksa ve yeni resim de seçilmediyse
+                if (string.IsNullOrEmpty(eskiResimYolu) && !FileUpload1.HasFile)
+                {
+                    Mesaj.Ver(Mesajlar.ProfilResmiZorunlu, Mesaj.MesajTurleri.WARNING, Master);
+                    return;
+                }
+
                 // Yeni resim seçildiyse kaydet
                 if (FileUpload1.HasFile)
                 {
                     if (!dosyaIslemleri.ResimUzantisiGecerliMi(FileUpload1.FileName))
                     {
-                        lblUyari.Text = "Sadece JPG, JPEG veya PNG dosyası yükleyebilirsiniz.";
+                        Mesaj.Ver(Mesajlar.ProfilResmiDosyaTipiYanlis, Mesaj.MesajTurleri.WARNING, Master);
                         return;
                     }
                     yeniResimYolu = dosyaIslemleri.ResimKaydet(DosyaIslemleri.C_Klasor_Kullanicilar, FileUpload1.PostedFile);
@@ -121,13 +129,13 @@ namespace AsyModbus.Pages
                         silinecekResimYolu = eskiResimYolu;
                         imgProfil.ImageUrl = "~/" + yeniResimYolu;
                     }
-                    lblUyari.Text = "Personel bilgileri güncellendi.";
+                    Mesaj.Ver(Mesajlar.KayitGuncellemeBasarili, Mesaj.MesajTurleri.SUCCESS, Master);
                 }
                 else
                 {
                     // DB başarısızsa yeni yüklenen resim gereksiz.
                     silinecekResimYolu = yeniResimYolu;
-                    lblUyari.Text = "Personel bilgileri güncellenemedi.";
+                    Mesaj.Ver(Mesajlar.KayitGuncellemeBasarisiz, Mesaj.MesajTurleri.FAIL, Master);
                 }
 
             }
@@ -135,7 +143,7 @@ namespace AsyModbus.Pages
             {
                 // Yeni resim kaydedildi ama devamında hata olduysa yeni resmi temizle.
                 silinecekResimYolu = yeniResimYolu;
-                lblUyari.Text = "Hata: " + ex.Message;
+                Mesaj.Ver(Mesajlar.SistemselHata(ex.Message), Mesaj.MesajTurleri.FAIL, Master);
             }
             finally
             {
@@ -160,7 +168,7 @@ namespace AsyModbus.Pages
 
                 if (!kullanicilar.Doldur())
                 {
-                    lblUyari.Text = "Silinecek kullanıcı bulunamadı.";
+                    Mesaj.Ver(Mesajlar.KullaniciBulunamadi, Mesaj.MesajTurleri.FAIL, Master);
                     return;
                 }
                 kullanicilar.GuncelleyenId = currentInfo.KullaniciId;
@@ -186,12 +194,12 @@ namespace AsyModbus.Pages
                 }
                 else
                 {
-                    lblUyari.Text = "Kullanıcı silinemedi.";
+                    Mesaj.Ver(Mesajlar.KayitSilmeBasarisiz, Mesaj.MesajTurleri.FAIL, Master);
                 }
             }
             catch (Exception ex)
             {
-                lblUyari.Text = "Hata: " + ex.Message;
+                Mesaj.Ver(Mesajlar.SistemselHata(ex.Message), Mesaj.MesajTurleri.FAIL, Master);
             }
             finally
             {
@@ -211,10 +219,10 @@ namespace AsyModbus.Pages
             }
             else if (txtAd.Text.Trim().Length < 2)
             {
-                lblUyari.Text = "Ad en az 2 karakter olmalıdır.";
+                Mesaj.Ver(Mesajlar.KullaniciAdEnAzIkiKarakter, Mesaj.MesajTurleri.WARNING, Master
+                );
                 return false;
             }
-
             if (txtSoyad.Text.Trim().Length == 0)
             {
                 mesaj += " Soyad";
@@ -222,14 +230,18 @@ namespace AsyModbus.Pages
             }
             else if (txtSoyad.Text.Trim().Length < 2)
             {
-                lblUyari.Text = "Soyad en az 2 karakter olmalıdır.";
+                Mesaj.Ver(Mesajlar.KullaniciSoyadEnAzIkiKarakter, Mesaj.MesajTurleri.WARNING, Master);
                 return false;
             }
-
             if (txtTckno.Text.Trim().Length == 0)
             {
                 mesaj += " TCKNO";
                 sonuc = false;
+            }
+            else if (txtTckno.Text.Trim().Length != 11)
+            {
+                Mesaj.Ver(Mesajlar.KullaniciTcKimlikNoOnBirHane, Mesaj.MesajTurleri.WARNING, Master);
+                return false;
             }
             if (txtMail.Text.Trim().Length == 0)
             {
@@ -248,10 +260,11 @@ namespace AsyModbus.Pages
             }
             if (mesaj != "")
             {
-                lblUyari.Text = mesaj + " Bilgisi/Bilgileri Zorunludur.";
+                Mesaj.Ver(Mesajlar.ZorunluAlanlar(mesaj), Mesaj.MesajTurleri.WARNING, Master
+                );
             }
             return sonuc;
         }
 
-    }      
+    }
 }

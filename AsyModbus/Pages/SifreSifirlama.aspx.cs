@@ -15,12 +15,12 @@ namespace AsyModbus.Pages
             if (string.IsNullOrWhiteSpace(txtMail.Text) ||
                 string.IsNullOrWhiteSpace(ucCepNo.Text))
             {
-                lblUyari.Text = "Mail ve Cep No boş bırakılamaz.";
+                Mesaj.Ver(Mesajlar.SifreSifirlamaMailCepNoBos, Mesaj.MesajTurleri.WARNING, this);
                 return;
             }
             if (!ucCepNo.CepNoUygunMu())
             {
-                lblUyari.Text = "Telefon numarası 10 haneli olmalıdır.";
+                Mesaj.Ver(Mesajlar.TelefonHatali, Mesaj.MesajTurleri.WARNING, this);
                 return;
             }
             VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
@@ -40,22 +40,22 @@ namespace AsyModbus.Pages
 
                     if (kullanicilar.SifreGuncelle())
                     {
-                        lblUyari.Text = "Yeni şifreniz = " + kullanicilar.Sifre;
+                        Mesaj.Ver(Mesajlar.SifreSifirlamaBasarili(kullanicilar.Sifre), Mesaj.MesajTurleri.SUCCESS, this);
                     }
                     else
                     {
-                        lblUyari.Text = "Şifre güncellenemedi.";
+                        Mesaj.Ver(Mesajlar.SifreSifirlamaBasarisiz, Mesaj.MesajTurleri.FAIL, this);
                     }
                 }
                 else
                 {
-                    lblUyari.Text = "Mail veya cep telefonu hatalı.";
+                    Mesaj.Ver(Mesajlar.SifreSifirlamaBilgilerHatali, Mesaj.MesajTurleri.WARNING, this);
                 }
             }
             catch (Exception ex)
             {
 
-                lblUyari.Text="Sistemsel Hata "+ex.Message;
+                Mesaj.Ver(Mesajlar.SistemselHata(ex.Message), Mesaj.MesajTurleri.FAIL, this);
             }
             finally
             {

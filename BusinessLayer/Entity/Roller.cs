@@ -5,13 +5,16 @@ using System.Web.UI.WebControls;
 
 public class Roller : OrtakAlanlar, IOrtakMetotlar
 {
-
-    private VeritabaniIslemleri veritabaniIslemleri;
     public Roller(VeritabaniIslemleri _veritabaniIslemleri)
     {
-        veritabaniIslemleri = _veritabaniIslemleri;
+        VeritabaniIslem = _veritabaniIslemleri;
     }
 
+    ~Roller()
+    {
+        VeriTablosu = new DataTable();
+        VeriTablosu = null;
+    }
 
     #region Sabitler
 
@@ -53,8 +56,8 @@ public class Roller : OrtakAlanlar, IOrtakMetotlar
 
     public DataTable TumunuGetir()
     {
-        veritabaniIslemleri.SpAdi = C_Sp_TumunuGetir;
-        VeriTablosu = veritabaniIslemleri.TabloGetir();
+        VeritabaniIslem.SpAdi = C_Sp_TumunuGetir;
+        VeriTablosu = VeritabaniIslem.TabloGetir();
         return VeriTablosu;
     }
 
@@ -71,6 +74,11 @@ public class Roller : OrtakAlanlar, IOrtakMetotlar
         dropDownList.DataValueField = C_Sutun_id;
         dropDownList.DataSource = VeriTablosu;
         dropDownList.DataBind();
+    }
+
+    public bool Doldur()
+    {
+        return false;
     }
 
     #endregion

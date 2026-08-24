@@ -20,7 +20,7 @@ namespace AsyModbus.MasterPages
                 Context.ApplicationInstance.CompleteRequest();
                 return;
             }
-            lblAdSoyad.Text = currentInfo.Ad + " " + currentInfo.Soyad;
+            hlAdSoyad.Text = currentInfo.Ad + " " + currentInfo.Soyad;
         }
 
         protected void btnCikis_Click(object sender, EventArgs e)

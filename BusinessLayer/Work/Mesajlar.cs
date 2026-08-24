@@ -126,4 +126,9 @@ public class Mesajlar
     {
         get { return "Profil resmi seçilmesi zorunludur."; }
     }
+
+    public static string SifreEnAzAltiKarakter
+    {
+        get { return "Şifre en az 6 karakter olmalıdır."; }
+    }
 }

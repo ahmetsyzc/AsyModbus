@@ -25,22 +25,22 @@
                 ID="lbl_success"
                 runat="server"
                 ClientIDMode="Static">
-        </asp:Label>
+            </asp:Label>
             <asp:Label
                 ID="lbl_warning"
                 runat="server"
                 ClientIDMode="Static">
-        </asp:Label>
+            </asp:Label>
             <asp:Label
                 ID="lbl_info"
                 runat="server"
                 ClientIDMode="Static">
-        </asp:Label>
+            </asp:Label>
             <asp:Label
                 ID="lbl_error"
                 runat="server"
                 ClientIDMode="Static">
-        </asp:Label>
+            </asp:Label>
         </div>
 
         <div class="container-fluid">
@@ -114,10 +114,12 @@
 
                         </asp:LinkButton>
 
-                        <asp:Label
-                            ID="lblAdSoyad"
-                            CssClass="menu-label"
-                            runat="server" />
+                        <asp:HyperLink
+                            ID="hlAdSoyad"
+                            runat="server"
+                            NavigateUrl="~/Pages/ProfilDuzenle.aspx"
+                            CssClass="menu-label text-decoration-none text-dark">
+                        </asp:HyperLink>
 
                     </div>
 

@@ -6,12 +6,16 @@ using System.Text.RegularExpressions;
 public class Kullanicilar : OrtakAlanlar, IOrtakMetotlar
 {
 
-    private VeritabaniIslemleri veritabaniIslemleri;
     public Kullanicilar(VeritabaniIslemleri _veritabaniIslemleri)
     {
-        veritabaniIslemleri = _veritabaniIslemleri;
+        VeritabaniIslem = _veritabaniIslemleri;
     }
 
+    ~Kullanicilar()
+    {
+        VeriTablosu = new DataTable();
+        VeriTablosu = null;
+    }
 
     #region Sabitler
 
@@ -30,6 +34,7 @@ public class Kullanicilar : OrtakAlanlar, IOrtakMetotlar
     public const string C_Sp_CepNoVarMi = "dbo.SP_Kullanicilar_CEPNO_VAR_MI";
     public const string C_Sp_KullaniciKodOlustur = "dbo.SP_Kullanicilar_KULLANICI_KOD_OLUSTUR";
     public const string C_Sp_MaxIdGetir = "dbo.SP_Kullanicilar_MAX_ID_GETIR";
+    public const string C_Sp_ProfilGuncelle = "dbo.SP_Kullanicilar_PROFIL_GUNCELLE";
 
 
     public const string C_Sutun_kullanici_kod = "kullanici_kod";
@@ -133,68 +138,81 @@ public class Kullanicilar : OrtakAlanlar, IOrtakMetotlar
 
     public bool Ekle()
     {
-        veritabaniIslemleri.SpAdi = C_Sp_Ekle;
-        veritabaniIslemleri.ParametreEkle(C_Sutun_roller_id, RollerId);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_ad, Ad);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_soyad, Soyad);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_tckno, Tckno);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_mail, Mail);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_sifre, Sifre);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_cep_no, CepNo);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_dogum_tarih, DogumTarih);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_resim_yol, ResimYol);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_aktif_mi, AktifMi);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_ekleyen_id, EkleyenId);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_ekleyen_ip, EkleyenIp);
-        return veritabaniIslemleri.Calistir();
+        VeritabaniIslem.SpAdi = C_Sp_Ekle;
+        VeritabaniIslem.ParametreEkle(C_Sutun_roller_id, RollerId);
+        VeritabaniIslem.ParametreEkle(C_Sutun_ad, Ad);
+        VeritabaniIslem.ParametreEkle(C_Sutun_soyad, Soyad);
+        VeritabaniIslem.ParametreEkle(C_Sutun_tckno, Tckno);
+        VeritabaniIslem.ParametreEkle(C_Sutun_mail, Mail);
+        VeritabaniIslem.ParametreEkle(C_Sutun_sifre, Sifre);
+        VeritabaniIslem.ParametreEkle(C_Sutun_cep_no, CepNo);
+        VeritabaniIslem.ParametreEkle(C_Sutun_dogum_tarih, DogumTarih);
+        VeritabaniIslem.ParametreEkle(C_Sutun_resim_yol, ResimYol);
+        VeritabaniIslem.ParametreEkle(C_Sutun_aktif_mi, AktifMi);
+        VeritabaniIslem.ParametreEkle(C_Sutun_ekleyen_id, EkleyenId);
+        VeritabaniIslem.ParametreEkle(C_Sutun_ekleyen_ip, EkleyenIp);
+        return VeritabaniIslem.Calistir();
     }
 
     public int MaxIdGetir()
     {
-        veritabaniIslemleri.SpAdi = C_Sp_MaxIdGetir;
-        return veritabaniIslemleri.DegerGetir();
+        VeritabaniIslem.SpAdi = C_Sp_MaxIdGetir;
+        return VeritabaniIslem.DegerGetir();
     }
 
 
     public bool Guncelle()
     {
-        veritabaniIslemleri.SpAdi = C_Sp_Guncelle;
-        veritabaniIslemleri.ParametreEkle(C_Sutun_id, Id);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_roller_id, RollerId);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_ad, Ad);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_soyad, Soyad);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_tckno, Tckno);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_mail, Mail);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_sifre, Sifre);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_cep_no, CepNo);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_dogum_tarih, DogumTarih);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_resim_yol, ResimYol);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_guncelleyen_id, GuncelleyenId);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_guncelleyen_ip, GuncelleyenIp);
-        return veritabaniIslemleri.Calistir();
+        VeritabaniIslem.SpAdi = C_Sp_Guncelle;
+        VeritabaniIslem.ParametreEkle(C_Sutun_id, Id);
+        VeritabaniIslem.ParametreEkle(C_Sutun_roller_id, RollerId);
+        VeritabaniIslem.ParametreEkle(C_Sutun_ad, Ad);
+        VeritabaniIslem.ParametreEkle(C_Sutun_soyad, Soyad);
+        VeritabaniIslem.ParametreEkle(C_Sutun_tckno, Tckno);
+        VeritabaniIslem.ParametreEkle(C_Sutun_mail, Mail);
+        VeritabaniIslem.ParametreEkle(C_Sutun_sifre, Sifre);
+        VeritabaniIslem.ParametreEkle(C_Sutun_cep_no, CepNo);
+        VeritabaniIslem.ParametreEkle(C_Sutun_dogum_tarih, DogumTarih);
+        VeritabaniIslem.ParametreEkle(C_Sutun_resim_yol, ResimYol);
+        VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_id, GuncelleyenId);
+        VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_ip, GuncelleyenIp);
+        return VeritabaniIslem.Calistir();
+    }
+
+    public bool ProfilGuncelle()
+    {
+        VeritabaniIslem.SpAdi = C_Sp_ProfilGuncelle;
+        VeritabaniIslem.ParametreEkle(C_Sutun_id, Id);
+        VeritabaniIslem.ParametreEkle(C_Sutun_ad, Ad);
+        VeritabaniIslem.ParametreEkle(C_Sutun_soyad, Soyad);
+        VeritabaniIslem.ParametreEkle(C_Sutun_mail, Mail);
+        VeritabaniIslem.ParametreEkle(C_Sutun_sifre, Sifre);
+        VeritabaniIslem.ParametreEkle(C_Sutun_cep_no, CepNo);
+        VeritabaniIslem.ParametreEkle(C_Sutun_resim_yol, ResimYol);
+        return VeritabaniIslem.Calistir();
     }
 
     public bool Sil()
     {
-        veritabaniIslemleri.SpAdi = C_Sp_Sil;
-        veritabaniIslemleri.ParametreEkle(C_Sutun_id, Id);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_guncelleyen_id, GuncelleyenId);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_guncelleyen_ip, GuncelleyenIp);
-        return veritabaniIslemleri.Calistir();
+        VeritabaniIslem.SpAdi = C_Sp_Sil;
+        VeritabaniIslem.ParametreEkle(C_Sutun_id, Id);
+        VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_id, GuncelleyenId);
+        VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_ip, GuncelleyenIp);
+        return VeritabaniIslem.Calistir();
     }
 
     public DataTable TumunuGetir()
     {
-        veritabaniIslemleri.SpAdi = C_Sp_TumunuGetir;
-        VeriTablosu = veritabaniIslemleri.TabloGetir();
+        VeritabaniIslem.SpAdi = C_Sp_TumunuGetir;
+        VeriTablosu = VeritabaniIslem.TabloGetir();
         return VeriTablosu;
     }
 
     public bool Doldur()
     {
-        veritabaniIslemleri.SpAdi = C_Sp_Doldur;
-        veritabaniIslemleri.ParametreEkle(C_Sutun_id, Id);
-        VeriSatiri = veritabaniIslemleri.SatirGetir();
+        VeritabaniIslem.SpAdi = C_Sp_Doldur;
+        VeritabaniIslem.ParametreEkle(C_Sutun_id, Id);
+        VeriSatiri = VeritabaniIslem.SatirGetir();
 
         if (VeriSatiri == null)
         {
@@ -253,51 +271,51 @@ public class Kullanicilar : OrtakAlanlar, IOrtakMetotlar
 
     public bool SifreKontrol()
     {
-        veritabaniIslemleri.SpAdi = C_Sp_SifreKontrol;
-        veritabaniIslemleri.ParametreEkle(C_Sutun_mail, Mail);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_sifre, Sifre);
-        VeriSatiri = veritabaniIslemleri.SatirGetir();
+        VeritabaniIslem.SpAdi = C_Sp_SifreKontrol;
+        VeritabaniIslem.ParametreEkle(C_Sutun_mail, Mail);
+        VeritabaniIslem.ParametreEkle(C_Sutun_sifre, Sifre);
+        VeriSatiri = VeritabaniIslem.SatirGetir();
         return VeriSatiri != null;
     }
 
     public DataRow MailCepNoKontrol()
     {
-        veritabaniIslemleri.SpAdi = C_Sp_MailCepNoKontrol;
-        veritabaniIslemleri.ParametreEkle(C_Sutun_mail, Mail);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_cep_no, CepNo);
-        VeriSatiri = veritabaniIslemleri.SatirGetir();
+        VeritabaniIslem.SpAdi = C_Sp_MailCepNoKontrol;
+        VeritabaniIslem.ParametreEkle(C_Sutun_mail, Mail);
+        VeritabaniIslem.ParametreEkle(C_Sutun_cep_no, CepNo);
+        VeriSatiri = VeritabaniIslem.SatirGetir();
         return VeriSatiri;
     }
 
     public bool SifreGuncelle()
     {
-        veritabaniIslemleri.SpAdi = C_Sp_SifreGuncelle;
-        veritabaniIslemleri.ParametreEkle(C_Sutun_id, Id);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_sifre, Sifre);
-        return veritabaniIslemleri.Calistir();
+        VeritabaniIslem.SpAdi = C_Sp_SifreGuncelle;
+        VeritabaniIslem.ParametreEkle(C_Sutun_id, Id);
+        VeritabaniIslem.ParametreEkle(C_Sutun_sifre, Sifre);
+        return VeritabaniIslem.Calistir();
     }
 
     public int MailVarMi()
     {
-        veritabaniIslemleri.SpAdi = C_Sp_MailVarMi;
-        veritabaniIslemleri.ParametreEkle(C_Sutun_mail, Mail);
-        int sonuc = veritabaniIslemleri.DegerGetir();
+        VeritabaniIslem.SpAdi = C_Sp_MailVarMi;
+        VeritabaniIslem.ParametreEkle(C_Sutun_mail, Mail);
+        int sonuc = VeritabaniIslem.DegerGetir();
         return sonuc;
     }
 
     public int TcknoVarMi()
     {
-        veritabaniIslemleri.SpAdi = C_Sp_TcknoVarMi;
-        veritabaniIslemleri.ParametreEkle(C_Sutun_tckno, Tckno);
-        int sonuc = veritabaniIslemleri.DegerGetir();
+        VeritabaniIslem.SpAdi = C_Sp_TcknoVarMi;
+        VeritabaniIslem.ParametreEkle(C_Sutun_tckno, Tckno);
+        int sonuc = VeritabaniIslem.DegerGetir();
         return sonuc;
     }
 
     public int CepNoVarMi()
     {
-        veritabaniIslemleri.SpAdi = C_Sp_CepNoVarMi;
-        veritabaniIslemleri.ParametreEkle(C_Sutun_cep_no, CepNo);
-        int sonuc = veritabaniIslemleri.DegerGetir();
+        VeritabaniIslem.SpAdi = C_Sp_CepNoVarMi;
+        VeritabaniIslem.ParametreEkle(C_Sutun_cep_no, CepNo);
+        int sonuc = VeritabaniIslem.DegerGetir();
         return sonuc;
     }
 
@@ -314,10 +332,10 @@ public class Kullanicilar : OrtakAlanlar, IOrtakMetotlar
 
     public bool KullaniciKodOlustur()
     {
-        veritabaniIslemleri.SpAdi = C_Sp_KullaniciKodOlustur;
-        veritabaniIslemleri.ParametreEkle(C_Sutun_id, Id);
-        veritabaniIslemleri.ParametreEkle(C_Sutun_kullanici_kod, KullaniciKod);
-        return veritabaniIslemleri.Calistir();
+        VeritabaniIslem.SpAdi = C_Sp_KullaniciKodOlustur;
+        VeritabaniIslem.ParametreEkle(C_Sutun_id, Id);
+        VeritabaniIslem.ParametreEkle(C_Sutun_kullanici_kod, KullaniciKod);
+        return VeritabaniIslem.Calistir();
     }
 
     #endregion

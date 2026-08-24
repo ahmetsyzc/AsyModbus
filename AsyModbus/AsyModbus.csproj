@@ -81,6 +81,7 @@
     <Content Include="Pages\KullaniciEkle.aspx" />
     <Content Include="Pages\KullaniciListele.aspx" />
     <Content Include="Pages\Login.aspx" />
+    <Content Include="Pages\ProfilDuzenle.aspx" />
     <Content Include="Pages\SifreSifirlama.aspx" />
     <Content Include="Scripts\KullaniciForm.js" />
     <Content Include="Scripts\ucMyGrid.js" />
@@ -143,6 +144,13 @@
     </Compile>
     <Compile Include="Pages\Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\ProfilDuzenle.aspx.cs">
+      <DependentUpon>ProfilDuzenle.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\ProfilDuzenle.aspx.designer.cs">
+      <DependentUpon>ProfilDuzenle.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\SifreSifirlama.aspx.cs">
       <DependentUpon>SifreSifirlama.aspx</DependentUpon>

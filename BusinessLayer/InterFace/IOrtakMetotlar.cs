@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Data;
+
 
 
 public interface IOrtakMetotlar
@@ -13,5 +11,8 @@ public interface IOrtakMetotlar
 
     bool Guncelle();
 
+    DataTable TumunuGetir();
+
+    bool Doldur();
 
 }

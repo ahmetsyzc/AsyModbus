@@ -72,25 +72,28 @@ function KullaniciDogrula() {
     const txtTcNo = document.getElementById("txtTckno");
 
     let telNo = txtTelefon.value.replace(/\D/g, "");
-    let tcNo = txtTcNo.value.replace(/\D/g, "");
 
-    if (tcNo.length !== 11) {
-        alert("TC Kimlik Numarası 11 haneli olmalıdır.");
-        txtTcNo.focus();
-        return false;
-    }
+    if (txtTcNo != null) {
 
-    if (tcNo.charAt(0) == "0") {
-        alert("TC Kimlik Numarası 0 ile başlayamaz.");
-        txtTcNo.focus();
-        return false;
-    }
+        let tcNo = txtTcNo.value.replace(/\D/g, "");
 
-    // TC algoritma kontrolü
-    if (!TcKimlikDogrula(tcNo)) {
-        alert("Geçersiz TC Kimlik Numarası.");
-        txtTcNo.focus();
-        return false;
+        if (tcNo.length !== 11) {
+            alert("TC Kimlik Numarası 11 haneli olmalıdır.");
+            txtTcNo.focus();
+            return false;
+        }
+
+        if (tcNo.charAt(0) == "0") {
+            alert("TC Kimlik Numarası 0 ile başlayamaz.");
+            txtTcNo.focus();
+            return false;
+        }
+
+        if (!TcKimlikDogrula(tcNo)) {
+            alert("Geçersiz TC Kimlik Numarası.");
+            txtTcNo.focus();
+            return false;
+        }
     }
 
     if (telNo.length !== 10) {
@@ -106,7 +109,7 @@ function KullaniciDogrula() {
     }
 
     return true;
-};
+}
 
 function TcKimlikDogrula(tcNo) {
 

@@ -90,6 +90,13 @@ public class OrtakAlanlar
         set { veriTablosu = value; }
     }
 
+    private VeritabaniIslemleri veritabaniIslem;
+    protected VeritabaniIslemleri VeritabaniIslem
+    {
+        get { return veritabaniIslem; }
+        set { veritabaniIslem = value; }
+    }
+
     #endregion
 
 }

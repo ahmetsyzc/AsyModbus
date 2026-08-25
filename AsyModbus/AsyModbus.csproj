@@ -77,10 +77,15 @@
     <Content Include="Pages\Default.aspx" />
     <Content Include="Files\Images\Icons\logo.png" />
     <Content Include="Files\Images\Kullanicilar\ahmet.png" />
-    <Content Include="Pages\KullaniciDüzenle.aspx" />
+    <Content Include="Pages\KullaniciDuzenle.aspx" />
     <Content Include="Pages\KullaniciEkle.aspx" />
     <Content Include="Pages\KullaniciListele.aspx" />
+    <Content Include="Pages\LogDetay.aspx" />
     <Content Include="Pages\Login.aspx" />
+    <Content Include="Pages\LogListele.aspx" />
+    <Content Include="Pages\MakineDuzenle.aspx" />
+    <Content Include="Pages\MakineEkle.aspx" />
+    <Content Include="Pages\MakineListele.aspx" />
     <Content Include="Pages\ProfilDuzenle.aspx" />
     <Content Include="Pages\SifreSifirlama.aspx" />
     <Content Include="Scripts\KullaniciForm.js" />
@@ -117,12 +122,12 @@
     <Compile Include="MasterPages\MasterPage.Master.designer.cs">
       <DependentUpon>MasterPage.Master</DependentUpon>
     </Compile>
-    <Compile Include="Pages\KullaniciDüzenle.aspx.cs">
-      <DependentUpon>KullaniciDüzenle.aspx</DependentUpon>
+    <Compile Include="Pages\KullaniciDuzenle.aspx.cs">
+      <DependentUpon>KullaniciDuzenle.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Pages\KullaniciDüzenle.aspx.designer.cs">
-      <DependentUpon>KullaniciDüzenle.aspx</DependentUpon>
+    <Compile Include="Pages\KullaniciDuzenle.aspx.designer.cs">
+      <DependentUpon>KullaniciDuzenle.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\KullaniciEkle.aspx.cs">
       <DependentUpon>KullaniciEkle.aspx</DependentUpon>
@@ -138,12 +143,47 @@
     <Compile Include="Pages\KullaniciListele.aspx.designer.cs">
       <DependentUpon>KullaniciListele.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Pages\LogDetay.aspx.cs">
+      <DependentUpon>LogDetay.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\LogDetay.aspx.designer.cs">
+      <DependentUpon>LogDetay.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Pages\Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\LogListele.aspx.cs">
+      <DependentUpon>LogListele.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\LogListele.aspx.designer.cs">
+      <DependentUpon>LogListele.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\MakineDuzenle.aspx.cs">
+      <DependentUpon>MakineDuzenle.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\MakineDuzenle.aspx.designer.cs">
+      <DependentUpon>MakineDuzenle.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\MakineEkle.aspx.cs">
+      <DependentUpon>MakineEkle.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\MakineEkle.aspx.designer.cs">
+      <DependentUpon>MakineEkle.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\MakineListele.aspx.cs">
+      <DependentUpon>MakineListele.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\MakineListele.aspx.designer.cs">
+      <DependentUpon>MakineListele.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\ProfilDuzenle.aspx.cs">
       <DependentUpon>ProfilDuzenle.aspx</DependentUpon>

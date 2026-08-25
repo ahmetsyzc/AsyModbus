@@ -78,7 +78,7 @@
 
                     </a>
 
-                    <a href="#"
+                    <a href="../Pages/MakineListele.aspx"
                         class="menu-link d-flex align-items-center gap-3 text-decoration-none px-3 py-2 text-dark">
 
                         <i class="fa-solid fa-bars"></i>
@@ -86,7 +86,7 @@
 
                     </a>
 
-                    <a href="#"
+                    <a href="../Pages/MakineEkle.aspx"
                         class="menu-link d-flex align-items-center gap-3 text-decoration-none px-3 py-2 text-dark">
 
                         <i class="fa-solid fa-plus"></i>
@@ -94,7 +94,7 @@
 
                     </a>
 
-                    <a href="#"
+                    <a href="../Pages/LogListele.aspx"
                         class="menu-link d-flex align-items-center gap-3 text-decoration-none px-3 py-2 text-dark">
 
                         <i class="fa-solid fa-font-awesome"></i>

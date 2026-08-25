@@ -80,6 +80,48 @@ public class Loglar : OrtakAlanlar, IOrtakMetotlar
 
     public bool Ekle()
     {
+        VeritabaniIslem.SpAdi = C_Sp_Ekle;
+        VeritabaniIslem.ParametreEkle(C_Sutun_url, Url);
+        VeritabaniIslem.ParametreEkle(C_Sutun_tablo_ad, TabloAd);
+        VeritabaniIslem.ParametreEkle(C_Sutun_islem_ad, IslemAd);
+        VeritabaniIslem.ParametreEkle(C_Sutun_islem_tip, IslemTip);
+        VeritabaniIslem.ParametreEkle(C_Sutun_detay, Detay);
+        VeritabaniIslem.ParametreEkle(C_Sutun_aktif_mi, AktifMi);
+        VeritabaniIslem.ParametreEkle(C_Sutun_ekleyen_id, EkleyenId);
+        VeritabaniIslem.ParametreEkle(C_Sutun_ekleyen_ip, EkleyenIp);
+        return VeritabaniIslem.Calistir();
+    }
+
+    public DataTable TumunuGetir()
+    {
+        VeritabaniIslem.SpAdi = C_Sp_TumunuGetir;
+        VeriTablosu = VeritabaniIslem.TabloGetir();
+        return VeriTablosu;
+    }
+
+    public bool Doldur()
+    {
+        VeritabaniIslem.SpAdi = C_Sp_Doldur;
+        VeritabaniIslem.ParametreEkle(C_Sutun_id, Id);
+
+        VeriSatiri = VeritabaniIslem.SatirGetir();
+
+        if (VeriSatiri != null)
+        {
+            Id = Convert.ToInt32(VeriSatiri[C_Sutun_id]);
+            Url = VeriSatiri[C_Sutun_url].ToString();
+            TabloAd = VeriSatiri[C_Sutun_tablo_ad].ToString();
+            IslemAd = VeriSatiri[C_Sutun_islem_ad].ToString();
+            IslemTip = VeriSatiri[C_Sutun_islem_tip].ToString();
+            Detay = VeriSatiri[C_Sutun_detay].ToString();
+            AktifMi = Convert.ToBoolean(VeriSatiri[C_Sutun_aktif_mi]);
+            EkleyenId = Convert.ToInt32(VeriSatiri[C_Sutun_ekleyen_id]);
+            EkleyenIp = VeriSatiri[C_Sutun_ekleyen_ip].ToString();
+            EklenmeTarih = Convert.ToDateTime(VeriSatiri[C_Sutun_eklenme_tarih]);
+
+            return true;
+        }
+
         return false;
     }
 
@@ -92,16 +134,6 @@ public class Loglar : OrtakAlanlar, IOrtakMetotlar
     {
         return false;
     }
-
-    public DataTable TumunuGetir()
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Doldur()
-    {
-        return false;
-    }
-
+    
     #endregion
 }

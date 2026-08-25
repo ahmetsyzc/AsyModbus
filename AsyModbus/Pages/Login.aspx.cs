@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Data;
-
 
 namespace AsyModbus.Pages
 {
@@ -59,6 +57,7 @@ namespace AsyModbus.Pages
                         currentInfo.Ip = Request.UserHostAddress;
                         currentInfo.LoginYapildiMi = true;
                         sessionlar.Current._CurrentInfo = currentInfo;
+                        LogIslemleri.IslemKaydet(Mesajlar.LogSistem, Mesajlar.LogSistemeGiris, LogIslemTipleri.Login, Mesajlar.SistemeBasariliGirisYapildi);
 
                         Response.Redirect("~/Default.aspx", false);
                         Context.ApplicationInstance.CompleteRequest();

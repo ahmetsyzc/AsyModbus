@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPages/MasterPage.Master" AutoEventWireup="true" CodeBehind="KullaniciDüzenle.aspx.cs" Inherits="AsyModbus.Pages.KullaniciDüzenle" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPages/MasterPage.Master" AutoEventWireup="true" CodeBehind="KullaniciDuzenle.aspx.cs" Inherits="AsyModbus.Pages.KullaniciDuzenle" %>
 
 <%@ Register Src="~/UserControls/ucCepNo.ascx"
     TagPrefix="uc"

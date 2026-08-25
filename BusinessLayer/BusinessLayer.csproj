@@ -60,6 +60,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Work\CurrentInfo.cs" />
     <Compile Include="Work\DosyaIslemleri.cs" />
+    <Compile Include="Work\LogIslemleri.cs" />
     <Compile Include="Work\Mesaj.cs" />
     <Compile Include="Work\Mesajlar.cs" />
     <Compile Include="Work\OrtakAlanlar.cs" />

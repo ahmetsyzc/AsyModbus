@@ -25,6 +25,8 @@ namespace AsyModbus.MasterPages
 
         protected void btnCikis_Click(object sender, EventArgs e)
         {
+            LogIslemleri.IslemKaydet(Mesajlar.LogSistem, Mesajlar.LogSistemdenCikis, LogIslemTipleri.Exit, Mesajlar.SistemdenBasariliCikisYapildi);
+
             Sessionlar sessionlar = new Sessionlar();
             sessionlar.Current._CurrentInfo = null;
             Session.Clear();

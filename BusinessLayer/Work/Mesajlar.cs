@@ -61,7 +61,7 @@ public class Mesajlar
     {
         get { return "Mail ve Cep No boş bırakılamaz."; }
     }
-    
+
 
     public static string SifreSifirlamaBasarili(string yeniSifre)
     {
@@ -88,6 +88,13 @@ public class Mesajlar
     public static string KullaniciKayitli
     {
         get { return "Bu kullanıcı sistemde kayıtlı."; }
+    }
+
+    /**************** MAKİNE YÖNETİMİ MESAJLARI ****************/
+
+    public static string MakineBulunamadi
+    {
+        get { return "Makine bulunamadı."; }
     }
 
 
@@ -122,7 +129,7 @@ public class Mesajlar
         get { return "Lütfen geçerli bir profil resmi seçiniz."; }
     }
 
-    public static string ProfilResmiZorunlu 
+    public static string ProfilResmiZorunlu
     {
         get { return "Profil resmi seçilmesi zorunludur."; }
     }
@@ -130,5 +137,62 @@ public class Mesajlar
     public static string SifreEnAzAltiKarakter
     {
         get { return "Şifre en az 6 karakter olmalıdır."; }
+    }
+
+    /**************** Log Mesajlari ****************/
+
+    public static string LogSistemeGiris
+    {
+        get { return "Sisteme Giriş"; }
+    }
+
+    public static string SistemeBasariliGirisYapildi
+    {
+        get { return "Sisteme başarılı giriş yapıldı."; }
+    }
+
+    public static string LogSistemdenCikis
+    {
+        get { return "Sistemden Çıkış"; }
+    }
+
+    public static string SistemdenBasariliCikisYapildi
+    {
+        get { return "Sistemden başarılı çıkış yapıldı."; }
+    }
+
+    public static string LogSistem
+    {
+        get { return "Sistem"; }
+    }
+
+    public static string OtomatikLogIslemAdi(string sinifAdi, string metotAdi)
+    {
+        return sinifAdi + " tablosunda " + metotAdi + " işlemi";
+    }
+
+    public static string OtomatikLogDetay(string sinifAdi, string metotAdi)
+    {
+        return OtomatikLogIslemAdi(sinifAdi, metotAdi) + " başarıyla tamamlandı.";
+    }
+
+    public static string LogEskiKayit
+    {
+        get { return "ESKİ KAYIT"; }
+    }
+
+    public static string LogYeniKayit
+    {
+        get { return "YENİ KAYIT"; }
+    }
+
+    public static string LogKayitBulunamadi
+    {
+        get { return "Kayıt bulunamadı."; }
+    }
+
+    public static string LogBulunamadi
+    {
+        get { return "Log Kayıtları bulunamadı."; }
     }
 }

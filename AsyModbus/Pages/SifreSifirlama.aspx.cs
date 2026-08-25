@@ -54,7 +54,6 @@ namespace AsyModbus.Pages
             }
             catch (Exception ex)
             {
-
                 Mesaj.Ver(Mesajlar.SistemselHata(ex.Message), Mesaj.MesajTurleri.FAIL, this);
             }
             finally

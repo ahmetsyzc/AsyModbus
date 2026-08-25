@@ -4,7 +4,7 @@ using System.Web.UI;
 
 namespace AsyModbus.Pages
 {
-    public partial class KullaniciDüzenle : System.Web.UI.Page
+    public partial class KullaniciDuzenle : System.Web.UI.Page
     {
         string id;
 
@@ -176,7 +176,6 @@ namespace AsyModbus.Pages
                 if (kullanicilar.Sil())
                 {
                     int aktifKullaniciId = currentInfo.KullaniciId;
-
                     if (kullanicilar.Id == aktifKullaniciId)
                     {
                         sessionlar.Current._CurrentInfo = null;

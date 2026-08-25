@@ -26,7 +26,6 @@ namespace AsyModbus.Pages
                     Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
                     kullanicilar.Id = currentInfo.KullaniciId;
                     if (kullanicilar.Doldur())
-
                     {
                         txtAd.Text = kullanicilar.Ad.ToString();
                         txtSoyad.Text = kullanicilar.Soyad.ToString();

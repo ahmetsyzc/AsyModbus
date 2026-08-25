@@ -97,27 +97,105 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
 
     public bool Ekle()
     {
-        return false;
+        VeritabaniIslem.SpAdi = C_Sp_Ekle;
+        VeritabaniIslem.ParametreEkle(C_Sutun_model_ad, ModelAd);
+        VeritabaniIslem.ParametreEkle(C_Sutun_entegrasyon_kod, EntegrasyonKod);
+        VeritabaniIslem.ParametreEkle(C_Sutun_gg_no, GgNo);
+        VeritabaniIslem.ParametreEkle(C_Sutun_makine_no, MakineNo);
+        VeritabaniIslem.ParametreEkle(C_Sutun_band_no, BandNo);
+        VeritabaniIslem.ParametreEkle(C_Sutun_ip, Ip);
+        VeritabaniIslem.ParametreEkle(C_Sutun_mfg, Mfg);
+        VeritabaniIslem.ParametreEkle(C_Sutun_aktif_mi, AktifMi);
+        VeritabaniIslem.ParametreEkle(C_Sutun_ekleyen_id, EkleyenId);
+        VeritabaniIslem.ParametreEkle(C_Sutun_ekleyen_ip, EkleyenIp);
+        return VeritabaniIslem.Calistir();
     }
 
     public bool Guncelle()
     {
-        return false;
+        VeritabaniIslem.SpAdi = C_Sp_Guncelle;
+        VeritabaniIslem.ParametreEkle(C_Sutun_id, Id);
+        VeritabaniIslem.ParametreEkle(C_Sutun_model_ad, ModelAd);
+        VeritabaniIslem.ParametreEkle(C_Sutun_entegrasyon_kod, EntegrasyonKod);
+        VeritabaniIslem.ParametreEkle(C_Sutun_gg_no, GgNo);
+        VeritabaniIslem.ParametreEkle(C_Sutun_makine_no, MakineNo);
+        VeritabaniIslem.ParametreEkle(C_Sutun_band_no, BandNo);
+        VeritabaniIslem.ParametreEkle(C_Sutun_ip, Ip);
+        VeritabaniIslem.ParametreEkle(C_Sutun_mfg, Mfg);
+        VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_id, GuncelleyenId);
+        VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_ip, GuncelleyenIp);
+        return VeritabaniIslem.Calistir();
     }
 
     public bool Sil()
     {
-        return false;
+        VeritabaniIslem.SpAdi = C_Sp_Sil;
+        VeritabaniIslem.ParametreEkle(C_Sutun_id, Id);
+        VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_id, GuncelleyenId);
+        VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_ip, GuncelleyenIp);
+        return VeritabaniIslem.Calistir();
     }
 
     public DataTable TumunuGetir()
     {
-        throw new NotImplementedException();
+        VeritabaniIslem.SpAdi = C_Sp_TumunuGetir;
+        VeriTablosu = VeritabaniIslem.TabloGetir();
+        return VeriTablosu;
     }
 
     public bool Doldur()
     {
-        return false;
+        VeritabaniIslem.SpAdi = C_Sp_Doldur;
+        VeritabaniIslem.ParametreEkle(C_Sutun_id, Id);
+        VeriSatiri = VeritabaniIslem.SatirGetir();
+
+        if (VeriSatiri == null)
+        {
+            return false;
+        }
+
+        Id = Convert.ToInt32(VeriSatiri[C_Sutun_id]);
+        ModelAd = VeriSatiri[C_Sutun_model_ad].ToString();
+        EntegrasyonKod = VeriSatiri[C_Sutun_entegrasyon_kod].ToString();
+        GgNo = VeriSatiri[C_Sutun_gg_no].ToString();
+        MakineNo = VeriSatiri[C_Sutun_makine_no].ToString();
+        BandNo = VeriSatiri[C_Sutun_band_no].ToString();
+        Ip = VeriSatiri[C_Sutun_ip].ToString();
+        Mfg = VeriSatiri[C_Sutun_mfg].ToString();
+        AktifMi = Convert.ToBoolean(VeriSatiri[C_Sutun_aktif_mi]);
+
+        EkleyenId = Convert.ToInt32(VeriSatiri[C_Sutun_ekleyen_id]);
+        EkleyenIp = VeriSatiri[C_Sutun_ekleyen_ip].ToString();
+        EklenmeTarih = Convert.ToDateTime(VeriSatiri[C_Sutun_eklenme_tarih]);
+
+        if (VeriSatiri[C_Sutun_guncelleyen_id] == DBNull.Value)
+        {
+            GuncelleyenId = 0;
+        }
+        else
+        {
+            GuncelleyenId = Convert.ToInt32(VeriSatiri[C_Sutun_guncelleyen_id]);
+        }
+
+        if (VeriSatiri[C_Sutun_guncelleyen_ip] == DBNull.Value)
+        {
+            GuncelleyenIp = "";
+        }
+        else
+        {
+            GuncelleyenIp = VeriSatiri[C_Sutun_guncelleyen_ip].ToString();
+        }
+
+        if (VeriSatiri[C_Sutun_guncellenme_tarih] == DBNull.Value)
+        {
+            GuncellenmeTarih = DateTime.MinValue;
+        }
+        else
+        {
+            GuncellenmeTarih = Convert.ToDateTime(VeriSatiri[C_Sutun_guncellenme_tarih]);
+        }
+
+        return true;
     }
 
     #endregion

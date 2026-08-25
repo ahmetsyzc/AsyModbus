@@ -11,7 +11,7 @@ namespace AsyModbus.Pages
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            ucMyGrid1.DetayURL = "~/Pages/KullaniciDüzenle.aspx?kullanici_id=";
+            ucMyGrid1.DetayURL = "~/Pages/KullaniciDuzenle.aspx?kullanici_id=";
 
             ucMyGrid1.KolonEkle(Kullanicilar.C_Sutun_id, "Kullanıcı ID");
             ucMyGrid1.KolonEkle(Kullanicilar.C_Sutun_ad, "Kullanıcı Ad");
@@ -25,9 +25,9 @@ namespace AsyModbus.Pages
                 Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
                 ucMyGrid1.VeriBagla(kullanicilar.TumunuGetir());
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                Mesaj.Ver(Mesajlar.SistemselHata(ex.Message), Mesaj.MesajTurleri.FAIL, Master);
             }
             finally
             {

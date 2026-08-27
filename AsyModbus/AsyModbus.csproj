@@ -87,6 +87,8 @@
     <Content Include="Pages\MakineEkle.aspx" />
     <Content Include="Pages\MakineListele.aspx" />
     <Content Include="Pages\ProfilDuzenle.aspx" />
+    <Content Include="Pages\RolIslemleri.aspx" />
+    <Content Include="Pages\RolYetkileri.aspx" />
     <Content Include="Pages\SifreSifirlama.aspx" />
     <Content Include="Scripts\KullaniciForm.js" />
     <Content Include="Scripts\ucMyGrid.js" />
@@ -191,6 +193,20 @@
     </Compile>
     <Compile Include="Pages\ProfilDuzenle.aspx.designer.cs">
       <DependentUpon>ProfilDuzenle.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\RolIslemleri.aspx.cs">
+      <DependentUpon>RolIslemleri.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\RolIslemleri.aspx.designer.cs">
+      <DependentUpon>RolIslemleri.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\RolYetkileri.aspx.cs">
+      <DependentUpon>RolYetkileri.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\RolYetkileri.aspx.designer.cs">
+      <DependentUpon>RolYetkileri.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\SifreSifirlama.aspx.cs">
       <DependentUpon>SifreSifirlama.aspx</DependentUpon>

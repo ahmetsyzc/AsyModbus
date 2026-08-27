@@ -102,6 +102,22 @@
 
                     </a>
 
+                     <a href="../Pages/RolIslemleri.aspx"
+                        class="menu-link d-flex align-items-center gap-3 text-decoration-none px-3 py-2 text-dark">
+
+                       <i class="fa-solid fa-users-gear"></i>
+                        <span class="menu-label">ROL İŞLEMLERİ</span>
+
+                    </a>
+
+                     <a href="../Pages/RolYetkileri.aspx"
+                        class="menu-link d-flex align-items-center gap-3 text-decoration-none px-3 py-2 text-dark">
+
+                       <i class="fa-solid fa-fingerprint"></i>
+                        <span class="menu-label">YETKİLENDİRME</span>
+
+                    </a>
+
                     <div class="cikis-div d-flex align-items-center gap-3 px-3 py-2">
 
                         <asp:LinkButton

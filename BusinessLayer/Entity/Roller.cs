@@ -21,6 +21,10 @@ public class Roller : OrtakAlanlar, IOrtakMetotlar
     public const string C_Tablo = "dbo.Roller";
 
     public const string C_Sp_TumunuGetir = "dbo.SP_Roller_TUMUNU_GETIR";
+    public const string C_Sp_Ekle = "dbo.SP_Roller_EKLE";
+    public const string C_Sp_Sil = "dbo.SP_Roller_SIL";
+    public const string C_Sp_Guncelle = "dbo.SP_Roller_GUNCELLE";
+    public const string C_Sp_Doldur = "dbo.SP_Roller_DOLDUR";
 
     public const string C_Sutun_ad = "ad";
 
@@ -43,15 +47,28 @@ public class Roller : OrtakAlanlar, IOrtakMetotlar
 
     public bool Ekle()
     {
-        return false;
+        VeritabaniIslem.SpAdi = C_Sp_Ekle;
+        VeritabaniIslem.ParametreEkle(C_Sutun_ad, Ad);
+        VeritabaniIslem.ParametreEkle(C_Sutun_ekleyen_id, EkleyenId);
+        VeritabaniIslem.ParametreEkle(C_Sutun_ekleyen_ip, EkleyenIp);
+        return VeritabaniIslem.Calistir();
     }
     public bool Sil()
     {
-        return false;
+        VeritabaniIslem.SpAdi = C_Sp_Sil;
+        VeritabaniIslem.ParametreEkle(C_Sutun_id, Id);
+        VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_id, GuncelleyenId);
+        VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_ip, GuncelleyenIp);
+        return VeritabaniIslem.Calistir();
     }
     public bool Guncelle()
     {
-        return false;
+        VeritabaniIslem.SpAdi = C_Sp_Guncelle;
+        VeritabaniIslem.ParametreEkle(C_Sutun_id, Id);
+        VeritabaniIslem.ParametreEkle(C_Sutun_ad, Ad);
+        VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_id, GuncelleyenId);
+        VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_ip, GuncelleyenIp);
+        return VeritabaniIslem.Calistir();
     }
 
     public DataTable TumunuGetir()
@@ -78,7 +95,14 @@ public class Roller : OrtakAlanlar, IOrtakMetotlar
 
     public bool Doldur()
     {
-        return false;
+        VeritabaniIslem.SpAdi = C_Sp_Doldur;
+        VeritabaniIslem.ParametreEkle(C_Sutun_id, Id);
+        VeriSatiri = VeritabaniIslem.SatirGetir();
+        if (VeriSatiri == null)
+            return false;
+        Id = Convert.ToInt32(VeriSatiri[C_Sutun_id]);
+        Ad = VeriSatiri[C_Sutun_ad].ToString();
+        return true;
     }
 
     #endregion

@@ -56,6 +56,7 @@
     <Compile Include="Entity\Loglar.cs" />
     <Compile Include="Entity\Makineler.cs" />
     <Compile Include="Entity\Roller.cs" />
+    <Compile Include="Entity\RolYetkiler.cs" />
     <Compile Include="InterFace\IOrtakMetotlar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Work\CurrentInfo.cs" />

@@ -195,4 +195,45 @@ public class Mesajlar
     {
         get { return "Log Kayıtları bulunamadı."; }
     }
+
+    public static string RolAdiBos
+    {
+        get { return "Rol adı boş bırakılamaz."; }
+    }
+
+    public static string RolEklendi
+    {
+        get { return "Rol başarıyla eklendi."; }
+    }
+
+    public static string RolEklenemedi
+    {
+        get { return "Rol eklenemedi."; }
+    }
+
+    public static string RolGuncellendi
+    {
+        get { return "Rol başarıyla güncellendi."; }
+    }
+
+    public static string RolGuncellenemedi
+    {
+        get { return "Rol güncellenemedi."; }
+    }
+
+    public static string RolSilindi
+    {
+        get { return "Rol başarıyla silindi."; }
+    }
+
+    public static string RolSilinemedi
+    {
+        get { return "Rol silinemedi."; }
+    }
+
+    public static string RolSilmeOnayi
+    {
+        get { return "Seçili rolü silmek istediğinize emin misiniz?"; }
+    }
+
 }

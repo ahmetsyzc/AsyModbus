@@ -1,177 +1,273 @@
 # AsyModbus
 
-AsyModbus is a web-based application developed with C#, ASP.NET Web Forms, ADO.NET, and Microsoft SQL Server.
+AsyModbus; C#, ASP.NET Web Forms, ADO.NET ve Microsoft SQL Server kullanılarak geliştirilen web tabanlı bir makine yönetim ve takip uygulamasıdır.
 
-The project is currently under development. Its main purpose is to improve my practical experience in web development, database operations, reusable UI components, and structured application design.
+Projenin amacı; web geliştirme, veritabanı işlemleri, yetkilendirme, tekrar kullanılabilir bileşenler ve katmanlı uygulama tasarımı konularında uygulamalı deneyim kazanmaktır.
 
-## 🚀 Current Features
+## 🚀 Mevcut Özellikler
 
-- User management
-- User login and authentication
-- Role-based user structure
-- Session management
-- Password reset and password management
-- Profile image management
-- User input validation
-- SQL Server database integration
-- Stored procedure-based database operations
-- Reusable ASP.NET UserControls
-- Reusable user listing grid
-- Client-side search and pagination
-- Configurable record count
-- Responsive Bootstrap-based interface
-- Centralized application messages
-- Toastr notification system
+* Kullanıcı ekleme, güncelleme, listeleme ve pasif silme
+* Kullanıcı giriş ve oturum yönetimi
+* Şifre sıfırlama ve şifre değiştirme
+* Profil bilgileri ve profil resmi yönetimi
+* Makine ekleme, güncelleme, listeleme ve pasif silme
+* Rol ekleme, güncelleme ve pasif silme
+* Rol bazlı sayfa ve işlem yetkilendirmesi
+* Getirme, ekleme, güncelleme ve silme yetkileri
+* Yetkiye göre menü ve işlem butonlarının gösterilmesi
+* Yetkisiz doğrudan sayfa erişimlerinin engellenmesi
+* Rolü pasif hâle getirilen kullanıcıların sisteme girişinin engellenmesi
+* Uygulama işlemlerinin otomatik olarak loglanması
+* SQL Server ve stored procedure tabanlı veritabanı işlemleri
+* Transaction ve rollback desteği
+* Tekrar kullanılabilir ASP.NET UserControl bileşenleri
+* İstemci taraflı arama ve sayfalama
+* Listelenecek kayıt sayısının seçilebilmesi
+* Bootstrap tabanlı responsive arayüz
+* Merkezi mesaj ve Toastr bildirim sistemi
+* Kullanıcı girişleri için doğrulama kontrolleri
 
-## 🛠️ Technologies
+## 🛠️ Kullanılan Teknolojiler
 
-- C#
-- .NET
-- ASP.NET Web Forms
-- ADO.NET
-- Microsoft SQL Server
-- HTML
-- CSS
-- Bootstrap
-- JavaScript
-- jQuery
-- Toastr
-- Git & GitHub
-- Visual Studio
+* C#
+* .NET
+* ASP.NET Web Forms
+* ADO.NET
+* Microsoft SQL Server
+* Stored Procedures
+* HTML
+* CSS
+* Bootstrap
+* JavaScript
+* jQuery
+* Toastr
+* Git ve GitHub
+* Visual Studio
 
-## 🏗️ Project Structure
+## 🏗️ Proje Yapısı
 
-The project separates database operations, business logic, reusable components, and web application pages to create a more organized and maintainable structure.
+Proje; kullanıcı arayüzü, iş mantığı, veritabanı işlemleri ve tekrar kullanılabilir bileşenlerin birbirinden ayrıldığı düzenli bir yapı üzerine kurulmuştur.
 
-Main components include:
+Başlıca proje bileşenleri:
 
-- **AsyModbus** — Web application and user interface
-- **BusinessLayer** — Business logic, entities, and database operations
-- **UserControls** — Reusable interface components
-- **SQL Server** — Database and stored procedures
-- **Scripts** — Client-side JavaScript operations
-- **Styles** — Application-specific CSS styles
+* **AsyModbus** — Web sayfaları ve kullanıcı arayüzü
+* **BusinessLayer** — Entity sınıfları, iş kuralları ve veritabanı işlemleri
+* **MasterPages** — Ortak sayfa düzeni, menü ve erişim kontrolleri
+* **UserControls** — Tekrar kullanılabilir arayüz bileşenleri
+* **SQL Server** — Veritabanı tabloları ve stored procedure'ler
+* **Scripts** — İstemci taraflı JavaScript işlemleri
+* **Styles** — Uygulamaya özel CSS dosyaları
 
-## 🧩 Reusable Components
+## 👤 Kullanıcı Yönetimi
 
-The project uses ASP.NET UserControls to reduce repeated UI code and create reusable components.
+Uygulamada kullanıcılar için aşağıdaki işlemler bulunmaktadır:
 
-Current reusable components include:
+* Kullanıcı ekleme
+* Kullanıcı bilgilerini güncelleme
+* Kullanıcıları listeleme
+* Kullanıcıları pasif hâle getirme
+* Kullanıcı giriş kontrolü
+* Aktif ve pasif kullanıcı kontrolü
+* Şifre sıfırlama ve değiştirme
+* Profil bilgilerini düzenleme
+* Profil resmi yükleme
+* Kullanıcı verilerini doğrulama
+* Kullanıcıya rol atama
+* Oturum bilgilerini merkezi olarak yönetme
 
-- Phone number input control
-- Reusable data grid (`ucMyGrid`)
-- Search functionality
-- Record count selection
-- Client-side pagination
-- Reusable action buttons
+## ⚙️ Makine Yönetimi
 
-This structure allows common components to be reused across different listing and management pages.
+Makine modülü aşağıdaki işlemleri desteklemektedir:
 
-## 🗄️ Database
+* Makine ekleme
+* Makine bilgilerini güncelleme
+* Makineleri listeleme
+* Makine kayıtlarını pasif hâle getirme
+* Makine detaylarını görüntüleme
+* Makine numarası, IP ve MFG kayıt kontrolleri
+* Kullanıcı girişlerinin doğrulanması
 
-The application uses Microsoft SQL Server.
+Makine bilgilerinin gerçek sistemlerden alınması için gerekli fiziksel bağlantı ve Modbus haberleşme çalışmaları projenin sonraki aşamasında gerçekleştirilecektir.
 
-Database operations are mainly handled with stored procedures for operations such as:
+## 🔐 Rol ve Yetkilendirme Sistemi
 
-- Adding users
-- Updating users
-- Deleting users
-- Retrieving users
-- Listing users
-- User authentication
-- Password operations
-- Role management
-- Duplicate record checks
+Uygulamada sayfa ve işlem bazlı rol yetkilendirme sistemi bulunmaktadır.
 
-ADO.NET is used for communication between the application and SQL Server.
+Her rol için aşağıdaki yetkiler ayrı ayrı yönetilebilir:
 
-Database operations are centralized to reduce repeated connection, command, parameter, and transaction code.
+* **Getirme** — Sayfaya erişme ve kayıtları görüntüleme
+* **Ekleme** — Yeni kayıt oluşturma
+* **Güncelleme** — Mevcut kayıtları değiştirme
+* **Silme** — Kayıtları pasif hâle getirme
 
-## 🔐 User Management
+Yetkilendirme sistemi kapsamında:
 
-The project currently includes user management features such as:
+* Menüler kullanıcının getirme yetkisine göre gösterilir.
+* Yetkisiz kullanıcıların doğrudan URL ile sayfalara erişmesi engellenir.
+* Sayfalardaki butonlar ilgili işlem yetkisine göre gösterilir.
+* Buton işlemlerinde sunucu tarafında tekrar yetki kontrolü yapılır.
+* Listeleme bileşenindeki **Aç** butonu hedef sayfanın yetkisine göre gizlenir.
+* Yeni rol oluşturulduğunda bütün yetkilendirilen sayfalar otomatik olarak eklenir.
+* Yeni rolün işlem yetkileri başlangıçta kapalı olarak oluşturulur.
+* Rol pasif hâle getirildiğinde role ait yetki kayıtları da pasif hâle getirilir.
+* Pasif bir role sahip kullanıcı sisteme giriş yapamaz.
+* Oturum sırasında rolü pasif hâle getirilen kullanıcı sistemden çıkarılır.
 
-- User registration
-- User editing
-- User deletion
-- User listing
-- Login
-- User roles
-- Active/inactive user status
-- Session management
-- Password reset
-- Profile image upload and management
-- User data validation
+Sayfa adları merkezi `Sayfalar` sınıfında tutulmaktadır. Yetki kontrolleri ise merkezi `IslemYetki` sınıfı üzerinden gerçekleştirilmektedir.
 
-## 🎨 User Interface
+## 🧩 Tekrar Kullanılabilir Bileşenler
 
-The application interface has been updated using Bootstrap to provide a cleaner and more responsive structure.
+Tekrarlanan arayüz kodlarını azaltmak amacıyla ASP.NET UserControl bileşenleri kullanılmaktadır.
 
-Current UI features include:
+Mevcut bileşenler:
 
-- Responsive page layouts
-- Bootstrap cards and forms
-- Responsive login page
-- Responsive password reset page
-- Reusable grid design
-- Search and pagination controls
-- Sticky table headers
-- Bootstrap buttons and form controls
+* Telefon numarası giriş bileşeni
+* Tekrar kullanılabilir veri listeleme bileşeni (`ucMyGrid`)
+* İstemci taraflı arama
+* Kayıt sayısı seçimi
+* İstemci taraflı sayfalama
+* Dinamik kolon oluşturma
+* Yetkiye göre detay butonu gösterme
+* Toplam kayıt sayısını gösterme
 
-Custom CSS is still used where project-specific styling is required.
+Bu yapı sayesinde ortak listeleme işlemleri farklı sayfalarda tekrar kod yazılmadan kullanılabilmektedir.
 
-## 🔔 Message & Notification System
+## 🗄️ Veritabanı
 
-Application messages are managed through a centralized message structure.
+Uygulamada Microsoft SQL Server kullanılmaktadır.
 
-The system separates:
+Veritabanı işlemleri ağırlıklı olarak stored procedure'ler üzerinden gerçekleştirilmektedir.
 
-- Message content
-- Message type
-- Message presentation
+Stored procedure kullanılan başlıca işlemler:
 
-Supported notification types include:
+* Kullanıcı ekleme, güncelleme, silme ve listeleme
+* Kullanıcı giriş ve şifre kontrolleri
+* Makine ekleme, güncelleme, silme ve listeleme
+* Tekrarlanan makine kayıtlarının kontrol edilmesi
+* Rol ekleme, güncelleme, silme ve listeleme
+* Rol yetkilerinin eklenmesi ve güncellenmesi
+* Sayfa ve işlem yetkilerinin kontrol edilmesi
+* Log kayıtlarının oluşturulması
+* Tek kayıt ve tablo verilerinin getirilmesi
 
-- Success
-- Warning
-- Error
-- Information
+ADO.NET, uygulama ile SQL Server arasındaki iletişimi sağlamaktadır.
 
-Toastr is used to display notifications to the user.
+Bağlantı, komut, parametre ve transaction işlemleri merkezi `VeritabaniIslemleri` sınıfı üzerinden yönetilmektedir.
 
-This structure prevents repeated message strings across pages and provides consistent notification handling throughout the application.
+## 🔄 Transaction Yönetimi
 
-## 📌 Project Status
+Birbirine bağlı birden fazla veritabanı işleminin güvenli şekilde yürütülmesi için transaction desteği kullanılmaktadır.
 
-🚧 **Currently under development**
+Transaction kullanılan başlıca işlemler:
 
-The project is continuously updated as I learn and implement new concepts.
+* Yeni rol ve role ait sayfa yetkilerinin birlikte oluşturulması
+* Rol ve role ait yetki kayıtlarının birlikte pasif hâle getirilmesi
+* Bir role ait birden fazla yetki kaydının toplu olarak güncellenmesi
 
-Current development focuses on improving:
+İşlemlerden biri başarısız olduğunda yapılan bütün değişiklikler rollback ile geri alınmaktadır. Tüm işlemler başarılı olduğunda transaction commit edilmektedir.
 
-- Reusable components
-- Code organization
-- UI consistency
-- Database architecture
-- Maintainability
-- Application-wide standards
+## 📋 Log Sistemi
 
-## 📄 Documentation
+Uygulamada gerçekleştirilen önemli işlemler merkezi olarak loglanmaktadır.
 
-Detailed project requirements and analysis are available in Turkish.
+Loglanan işlem türleri:
 
-- [Proje Analizi (Türkçe)](docs/Proje-Analizi.md)
+* Kayıt ekleme
+* Kayıt güncelleme
+* Kayıt silme
+* Kayıt görüntüleme
+* Sisteme giriş
+* Sistemden çıkış
 
-## 🎯 Purpose
+Log kayıtlarında kullanıcı, işlem yapılan tablo, işlem türü, IP adresi, tarih ve işlem detayları tutulmaktadır.
 
-This project is being developed as a practical learning project to improve my skills in:
+## 🎨 Kullanıcı Arayüzü
 
-- Backend development
-- Frontend development
-- Database design
-- ASP.NET development
-- ADO.NET
-- Object-Oriented Programming
-- Reusable component development
-- Software architecture
-- Clean and maintainable code
+Uygulama arayüzü Bootstrap kullanılarak responsive olacak şekilde hazırlanmıştır.
+
+Mevcut arayüz özellikleri:
+
+* Responsive sayfa düzenleri
+* Bootstrap kart ve form yapıları
+* Responsive giriş ve şifre sıfırlama sayfaları
+* Ortak MasterPage yapısı
+* Yetkiye göre oluşturulan dinamik menü
+* Tekrar kullanılabilir tablo tasarımı
+* Arama ve sayfalama kontrolleri
+* Sabit tablo başlıkları
+* Bootstrap butonları ve form bileşenleri
+* Toastr bildirimleri
+
+Projeye özel tasarım ihtiyaçlarında özel CSS dosyaları kullanılmaktadır.
+
+## 🔔 Mesaj ve Bildirim Sistemi
+
+Uygulama mesajları merkezi `Mesajlar` sınıfında tutulmaktadır.
+
+Mesaj sistemi aşağıdaki bölümleri birbirinden ayırmaktadır:
+
+* Mesaj içeriği
+* Mesaj türü
+* Mesajın kullanıcıya gösterilmesi
+
+Desteklenen bildirim türleri:
+
+* Başarılı
+* Uyarı
+* Hata
+* Bilgilendirme
+
+Bildirimlerin kullanıcıya gösterilmesi için Toastr kullanılmaktadır. Bu yapı, aynı mesajların farklı sayfalarda tekrar yazılmasını önlemekte ve uygulama genelinde tutarlı bildirimler sağlamaktadır.
+
+## 📌 Proje Durumu
+
+🚧 **Proje geliştirme aşamasındadır.**
+
+Web uygulamasının temel yazılım altyapısı büyük ölçüde tamamlanmıştır.
+
+Tamamlanan ana bölümler:
+
+* Kullanıcı yönetimi
+* Makine yönetimi
+* Rol yönetimi
+* Rol bazlı yetkilendirme
+* Oturum ve erişim kontrolü
+* Log sistemi
+* Tekrar kullanılabilir bileşenler
+* Merkezi mesaj sistemi
+* Transaction altyapısı
+* Responsive kullanıcı arayüzü
+
+Sonraki geliştirme aşamasında yapılacak çalışmalar:
+
+* Makine kablolamalarının tamamlanması
+* Makinelerin sisteme fiziksel olarak bağlanması
+* Modbus haberleşmesinin kurulması
+* Makinelerden canlı veri alınması
+* Gerçek saha testlerinin yapılması
+* Hata yönetimi ve güvenlik kontrollerinin geliştirilmesi
+* Genel kod temizliği ve son kullanıcı testleri
+
+## 📄 Dokümantasyon
+
+Projenin ayrıntılı gereksinimleri ve analiz dokümanı Türkçe olarak hazırlanmıştır.
+
+* [Proje Analizi](docs/Proje-Analizi.md)
+
+## 🎯 Projenin Amacı
+
+Bu proje aşağıdaki alanlarda bilgi ve deneyim kazanmak amacıyla geliştirilmektedir:
+
+* Backend geliştirme
+* Frontend geliştirme
+* Veritabanı tasarımı
+* ASP.NET Web Forms
+* ADO.NET
+* Nesne yönelimli programlama
+* Rol ve yetkilendirme sistemleri
+* Transaction yönetimi
+* Loglama
+* Tekrar kullanılabilir bileşen geliştirme
+* Yazılım mimarisi
+* Temiz ve sürdürülebilir kod yazımı
+* Endüstriyel sistem ve Modbus entegrasyonu

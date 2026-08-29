@@ -109,7 +109,6 @@
                                 runat="server"
                                 Text="Güncelle"
                                 CssClass="btn btn-warning"
-                                Visible="false"
                                 OnClick="btnGuncelle_Click" />
 
                             <asp:Button
@@ -117,7 +116,6 @@
                                 runat="server"
                                 Text="Sil"
                                 CssClass="btn btn-danger"
-                                Visible="false"
                                 OnClick="btnSil_Click"
                                 OnClientClick="return confirm('Seçili rolü silmek istediğinize emin misiniz?');" />
 

@@ -28,11 +28,17 @@ namespace AsyModbus.Pages
                 {
                     veritabaniIslemleri.Bitir();
                 }
+                btnKaydet.Visible = IslemYetki.Kontrol(YetkiIslemTurleri.Ekleme);
             }
         }
 
         protected void btnKaydet_Click(object sender, EventArgs e)
         {
+            if (!IslemYetki.Kontrol(YetkiIslemTurleri.Ekleme))
+            {
+                Mesaj.Ver(Mesajlar.YetkisizIslem, Mesaj.MesajTurleri.WARNING, Master);
+                return;
+            }
 
             if (!AlanlarUygunMu())
             {

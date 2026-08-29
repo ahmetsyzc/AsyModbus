@@ -23,6 +23,7 @@ namespace AsyModbus.Pages
             {
                 veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
                 Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
+                ucMyGrid1.DetayGoster = IslemYetki.Kontrol(Sayfalar.KullaniciDuzenle, YetkiIslemTurleri.Getirme);
                 ucMyGrid1.VeriBagla(kullanicilar.TumunuGetir());
             }
             catch (Exception ex)

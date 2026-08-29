@@ -54,11 +54,20 @@ namespace AsyModbus.Pages
                 {
                     veritabaniIslemleri.Bitir();
                 }
+
+                btnKaydet.Visible = IslemYetki.Kontrol(YetkiIslemTurleri.Guncelleme);
+                btnSil.Visible = IslemYetki.Kontrol(YetkiIslemTurleri.Silme);
             }
         }
 
         protected void btnKaydet_Click(object sender, EventArgs e)
         {
+            if (!IslemYetki.Kontrol(YetkiIslemTurleri.Guncelleme))
+            {
+                Mesaj.Ver(Mesajlar.YetkisizIslem, Mesaj.MesajTurleri.WARNING, Master);
+                return;
+            }
+
             if (!AlanlarUygunMu())
             {
                 return;
@@ -157,6 +166,11 @@ namespace AsyModbus.Pages
 
         protected void btnSil_Click(object sender, EventArgs e)
         {
+            if (!IslemYetki.Kontrol(YetkiIslemTurleri.Silme))
+            {
+                Mesaj.Ver(Mesajlar.YetkisizIslem, Mesaj.MesajTurleri.WARNING, Master);
+                return;
+            }
             VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
             try
             {
@@ -186,7 +200,6 @@ namespace AsyModbus.Pages
                         Context.ApplicationInstance.CompleteRequest();
                         return;
                     }
-
                     Response.Redirect("~/Pages/KullaniciListele.aspx", false);
                     Context.ApplicationInstance.CompleteRequest();
                     return;

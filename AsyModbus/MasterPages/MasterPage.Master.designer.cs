@@ -69,6 +69,69 @@ namespace AsyModbus.MasterPages
         protected global::System.Web.UI.WebControls.Label lbl_error;
 
         /// <summary>
+        /// menuKullaniciListele control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuKullaniciListele;
+
+        /// <summary>
+        /// menuKullaniciEkle control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuKullaniciEkle;
+
+        /// <summary>
+        /// menuMakineListele control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuMakineListele;
+
+        /// <summary>
+        /// menuMakineEkle control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuMakineEkle;
+
+        /// <summary>
+        /// menuLogListele control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuLogListele;
+
+        /// <summary>
+        /// menuRolIslemleri control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuRolIslemleri;
+
+        /// <summary>
+        /// menuRolYetkileri control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuRolYetkileri;
+
+        /// <summary>
         /// btnCikis control.
         /// </summary>
         /// <remarks>

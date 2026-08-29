@@ -25,6 +25,7 @@ public class Roller : OrtakAlanlar, IOrtakMetotlar
     public const string C_Sp_Sil = "dbo.SP_Roller_SIL";
     public const string C_Sp_Guncelle = "dbo.SP_Roller_GUNCELLE";
     public const string C_Sp_Doldur = "dbo.SP_Roller_DOLDUR";
+    public const string C_Sp_MaxIdGetir = "dbo.SP_Roller_MAX_ID_GETIR";
 
     public const string C_Sutun_ad = "ad";
 
@@ -103,6 +104,12 @@ public class Roller : OrtakAlanlar, IOrtakMetotlar
         Id = Convert.ToInt32(VeriSatiri[C_Sutun_id]);
         Ad = VeriSatiri[C_Sutun_ad].ToString();
         return true;
+    }
+
+    public int MaxIdGetir()
+    {
+        VeritabaniIslem.SpAdi = C_Sp_MaxIdGetir;
+        return VeritabaniIslem.DegerGetir();
     }
 
     #endregion

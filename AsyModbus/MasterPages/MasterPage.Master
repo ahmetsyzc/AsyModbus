@@ -24,22 +24,26 @@
             <asp:Label
                 ID="lbl_success"
                 runat="server"
-                ClientIDMode="Static">
+                ClientIDMode="Static"
+                EnableViewState="false">
             </asp:Label>
             <asp:Label
                 ID="lbl_warning"
                 runat="server"
-                ClientIDMode="Static">
+                ClientIDMode="Static"
+                EnableViewState="false">
             </asp:Label>
             <asp:Label
                 ID="lbl_info"
                 runat="server"
-                ClientIDMode="Static">
+                ClientIDMode="Static"
+                EnableViewState="false">
             </asp:Label>
             <asp:Label
                 ID="lbl_error"
                 runat="server"
-                ClientIDMode="Static">
+                ClientIDMode="Static"
+                EnableViewState="false">
             </asp:Label>
         </div>
 
@@ -62,7 +66,9 @@
 
                     </a>
 
-                    <a href="../Pages/KullaniciListele.aspx"
+                    <a id="menuKullaniciListele"
+                        runat="server"
+                        href="../Pages/KullaniciListele.aspx"
                         class="menu-link d-flex align-items-center gap-3 text-decoration-none px-3 py-2 text-dark">
 
                         <i class="fa-solid fa-users"></i>
@@ -70,7 +76,9 @@
 
                     </a>
 
-                    <a href="../Pages/KullaniciEkle.aspx"
+                    <a id="menuKullaniciEkle"
+                        runat="server"
+                        href="../Pages/KullaniciEkle.aspx"
                         class="menu-link d-flex align-items-center gap-3 text-decoration-none px-3 py-2 text-dark">
 
                         <i class="fa-solid fa-user-plus"></i>
@@ -78,7 +86,9 @@
 
                     </a>
 
-                    <a href="../Pages/MakineListele.aspx"
+                    <a id="menuMakineListele"
+                        runat="server"
+                        href="../Pages/MakineListele.aspx"
                         class="menu-link d-flex align-items-center gap-3 text-decoration-none px-3 py-2 text-dark">
 
                         <i class="fa-solid fa-bars"></i>
@@ -86,7 +96,9 @@
 
                     </a>
 
-                    <a href="../Pages/MakineEkle.aspx"
+                    <a id="menuMakineEkle"
+                        runat="server"
+                        href="../Pages/MakineEkle.aspx"
                         class="menu-link d-flex align-items-center gap-3 text-decoration-none px-3 py-2 text-dark">
 
                         <i class="fa-solid fa-plus"></i>
@@ -94,7 +106,9 @@
 
                     </a>
 
-                    <a href="../Pages/LogListele.aspx"
+                    <a id="menuLogListele"
+                        runat="server"
+                        href="../Pages/LogListele.aspx"
                         class="menu-link d-flex align-items-center gap-3 text-decoration-none px-3 py-2 text-dark">
 
                         <i class="fa-solid fa-font-awesome"></i>
@@ -102,18 +116,22 @@
 
                     </a>
 
-                     <a href="../Pages/RolIslemleri.aspx"
+                    <a id="menuRolIslemleri"
+                        runat="server"
+                        href="../Pages/RolIslemleri.aspx"
                         class="menu-link d-flex align-items-center gap-3 text-decoration-none px-3 py-2 text-dark">
 
-                       <i class="fa-solid fa-users-gear"></i>
+                        <i class="fa-solid fa-users-gear"></i>
                         <span class="menu-label">ROL İŞLEMLERİ</span>
 
                     </a>
 
-                     <a href="../Pages/RolYetkileri.aspx"
+                    <a id="menuRolYetkileri"
+                        runat="server"
+                        href="../Pages/RolYetkileri.aspx"
                         class="menu-link d-flex align-items-center gap-3 text-decoration-none px-3 py-2 text-dark">
 
-                       <i class="fa-solid fa-fingerprint"></i>
+                        <i class="fa-solid fa-fingerprint"></i>
                         <span class="menu-label">YETKİLENDİRME</span>
 
                     </a>

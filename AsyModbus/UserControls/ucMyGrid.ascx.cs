@@ -15,6 +15,20 @@ namespace AsyModbus.UserControls
             set { detayURL = value; }
         }
 
+        public bool DetayGoster
+        {
+            get
+            {
+                if (ViewState["DetayGoster"] == null)
+                    return true;
+                return Convert.ToBoolean(ViewState["DetayGoster"]);
+            }
+            set
+            {
+                ViewState["DetayGoster"] = value;
+            }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
 
@@ -22,6 +36,8 @@ namespace AsyModbus.UserControls
 
         protected void grdMyGrid_RowCommand(object sender, GridViewCommandEventArgs e)
         {
+            if (DetayGoster == false)
+                return;
             if (e.CommandName == C_Command_Ac )
             {
                 string id = e.CommandArgument.ToString();
@@ -32,6 +48,7 @@ namespace AsyModbus.UserControls
 
         public void VeriBagla(DataTable dataTable)
         {
+            grdMyGrid.Columns[0].Visible = DetayGoster;
             grdMyGrid.DataSource = dataTable;
             grdMyGrid.DataBind();
 

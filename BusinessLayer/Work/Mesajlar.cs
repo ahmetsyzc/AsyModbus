@@ -33,6 +33,16 @@ public class Mesajlar
         return "Sistemsel Hata " + hataMesaji;
     }
 
+    public static string RolPasifOturumSonlandirildi
+    {
+        get { return "Rolünüz pasif duruma getirildiği için oturumunuz sonlandırıldı."; }
+    }
+
+    public static string KullaniciPasifOturumSonlandirildi
+    {
+        get { return "Hesabınız silindi, oturumunuz sonlandırıldı."; }
+    }
+
     /**************** KULLANICI GİRİŞ MESAJLARI ****************/
 
     public static string KullaniciGirisHataliGiris
@@ -53,6 +63,11 @@ public class Mesajlar
     public static string KullaniciGirisAlanlarBos
     {
         get { return "Mail ve Şifre boş bırakılamaz."; }
+    }
+
+    public static string KullaniciRoluPasif
+    {
+        get { return "Kullanıcı rolünüz aktif değildir. Sistem yöneticisiyle iletişime geçiniz."; }
     }
 
     /**************** ŞİFRE SIFIRLAMA MESAJLARI ****************/
@@ -236,4 +251,33 @@ public class Mesajlar
         get { return "Seçili rolü silmek istediğinize emin misiniz?"; }
     }
 
+    public static string SayfaErisimYetkisiYok
+    {
+        get { return "Bu sayfaya erişim yetkiniz bulunmamaktadır."; }
+    }
+
+    public static string YetkisizIslem
+    {
+        get { return "Bu işlemi gerçekleştirme yetkiniz bulunmamaktadır."; }
+    }
+
+    public static string RolSeciniz
+    {
+        get { return "Lütfen bir rol seçiniz."; }
+    }
+
+    public static string RolYetkileriGuncellendi
+    {
+        get { return "Rol yetkileri başarıyla güncellendi."; }
+    }
+
+    public static string RolYetkileriGuncellenemedi
+    {
+        get { return "Rol yetkileri güncellenemedi."; }
+    }
+
+    public static string SuperAdminRoluSilinemez
+    {
+        get { return "Super Admin rolü silinemez."; }
+    }
 }

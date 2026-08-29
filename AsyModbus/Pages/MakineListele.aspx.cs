@@ -30,6 +30,7 @@ namespace AsyModbus.Pages
             {
                 veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
                 Makineler makineler = new Makineler(veritabaniIslemleri);
+                ucMyGrid1.DetayGoster = IslemYetki.Kontrol(Sayfalar.MakineDuzenle, YetkiIslemTurleri.Getirme);
                 ucMyGrid1.VeriBagla(makineler.TumunuGetir());
             }
             catch (Exception ex)

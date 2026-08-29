@@ -1,6 +1,14 @@
 ﻿using System;
 using System.Data;
 
+public enum YetkiIslemTurleri
+{
+    Getirme,
+    Ekleme,
+    Guncelleme,
+    Silme
+}
+
 public class RolYetkiler : OrtakAlanlar, IOrtakMetotlar
 {
 
@@ -29,6 +37,7 @@ public class RolYetkiler : OrtakAlanlar, IOrtakMetotlar
     public const string C_Sp_Guncelle = "dbo.SP_RolYetkiler_GUNCELLE";
     public const string C_Sp_Doldur = "dbo.SP_RolYetkiler_DOLDUR";
     public const string C_Sp_TumunuGetir = "dbo.SP_RolYetkiler_TUMUNU_GETIR";
+    public const string C_Sp_YetkiVarMi = "dbo.SP_RolYetkiler_YETKI_VAR_MI";
 
     public const string C_Sutun_roller_id = "roller_id";
     public const string C_Sutun_sayfa_adi = "sayfa_adi";
@@ -86,6 +95,16 @@ public class RolYetkiler : OrtakAlanlar, IOrtakMetotlar
     #endregion
 
     #region METOTLAR
+
+    public bool YetkiVarMi(YetkiIslemTurleri islemTuru)
+    {
+        VeritabaniIslem.SpAdi = C_Sp_YetkiVarMi;
+        VeritabaniIslem.ParametreEkle(C_Sutun_roller_id, RollerId);
+        VeritabaniIslem.ParametreEkle(C_Sutun_sayfa_adi, SayfaAdi);
+        VeritabaniIslem.ParametreEkle("islem_turu", islemTuru.ToString());
+        int sonuc = VeritabaniIslem.DegerGetir();
+        return Convert.ToBoolean(sonuc);
+    }
 
     public bool Ekle()
     {

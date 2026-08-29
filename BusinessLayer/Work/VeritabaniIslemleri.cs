@@ -37,6 +37,14 @@ public class VeritabaniIslemleri
         etkilenenKayitSayisi = 0;
     }
 
+    private void TransactionAta(SqlCommand sqlCommand)
+    {
+        if (sqlTransaction != null)
+        {
+            sqlCommand.Transaction = sqlTransaction;
+        }
+    }
+
     public SqlConnection Baslat(IslemTip islemTip)
     {
         HatalariSil();
@@ -144,6 +152,7 @@ public class VeritabaniIslemleri
 
             SqlCommand sqlCommand = new SqlCommand(SpAdi, sqlConnection);
             sqlCommand.CommandType = CommandType.StoredProcedure;
+            TransactionAta(sqlCommand);
             foreach (SqlParameter sqlParameter in parametreler)
             {
                 sqlCommand.Parameters.Add(sqlParameter);
@@ -290,11 +299,7 @@ public class VeritabaniIslemleri
             }
 
             SqlCommand sqlCommand = new SqlCommand("SELECT * FROM dbo." + tabloAdi + " WHERE id = @id", sqlConnection);
-
-            if (sqlTransaction != null)
-            {
-                sqlCommand.Transaction = sqlTransaction;
-            }
+            TransactionAta(sqlCommand);
 
             sqlCommand.Parameters.AddWithValue("@id", Convert.ToInt32(idParametresi.Value));
 
@@ -352,6 +357,7 @@ public class VeritabaniIslemleri
 
             SqlCommand sqlCommand = new SqlCommand(SpAdi, sqlConnection);
             sqlCommand.CommandType = CommandType.StoredProcedure;
+            TransactionAta(sqlCommand);
 
             foreach (SqlParameter sqlParameter in parametreler)
             {
@@ -391,6 +397,7 @@ public class VeritabaniIslemleri
             HatalariSil();
             SqlCommand sqlCommand = new SqlCommand(SpAdi, sqlConnection);
             sqlCommand.CommandType = CommandType.StoredProcedure;
+            TransactionAta(sqlCommand);
 
             foreach (SqlParameter sqlParameter in parametreler)
             {

@@ -4,19 +4,30 @@
 
 body {
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     background-color: #808080;
 }
 
 .menüdiv {
-    position: relative; /* Çıkış alanının sidebar'ın altına göre konumlanması için */
+    /*position: relative;  Çıkış alanının sidebar'ın altına göre konumlanması için */
+    position: sticky;
+    top: 0;
     background-color: #e1e1e1;
     height: 100vh;
 }
 
+@media (max-width: 767px) {
+    .menüdiv {
+        position: relative; /* Küçük ekranda menünün sayfayla birlikte hareket etmesini sağlar. */
+        height: auto; /* Menü yüksekliğini içerisindeki bağlantılara göre ayarlar. */
+        min-height: 100vh; /* Menünün en az ekran yüksekliği kadar olmasını sağlar. */
+        padding-bottom: 60px; /* Kullanıcı ve çıkış alanı için menünün altında boşluk bırakır. */
+    }
+}
+
 .ortakdiv {
     background-color: #808080;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 .image {

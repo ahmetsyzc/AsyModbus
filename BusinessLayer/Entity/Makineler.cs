@@ -27,8 +27,11 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
     public const string C_Sp_Guncelle = "dbo.SP_Makineler_GUNCELLE";
     public const string C_Sp_TumunuGetir = "dbo.SP_Makineler_TUMUNU_GETIR";
     public const string C_Sp_Doldur = "dbo.SP_Makineler_DOLDUR";//Tek Kayıt Getirir
+    public const string C_Sp_DurumGuncelle = "dbo.SP_Makineler_DURUM_GUNCELLE";
+    public const string C_Sp_SiraGuncelle = "dbo.SP_Makineler_SIRA_GUNCELLE";
+    public const string C_Sp_MaxSiraGetir = "dbo.SP_Makineler_MAX_SIRA_GETIR";
 
-
+    public const string C_Sutun_makine_ad = "makine_ad";
     public const string C_Sutun_model_ad = "model_ad";
     public const string C_Sutun_entegrasyon_kod = "entegrasyon_kod";
     public const string C_Sutun_gg_no = "gg_no";
@@ -36,10 +39,20 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
     public const string C_Sutun_band_no = "band_no";
     public const string C_Sutun_ip = "ip";
     public const string C_Sutun_mfg = "mfg";
+    public const string C_Sutun_durum = "durum";
+    public const string C_Sutun_son_durum_tarih = "son_durum_tarih";
+    public const string C_Sutun_sira_no = "sira_no";
 
     #endregion
 
     #region Nesneler
+
+    private string makineAd;
+    public string MakineAd
+    {
+        get { return makineAd; }
+        set { makineAd = value; }
+    }
 
     private string modelAd;
     public string ModelAd
@@ -90,14 +103,35 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
         set { mfg = value; }
     }
 
-    #endregion
+    private string durum;
+    public string Durum
+    {
+        get { return durum; }
+        set { durum = value; }
+    }
 
+    private DateTime? sonDurumTarihi;
+    public DateTime? SonDurumTarihi
+    {
+        get { return sonDurumTarihi; }
+        set { sonDurumTarihi = value; }
+    }
+
+    private int? siraNo;
+    public int? SiraNo
+    {
+        get { return siraNo; }
+        set { siraNo = value; }
+    }
+
+    #endregion
 
     #region Metotlar
 
     public bool Ekle()
     {
         VeritabaniIslem.SpAdi = C_Sp_Ekle;
+        VeritabaniIslem.ParametreEkle(C_Sutun_makine_ad, MakineAd);
         VeritabaniIslem.ParametreEkle(C_Sutun_model_ad, ModelAd);
         VeritabaniIslem.ParametreEkle(C_Sutun_entegrasyon_kod, EntegrasyonKod);
         VeritabaniIslem.ParametreEkle(C_Sutun_gg_no, GgNo);
@@ -105,6 +139,7 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
         VeritabaniIslem.ParametreEkle(C_Sutun_band_no, BandNo);
         VeritabaniIslem.ParametreEkle(C_Sutun_ip, Ip);
         VeritabaniIslem.ParametreEkle(C_Sutun_mfg, Mfg);
+        VeritabaniIslem.ParametreEkle(C_Sutun_sira_no, SiraNo);
         VeritabaniIslem.ParametreEkle(C_Sutun_aktif_mi, AktifMi);
         VeritabaniIslem.ParametreEkle(C_Sutun_ekleyen_id, EkleyenId);
         VeritabaniIslem.ParametreEkle(C_Sutun_ekleyen_ip, EkleyenIp);
@@ -115,6 +150,7 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
     {
         VeritabaniIslem.SpAdi = C_Sp_Guncelle;
         VeritabaniIslem.ParametreEkle(C_Sutun_id, Id);
+        VeritabaniIslem.ParametreEkle(C_Sutun_makine_ad, MakineAd);
         VeritabaniIslem.ParametreEkle(C_Sutun_model_ad, ModelAd);
         VeritabaniIslem.ParametreEkle(C_Sutun_entegrasyon_kod, EntegrasyonKod);
         VeritabaniIslem.ParametreEkle(C_Sutun_gg_no, GgNo);
@@ -122,6 +158,7 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
         VeritabaniIslem.ParametreEkle(C_Sutun_band_no, BandNo);
         VeritabaniIslem.ParametreEkle(C_Sutun_ip, Ip);
         VeritabaniIslem.ParametreEkle(C_Sutun_mfg, Mfg);
+        VeritabaniIslem.ParametreEkle(C_Sutun_sira_no, SiraNo);
         VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_id, GuncelleyenId);
         VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_ip, GuncelleyenIp);
         return VeritabaniIslem.Calistir();
@@ -155,6 +192,7 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
         }
 
         Id = Convert.ToInt32(VeriSatiri[C_Sutun_id]);
+        MakineAd = VeriSatiri[C_Sutun_makine_ad].ToString();
         ModelAd = VeriSatiri[C_Sutun_model_ad].ToString();
         EntegrasyonKod = VeriSatiri[C_Sutun_entegrasyon_kod].ToString();
         GgNo = VeriSatiri[C_Sutun_gg_no].ToString();
@@ -162,8 +200,26 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
         BandNo = VeriSatiri[C_Sutun_band_no].ToString();
         Ip = VeriSatiri[C_Sutun_ip].ToString();
         Mfg = VeriSatiri[C_Sutun_mfg].ToString();
-        AktifMi = Convert.ToBoolean(VeriSatiri[C_Sutun_aktif_mi]);
+        Durum = VeriSatiri[C_Sutun_durum] == DBNull.Value ? "" : VeriSatiri[C_Sutun_durum].ToString();
 
+        if (VeriSatiri[C_Sutun_son_durum_tarih] == DBNull.Value)
+        {
+            SonDurumTarihi = null;
+        }
+        else
+        {
+            SonDurumTarihi = Convert.ToDateTime(VeriSatiri[C_Sutun_son_durum_tarih]);
+        }
+        if (VeriSatiri[C_Sutun_sira_no] == DBNull.Value)
+        {
+            SiraNo = null;
+        }
+        else
+        {
+            SiraNo = Convert.ToInt32(VeriSatiri[C_Sutun_sira_no]);
+        }
+
+        AktifMi = Convert.ToBoolean(VeriSatiri[C_Sutun_aktif_mi]);
         EkleyenId = Convert.ToInt32(VeriSatiri[C_Sutun_ekleyen_id]);
         EkleyenIp = VeriSatiri[C_Sutun_ekleyen_ip].ToString();
         EklenmeTarih = Convert.ToDateTime(VeriSatiri[C_Sutun_eklenme_tarih]);
@@ -193,6 +249,61 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
         else
         {
             GuncellenmeTarih = Convert.ToDateTime(VeriSatiri[C_Sutun_guncellenme_tarih]);
+        }
+
+        return true;
+    }
+
+    public bool DurumGuncelle()
+    {
+        VeritabaniIslem.SpAdi = C_Sp_DurumGuncelle;
+        VeritabaniIslem.ParametreEkle(C_Sutun_id, Id);
+        VeritabaniIslem.ParametreEkle(C_Sutun_durum, Durum);
+        VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_id, GuncelleyenId);
+        VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_ip, GuncelleyenIp);
+        return VeritabaniIslem.Calistir();
+    }
+
+    public bool SiraGuncelle()
+    {
+        VeritabaniIslem.SpAdi = C_Sp_SiraGuncelle;
+        VeritabaniIslem.ParametreEkle(C_Sutun_id, Id);
+        VeritabaniIslem.ParametreEkle(C_Sutun_sira_no, SiraNo);
+        VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_id, GuncelleyenId);
+        VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_ip, GuncelleyenIp);
+        return VeritabaniIslem.Calistir();
+    }
+
+    public int MaxSiraGetir()
+    {
+        VeritabaniIslem.SpAdi = C_Sp_MaxSiraGetir;
+        VeritabaniIslem.ParametreEkle(C_Sutun_band_no, BandNo);
+        return VeritabaniIslem.DegerGetir();
+    }
+
+    public bool BandSiralariniSikistir()
+    {
+        string bandNo = BandNo;
+        int guncelleyenId = GuncelleyenId;
+        string guncelleyenIp = GuncelleyenIp;
+
+        DataTable makinelerTablosu = TumunuGetir();
+        DataRow[] siraliMakineler = makinelerTablosu.AsEnumerable()
+            .Where(row => row[C_Sutun_band_no].ToString() == bandNo)
+            .OrderBy(row => row.Field<int?>(C_Sutun_sira_no) ?? int.MaxValue)
+            .ToArray();
+
+        for (int i = 0; i < siraliMakineler.Length; i++)
+        {
+            Id = Convert.ToInt32(siraliMakineler[i][C_Sutun_id]);
+            SiraNo = i + 1;
+            GuncelleyenId = guncelleyenId;
+            GuncelleyenIp = guncelleyenIp;
+
+            if (!SiraGuncelle())
+            {
+                return false;
+            }
         }
 
         return true;

@@ -22,6 +22,7 @@ namespace AsyModbus.Pages
                     if (makineler.Doldur())
                     {
                         txtID.Text = makineler.Id.ToString();
+                        txtMakineAd.Text = makineler.MakineAd;
                         txtModelAd.Text = makineler.ModelAd;
                         txtEntegrasyonKod.Text = makineler.EntegrasyonKod;
                         txtGgNo.Text = makineler.GgNo;
@@ -66,9 +67,21 @@ namespace AsyModbus.Pages
 
             try
             {
-                veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
+                veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMLI);
                 Makineler makineler = new Makineler(veritabaniIslemleri);
                 makineler.Id = Convert.ToInt32(txtID.Text.Trim());
+
+                if (!makineler.Doldur())
+                {
+                    veritabaniIslemleri.GeriAl();
+                    Mesaj.Ver(Mesajlar.MakineBulunamadi, Mesaj.MesajTurleri.FAIL, Master);
+                    return;
+                }
+
+                string eskiBand = makineler.BandNo;
+                int? eskiSira = makineler.SiraNo;
+
+                makineler.MakineAd = txtMakineAd.Text.Trim();
                 makineler.ModelAd = txtModelAd.Text.Trim();
                 makineler.EntegrasyonKod = txtEntegrasyonKod.Text.Trim();
                 makineler.GgNo = txtGgNo.Text.Trim();
@@ -79,17 +92,47 @@ namespace AsyModbus.Pages
                 makineler.GuncelleyenId = currentInfo.KullaniciId;
                 makineler.GuncelleyenIp = currentInfo.Ip;
 
-                if (makineler.Guncelle())
+                bool bandDegisti = eskiBand != makineler.BandNo;
+
+                if (bandDegisti)
                 {
-                    Mesaj.Ver(Mesajlar.KayitGuncellemeBasarili, Mesaj.MesajTurleri.SUCCESS, Master);
+                    makineler.SiraNo = makineler.MaxSiraGetir() + 1;
+                }
+                else if (eskiSira.HasValue)
+                {
+                    makineler.SiraNo = eskiSira;
                 }
                 else
                 {
-                    Mesaj.Ver(Mesajlar.KayitGuncellemeBasarisiz, Mesaj.MesajTurleri.FAIL, Master);
+                    makineler.SiraNo = makineler.MaxSiraGetir() + 1;
                 }
+
+                if (!makineler.Guncelle())
+                {
+                    veritabaniIslemleri.GeriAl();
+                    Mesaj.Ver(Mesajlar.KayitGuncellemeBasarisiz, Mesaj.MesajTurleri.FAIL, Master);
+                    return;
+                }
+
+                if (bandDegisti)
+                {
+                    makineler.BandNo = eskiBand;
+                    makineler.GuncelleyenId = currentInfo.KullaniciId;
+                    makineler.GuncelleyenIp = currentInfo.Ip;
+                    if (!makineler.BandSiralariniSikistir())
+                    {
+                        veritabaniIslemleri.GeriAl();
+                        Mesaj.Ver(Mesajlar.KayitGuncellemeBasarisiz, Mesaj.MesajTurleri.FAIL, Master);
+                        return;
+                    }
+                }
+
+                veritabaniIslemleri.Uygula();
+                Mesaj.Ver(Mesajlar.KayitGuncellemeBasarili, Mesaj.MesajTurleri.SUCCESS, Master);
             }
             catch (Exception ex)
             {
+                veritabaniIslemleri.GeriAl();
                 Mesaj.Ver(Mesajlar.SistemselHata(ex.Message), Mesaj.MesajTurleri.FAIL, Master);
             }
             finally
@@ -110,30 +153,45 @@ namespace AsyModbus.Pages
             {
                 Sessionlar sessionlar = new Sessionlar();
                 CurrentInfo currentInfo = sessionlar.Current._CurrentInfo;
-                veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
+                veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMLI);
                 Makineler makineler = new Makineler(veritabaniIslemleri);
                 makineler.Id = Convert.ToInt32(id);
 
                 if (!makineler.Doldur())
                 {
+                    veritabaniIslemleri.GeriAl();
                     Mesaj.Ver(Mesajlar.MakineBulunamadi, Mesaj.MesajTurleri.FAIL, Master);
                     return;
                 }
 
+                string eskiBand = makineler.BandNo;
                 makineler.GuncelleyenId = currentInfo.KullaniciId;
                 makineler.GuncelleyenIp = currentInfo.Ip;
 
-                if (makineler.Sil())
+                if (!makineler.Sil())
                 {
-                    Response.Redirect("~/Pages/MakineListele.aspx", false);
-                    Context.ApplicationInstance.CompleteRequest();
+                    veritabaniIslemleri.GeriAl();
+                    Mesaj.Ver(Mesajlar.KayitSilmeBasarisiz, Mesaj.MesajTurleri.FAIL, Master);
                     return;
                 }
 
-                Mesaj.Ver(Mesajlar.KayitSilmeBasarisiz, Mesaj.MesajTurleri.FAIL, Master);
+                makineler.BandNo = eskiBand;
+                makineler.GuncelleyenId = currentInfo.KullaniciId;
+                makineler.GuncelleyenIp = currentInfo.Ip;
+                if (!makineler.BandSiralariniSikistir())
+                {
+                    veritabaniIslemleri.GeriAl();
+                    Mesaj.Ver(Mesajlar.KayitSilmeBasarisiz, Mesaj.MesajTurleri.FAIL, Master);
+                    return;
+                }
+
+                veritabaniIslemleri.Uygula();
+                Response.Redirect("~/Pages/MakineListele.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
             }
             catch (Exception ex)
             {
+                veritabaniIslemleri.GeriAl();
                 Mesaj.Ver(Mesajlar.SistemselHata(ex.Message), Mesaj.MesajTurleri.FAIL, Master);
             }
             finally
@@ -147,6 +205,11 @@ namespace AsyModbus.Pages
             bool sonuc = true;
             string mesaj = "";
 
+            if (txtMakineAd.Text.Trim().Length == 0)
+            {
+                mesaj += " Makine Adı";
+                sonuc = false;
+            }
             if (txtModelAd.Text.Trim().Length == 0)
             {
                 mesaj += " Model Adı";

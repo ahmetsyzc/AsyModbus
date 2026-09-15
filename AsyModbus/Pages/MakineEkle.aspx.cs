@@ -32,6 +32,7 @@ namespace AsyModbus.Pages
             try
             {
                 Makineler makineler = new Makineler(veritabaniIslemleri);
+                makineler.MakineAd = txtMakineAd.Text.Trim();
                 makineler.ModelAd = txtModelAd.Text.Trim();
                 makineler.EntegrasyonKod = txtEntegrasyonKod.Text.Trim();
                 makineler.GgNo = txtGgNo.Text.Trim();
@@ -39,6 +40,7 @@ namespace AsyModbus.Pages
                 makineler.BandNo = txtBandNo.Text.Trim();
                 makineler.Ip = txtIp.Text.Trim();
                 makineler.Mfg = txtMfg.Text.Trim();
+                makineler.SiraNo = makineler.MaxSiraGetir() + 1;
                 makineler.AktifMi = true;
                 makineler.EkleyenId = currentInfo.KullaniciId;
                 makineler.EkleyenIp = currentInfo.Ip;
@@ -66,6 +68,11 @@ namespace AsyModbus.Pages
             bool sonuc = true;
             string mesaj = "";
 
+            if (txtMakineAd.Text.Trim().Length == 0)
+            {
+                mesaj += " Makine Adı";
+                sonuc = false;
+            }
             if (txtModelAd.Text.Trim().Length == 0)
             {
                 mesaj += " Model Adı";

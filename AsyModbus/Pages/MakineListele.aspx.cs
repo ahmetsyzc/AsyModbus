@@ -19,6 +19,7 @@ namespace AsyModbus.Pages
             }
             
             ucMyGrid1.KolonEkle(Makineler.C_Sutun_makine_no, "Makine Numarası");
+            ucMyGrid1.KolonEkle(Makineler.C_Sutun_makine_ad, "Makine Adı");
             ucMyGrid1.KolonEkle(Makineler.C_Sutun_model_ad, "Model Adı");
             ucMyGrid1.KolonEkle(Makineler.C_Sutun_gg_no, "GG Numarası");
             ucMyGrid1.KolonEkle(Makineler.C_Sutun_ip, "IP Numarası");

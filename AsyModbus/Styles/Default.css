@@ -1,0 +1,46 @@
+﻿.makine-kolon {
+    flex: 0 0 10%;
+    max-width: 10%;
+}
+
+@media (max-width: 1199px) {
+    .makine-kolon {
+        flex: 0 0 20%;
+        max-width: 20%;
+    }
+}
+
+@media (max-width: 767px) {
+    .makine-kolon {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+
+/* Sıralama modalının ekran genişliğini daha fazla kullanmasını sağlar. */
+.modal-siralama {
+    width: calc(100% - 30px);
+    max-width: none;
+}
+
+/* Büyük ekranda her satıra 10 sıralama kartı yerleştirir. */
+.siralama-karti {
+    flex: 0 0 10%;
+    max-width: 10%;
+}
+
+/* Orta boy ekranda her satıra 5 kart yerleştirir. */
+@media (max-width: 1199px) {
+    .siralama-karti {
+        flex: 0 0 20%;
+        max-width: 20%;
+    }
+}
+
+/* Küçük ekranda her satıra 2 kart yerleştirir. */
+@media (max-width: 767px) {
+    .siralama-karti {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}

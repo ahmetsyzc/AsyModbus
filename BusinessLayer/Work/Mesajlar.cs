@@ -280,4 +280,53 @@ public class Mesajlar
     {
         get { return "Super Admin rolü silinemez."; }
     }
+
+    #region Makine Durdurma Mesajları
+
+    public static string MakineCalismiyor
+    {
+        get { return "Yalnızca çalışan makineler durdurulabilir."; }
+    }
+
+    public static string MakineBasariylaDurduruldu
+    {
+        get { return "Makine başarıyla durduruldu."; }
+    }
+
+    public static string MakineDurdurmaHatasi
+    {
+        get { return "Makine durdurulurken bir hata oluştu."; }
+    }
+
+    public static string MakineLoglamaHatasi
+    {
+        get { return "Makine durduruldu ancak log kaydı oluşturulamadı."; }
+    }
+
+    #endregion
+
+    public static string MakineSirasiBos
+    {
+        get { return "Makine sıralaması alınamadı."; }
+    }
+
+    public static string MakineSirasiGecersiz
+    {
+        get { return "Makine sıralamasında geçersiz bir değer bulundu."; }
+    }
+
+    public static string MakineSirasiGuncellenemedi
+    {
+        get { return "Makine sıralaması güncellenirken hata oluştu."; }
+    }
+
+    public static string MakineSirasiGuncellendi
+    {
+        get { return "Makine sıralaması başarıyla güncellendi."; }
+    }
+
+    public static string MakineSirasiLoglamaHatasi
+    {
+        get { return "İşlem tamamlandı ancak log kaydı oluşturulamadı."; }
+    }
 }

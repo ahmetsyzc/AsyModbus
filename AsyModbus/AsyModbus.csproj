@@ -90,8 +90,10 @@
     <Content Include="Pages\RolIslemleri.aspx" />
     <Content Include="Pages\RolYetkileri.aspx" />
     <Content Include="Pages\SifreSifirlama.aspx" />
+    <Content Include="Scripts\Default.js" />
     <Content Include="Scripts\KullaniciForm.js" />
     <Content Include="Scripts\ucMyGrid.js" />
+    <Content Include="Styles\Default.css" />
     <Content Include="Styles\KullaniciForm.css" />
     <Content Include="Styles\KullaniciListele.css" />
     <Content Include="Styles\Login.css" />

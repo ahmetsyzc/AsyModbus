@@ -34,6 +34,17 @@
 
                         <div class="row mb-3">
                             <div class="col-12 col-md-3">
+                                <asp:Label Text="Makine Ad&#305; :" runat="server" />
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <asp:TextBox ID="txtMakineAd" runat="server"
+                                    CssClass="form-control"
+                                    MaxLength="20" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-12 col-md-3">
                                 <asp:Label Text="Model Ad&#305; :" runat="server" />
                             </div>
                             <div class="col-12 col-md-9">

@@ -130,8 +130,13 @@ public class VeritabaniIslemleri
                     metotAdi = string.Empty;
                 }
 
-                // Log ekleme işlemi tekrar loglanmaz.
-                loglanacakMi = sinifAdi.ToLower() != "loglar" && metotAdi != string.Empty;
+                // Genel log / makine log ekleme tekrar loglanmaz.
+                // SiraGuncelle döngüde çok kez çağrıldığı için otomatik loglanmaz;
+                // özet log sayfada LogIslemleri.IslemKaydet ile tek kayıt yazılır.
+                loglanacakMi = sinifAdi.ToLower() != "loglar"
+                    && sinifAdi.ToLower() != "makinelerloglar"
+                    && metotAdiKucuk != "siraguncelle"
+                    && metotAdi != string.Empty;
             }
 
             DataTable eskiKayitlar = null;

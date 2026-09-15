@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Entity\Kullanicilar.cs" />
     <Compile Include="Entity\Loglar.cs" />
+    <Compile Include="Entity\MakinelerLoglar.cs" />
     <Compile Include="Entity\Makineler.cs" />
     <Compile Include="Entity\Roller.cs" />
     <Compile Include="Entity\RolYetkiler.cs" />

@@ -11,71 +11,35 @@ namespace AsyModbus.Pages
 {
 
 
-    public partial class MakineEkle
+    public partial class RoleCihazIslemleri
     {
 
         /// <summary>
-        /// txtID control.
+        /// ddlCihazlar control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtID;
+        protected global::System.Web.UI.WebControls.DropDownList ddlCihazlar;
 
         /// <summary>
-        /// txtMakineAd control.
+        /// txtId control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtMakineAd;
+        protected global::System.Web.UI.WebControls.TextBox txtId;
 
         /// <summary>
-        /// txtModelAd control.
+        /// txtAd control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtModelAd;
-
-        /// <summary>
-        /// txtEntegrasyonKod control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtEntegrasyonKod;
-
-        /// <summary>
-        /// txtGgNo control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtGgNo;
-
-        /// <summary>
-        /// txtMakineNo control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtMakineNo;
-
-        /// <summary>
-        /// txtBandNo control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtBandNo;
+        protected global::System.Web.UI.WebControls.TextBox txtAd;
 
         /// <summary>
         /// txtIp control.
@@ -87,39 +51,48 @@ namespace AsyModbus.Pages
         protected global::System.Web.UI.WebControls.TextBox txtIp;
 
         /// <summary>
-        /// txtMfg control.
+        /// txtPort control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtMfg;
+        protected global::System.Web.UI.WebControls.TextBox txtPort;
 
         /// <summary>
-        /// ddlRoleCihaz control.
+        /// txtKanalSayisi control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlRoleCihaz;
+        protected global::System.Web.UI.WebControls.TextBox txtKanalSayisi;
 
         /// <summary>
-        /// ddlRoleKanal control.
+        /// btnEkle control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlRoleKanal;
+        protected global::System.Web.UI.WebControls.Button btnEkle;
 
         /// <summary>
-        /// btnKaydet control.
+        /// btnGuncelle control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnKaydet;
+        protected global::System.Web.UI.WebControls.Button btnGuncelle;
+
+        /// <summary>
+        /// btnSil control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnSil;
     }
 }

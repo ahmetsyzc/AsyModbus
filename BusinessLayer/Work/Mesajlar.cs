@@ -211,6 +211,71 @@ public class Mesajlar
         get { return "Log Kayıtları bulunamadı."; }
     }
 
+    public static string RoleCihazAdiBos
+    {
+        get { return "Cihaz adı boş bırakılamaz."; }
+    }
+
+    public static string RoleCihazIpBos
+    {
+        get { return "IP boş bırakılamaz."; }
+    }
+
+    public static string RoleCihazPortGecersiz
+    {
+        get { return "Port geçerli bir sayı olmalıdır."; }
+    }
+
+    public static string RoleCihazKanalSayisiGecersiz
+    {
+        get { return "Kanal sayısı geçerli bir sayı olmalıdır."; }
+    }
+
+    public static string RoleCihazEklendi
+    {
+        get { return "Cihaz başarıyla eklendi."; }
+    }
+
+    public static string RoleCihazEklenemedi
+    {
+        get { return "Cihaz eklenemedi."; }
+    }
+
+    public static string RoleCihazGuncellendi
+    {
+        get { return "Cihaz başarıyla güncellendi."; }
+    }
+
+    public static string RoleCihazGuncellenemedi
+    {
+        get { return "Cihaz güncellenemedi."; }
+    }
+
+    public static string RoleCihazSilindi
+    {
+        get { return "Cihaz başarıyla silindi."; }
+    }
+
+    public static string RoleCihazSilinemedi
+    {
+        get { return "Cihaz silinemedi."; }
+    }
+
+    public static string RoleKanalSecilmedi
+    {
+        get { return "Röle cihazı seçildiğinde kanal seçimi zorunludur."; }
+    }
+
+    public static string RoleKanalKullanimda
+    {
+        get { return "Seçilen röle kanalı başka bir makinede kullanılmaktadır."; }
+    }
+
+    public static string RoleBosKanalKalmadi
+    {
+        get { return "Bu rölede boş kanal kalmadı."; }
+    }
+
     public static string RolAdiBos
     {
         get { return "Rol adı boş bırakılamaz."; }

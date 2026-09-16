@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 
 public class Makineler : OrtakAlanlar, IOrtakMetotlar
 {
@@ -30,6 +29,7 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
     public const string C_Sp_DurumGuncelle = "dbo.SP_Makineler_DURUM_GUNCELLE";
     public const string C_Sp_SiraGuncelle = "dbo.SP_Makineler_SIRA_GUNCELLE";
     public const string C_Sp_MaxSiraGetir = "dbo.SP_Makineler_MAX_SIRA_GETIR";
+    public const string C_Sp_KullanilanKanallariGetir = "dbo.SP_Makineler_KULLANILAN_KANALLARI_GETIR";
 
     public const string C_Sutun_makine_ad = "makine_ad";
     public const string C_Sutun_model_ad = "model_ad";
@@ -42,6 +42,8 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
     public const string C_Sutun_durum = "durum";
     public const string C_Sutun_son_durum_tarih = "son_durum_tarih";
     public const string C_Sutun_sira_no = "sira_no";
+    public const string C_Sutun_rolecihazlar_id = "rolecihazlar_id";
+    public const string C_Sutun_role_kanal_no = "role_kanal_no";
 
     #endregion
 
@@ -124,6 +126,20 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
         set { siraNo = value; }
     }
 
+    private int? roleCihazlarId;
+    public int? RoleCihazlarId
+    {
+        get { return roleCihazlarId; }
+        set { roleCihazlarId = value; }
+    }
+
+    private int? roleKanalNo;
+    public int? RoleKanalNo
+    {
+        get { return roleKanalNo; }
+        set { roleKanalNo = value; }
+    }
+
     #endregion
 
     #region Metotlar
@@ -140,6 +156,8 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
         VeritabaniIslem.ParametreEkle(C_Sutun_ip, Ip);
         VeritabaniIslem.ParametreEkle(C_Sutun_mfg, Mfg);
         VeritabaniIslem.ParametreEkle(C_Sutun_sira_no, SiraNo);
+        VeritabaniIslem.ParametreEkle(C_Sutun_rolecihazlar_id, NullDeger(RoleCihazlarId));
+        VeritabaniIslem.ParametreEkle(C_Sutun_role_kanal_no, NullDeger(RoleKanalNo));
         VeritabaniIslem.ParametreEkle(C_Sutun_aktif_mi, AktifMi);
         VeritabaniIslem.ParametreEkle(C_Sutun_ekleyen_id, EkleyenId);
         VeritabaniIslem.ParametreEkle(C_Sutun_ekleyen_ip, EkleyenIp);
@@ -159,6 +177,8 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
         VeritabaniIslem.ParametreEkle(C_Sutun_ip, Ip);
         VeritabaniIslem.ParametreEkle(C_Sutun_mfg, Mfg);
         VeritabaniIslem.ParametreEkle(C_Sutun_sira_no, SiraNo);
+        VeritabaniIslem.ParametreEkle(C_Sutun_rolecihazlar_id, NullDeger(RoleCihazlarId));
+        VeritabaniIslem.ParametreEkle(C_Sutun_role_kanal_no, NullDeger(RoleKanalNo));
         VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_id, GuncelleyenId);
         VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_ip, GuncelleyenIp);
         return VeritabaniIslem.Calistir();
@@ -200,6 +220,8 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
         BandNo = VeriSatiri[C_Sutun_band_no].ToString();
         Ip = VeriSatiri[C_Sutun_ip].ToString();
         Mfg = VeriSatiri[C_Sutun_mfg].ToString();
+        RoleCihazlarId = NullIntGetir(VeriSatiri[C_Sutun_rolecihazlar_id]);
+        RoleKanalNo = NullIntGetir(VeriSatiri[C_Sutun_role_kanal_no]);
         Durum = VeriSatiri[C_Sutun_durum] == DBNull.Value ? "" : VeriSatiri[C_Sutun_durum].ToString();
 
         if (VeriSatiri[C_Sutun_son_durum_tarih] == DBNull.Value)
@@ -307,6 +329,92 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
         }
 
         return true;
+    }
+
+    public DataTable KullanilanKanallariGetir()
+    {
+        return KullanilanKanallariGetir(RoleCihazlarId, Id > 0 ? (int?)Id : null);
+    }
+
+    public DataTable KullanilanKanallariGetir(int? roleCihazlarId, int? id)
+    {
+        VeritabaniIslem.SpAdi = C_Sp_KullanilanKanallariGetir;
+        VeritabaniIslem.ParametreEkle(C_Sutun_rolecihazlar_id, NullDeger(roleCihazlarId));
+        VeritabaniIslem.ParametreEkle(C_Sutun_id, NullDeger(id));
+        VeriTablosu = VeritabaniIslem.TabloGetir();
+        return VeriTablosu;
+    }
+
+    public bool KanalKullanimdaMi(int? roleCihazlarId, int? kanalNo, int? id)
+    {
+        if (!roleCihazlarId.HasValue || !kanalNo.HasValue)
+        {
+            return false;
+        }
+
+        DataTable kullanilanKanallar = KullanilanKanallariGetir(roleCihazlarId, id);
+        if (kullanilanKanallar == null)
+        {
+            return false;
+        }
+
+        foreach (DataRow satir in kullanilanKanallar.Rows)
+        {
+            if (satir[C_Sutun_role_kanal_no] != DBNull.Value &&
+                Convert.ToInt32(satir[C_Sutun_role_kanal_no]) == kanalNo.Value)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void BosKanallariListele(DropDownList dropDownList, int kanalSayisi)
+    {
+        DataTable kullanilanKanallar = KullanilanKanallariGetir();
+        dropDownList.Items.Clear();
+        dropDownList.Items.Add(new ListItem("Seçiniz", "0"));
+
+        HashSet<int> doluKanallar = new HashSet<int>();
+        if (kullanilanKanallar != null)
+        {
+            foreach (DataRow satir in kullanilanKanallar.Rows)
+            {
+                if (satir[C_Sutun_role_kanal_no] != DBNull.Value)
+                {
+                    doluKanallar.Add(Convert.ToInt32(satir[C_Sutun_role_kanal_no]));
+                }
+            }
+        }
+
+        for (int kanalNo = 1; kanalNo <= kanalSayisi; kanalNo++)
+        {
+            if (!doluKanallar.Contains(kanalNo))
+            {
+                dropDownList.Items.Add(new ListItem("Kanal " + kanalNo, kanalNo.ToString()));
+            }
+        }
+    }
+
+    private object NullDeger(int? deger)
+    {
+        if (deger.HasValue)
+        {
+            return deger.Value;
+        }
+
+        return DBNull.Value;
+    }
+
+    private int? NullIntGetir(object deger)
+    {
+        if (deger == null || deger == DBNull.Value)
+        {
+            return null;
+        }
+
+        return Convert.ToInt32(deger);
     }
 
     #endregion

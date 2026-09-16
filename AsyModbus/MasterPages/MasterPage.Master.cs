@@ -62,6 +62,7 @@ namespace AsyModbus.MasterPages
             menuMakineEkle.Visible = IslemYetki.Kontrol(Sayfalar.MakineEkle, YetkiIslemTurleri.Getirme);
             menuLogListele.Visible = IslemYetki.Kontrol(Sayfalar.LogListele, YetkiIslemTurleri.Getirme);
             menuRolIslemleri.Visible = IslemYetki.Kontrol(Sayfalar.RolIslemleri, YetkiIslemTurleri.Getirme);
+            menuRoleCihazIslemleri.Visible = IslemYetki.Kontrol(Sayfalar.RoleCihazIslemleri, YetkiIslemTurleri.Getirme);
             menuRolYetkileri.Visible = IslemYetki.Kontrol(Sayfalar.RolYetkileri, YetkiIslemTurleri.Getirme);
         }
 

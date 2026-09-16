@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Default.aspx" />
+    <Content Include="Global.asax" />
     <Content Include="Pages\Default.aspx" />
     <Content Include="Files\Images\Icons\logo.png" />
     <Content Include="Files\Images\Kullanicilar\ahmet.png" />
@@ -87,6 +88,7 @@
     <Content Include="Pages\MakineEkle.aspx" />
     <Content Include="Pages\MakineListele.aspx" />
     <Content Include="Pages\ProfilDuzenle.aspx" />
+    <Content Include="Pages\RoleCihazIslemleri.aspx" />
     <Content Include="Pages\RolIslemleri.aspx" />
     <Content Include="Pages\RolYetkileri.aspx" />
     <Content Include="Pages\SifreSifirlama.aspx" />
@@ -111,6 +113,9 @@
     </Compile>
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Pages\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -195,6 +200,13 @@
     </Compile>
     <Compile Include="Pages\ProfilDuzenle.aspx.designer.cs">
       <DependentUpon>ProfilDuzenle.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\RoleCihazIslemleri.aspx.cs">
+      <DependentUpon>RoleCihazIslemleri.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\RoleCihazIslemleri.aspx.designer.cs">
+      <DependentUpon>RoleCihazIslemleri.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\RolIslemleri.aspx.cs">
       <DependentUpon>RolIslemleri.aspx</DependentUpon>

@@ -3,6 +3,11 @@
     max-width: 10%;
 }
 
+.badge-role-yok {
+    background-color: #8B4513;
+    color: #fff;
+}
+
 @media (max-width: 1199px) {
     .makine-kolon {
         flex: 0 0 20%;

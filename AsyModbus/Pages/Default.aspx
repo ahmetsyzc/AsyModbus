@@ -64,8 +64,8 @@
                                                             Makine <%# Eval("makine_no") %>
                                                         </div>
 
-                                                        <span class='<%# "badge " + DurumCssGetir(Eval("durum")) %>'>
-                                                            <%# DurumMetniGetir(Eval("durum")) %>
+                                                        <span class='<%# "badge " + MakineEtiketCssGetir(Eval("rolecihazlar_id"), Eval("durum")) %>'>
+                                                            <%# MakineEtiketMetniGetir(Eval("rolecihazlar_id"), Eval("durum")) %>
                                                         </span>
 
                                                     </div>
@@ -105,7 +105,7 @@
                                                                 Text="Durdur"
                                                                 CssClass="btn btn-danger btn-sm flex-grow-1"
                                                                 CommandArgument='<%# Eval("id") %>'
-                                                                Enabled='<%# DurdurButonuAktifMi(Eval("durum")) %>'
+                                                                Enabled='<%# DurdurButonuAktifMi(Eval("rolecihazlar_id"), Eval("durum")) %>'
                                                                 OnClientClick="return confirm('Makineyi durdurmak istediğinize emin misiniz?');"
                                                                 OnClick="btnDurdur_Click" />
 

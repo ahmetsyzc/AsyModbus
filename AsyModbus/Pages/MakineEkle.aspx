@@ -135,6 +135,32 @@
                             </div>
                         </div>
 
+                        <div class="row mb-3">
+                            <div class="col-12 col-md-3">
+                                <asp:Label Text="Röle Cihazı :" runat="server" />
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <asp:DropDownList
+                                    ID="ddlRoleCihaz"
+                                    runat="server"
+                                    CssClass="form-select"
+                                    AutoPostBack="true"
+                                    OnSelectedIndexChanged="ddlRoleCihaz_SelectedIndexChanged" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-12 col-md-3">
+                                <asp:Label Text="Röle Kanalı :" runat="server" />
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <asp:DropDownList
+                                    ID="ddlRoleKanal"
+                                    runat="server"
+                                    CssClass="form-select" />
+                            </div>
+                        </div>
+
                         <div class="text-center">
                             <asp:Button
                                 ID="btnKaydet"

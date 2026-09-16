@@ -120,8 +120,33 @@ namespace AsyModbus
             }
         }
 
-        protected bool DurdurButonuAktifMi(object durum)
+        protected string MakineEtiketMetniGetir(object roleCihazlarId, object durum)
         {
+            if (!RoleSeciliMi(roleCihazlarId))
+            {
+                return "Röle seçilmedi";
+            }
+
+            return DurumMetniGetir(durum);
+        }
+
+        protected string MakineEtiketCssGetir(object roleCihazlarId, object durum)
+        {
+            if (!RoleSeciliMi(roleCihazlarId))
+            {
+                return "badge-role-yok";
+            }
+
+            return DurumCssGetir(durum);
+        }
+
+        protected bool DurdurButonuAktifMi(object roleCihazlarId, object durum)
+        {
+            if (!RoleSeciliMi(roleCihazlarId))
+            {
+                return false;
+            }
+
             if (durum == null || durum == DBNull.Value)
             {
                 return false;
@@ -130,6 +155,11 @@ namespace AsyModbus
             string durumDegeri = durum.ToString().Trim().ToUpper();
 
             return durumDegeri == "CALISIYOR";
+        }
+
+        private bool RoleSeciliMi(object roleCihazlarId)
+        {
+            return roleCihazlarId != null && roleCihazlarId != DBNull.Value;
         }
 
         protected void btnDurdur_Click(object sender, EventArgs e)

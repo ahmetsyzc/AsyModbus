@@ -1,4 +1,6 @@
 using System;
+using System.Data;
+using System.Web.UI.WebControls;
 
 namespace AsyModbus.Pages
 {
@@ -19,6 +21,9 @@ namespace AsyModbus.Pages
                     Makineler makineler = new Makineler(veritabaniIslemleri);
                     makineler.Id = Convert.ToInt32(id);
 
+                    RoleCihazlar roleCihazlar = new RoleCihazlar(veritabaniIslemleri);
+                    RoleCihazlariniDoldur(roleCihazlar);
+
                     if (makineler.Doldur())
                     {
                         txtID.Text = makineler.Id.ToString();
@@ -30,6 +35,20 @@ namespace AsyModbus.Pages
                         txtBandNo.Text = makineler.BandNo;
                         txtIp.Text = makineler.Ip;
                         txtMfg.Text = makineler.Mfg;
+
+                        if (makineler.RoleCihazlarId.HasValue)
+                        {
+                            ListItem cihazItem = ddlRoleCihaz.Items.FindByValue(makineler.RoleCihazlarId.Value.ToString());
+                            if (cihazItem != null)
+                            {
+                                ddlRoleCihaz.SelectedValue = cihazItem.Value;
+                            }
+                            RoleKanallariniDoldur(veritabaniIslemleri, makineler.Id, makineler.RoleKanalNo);
+                        }
+                        else
+                        {
+                            RoleKanallariniTemizle();
+                        }
                     }
                     else
                     {
@@ -46,6 +65,29 @@ namespace AsyModbus.Pages
                 }
                 btnKaydet.Visible = IslemYetki.Kontrol(YetkiIslemTurleri.Guncelleme);
                 btnSil.Visible = IslemYetki.Kontrol(YetkiIslemTurleri.Silme);
+            }
+        }
+
+        protected void ddlRoleCihaz_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
+            try
+            {
+                veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
+                int makineId;
+                if (!int.TryParse(txtID.Text.Trim(), out makineId))
+                {
+                    makineId = 0;
+                }
+                RoleKanallariniDoldur(veritabaniIslemleri, makineId, null);
+            }
+            catch (Exception ex)
+            {
+                Mesaj.Ver(Mesajlar.SistemselHata(ex.Message), Mesaj.MesajTurleri.FAIL, Master);
+            }
+            finally
+            {
+                veritabaniIslemleri.Bitir();
             }
         }
 
@@ -89,8 +131,17 @@ namespace AsyModbus.Pages
                 makineler.BandNo = txtBandNo.Text.Trim();
                 makineler.Ip = txtIp.Text.Trim();
                 makineler.Mfg = txtMfg.Text.Trim();
+                makineler.RoleCihazlarId = SeciliRoleCihazlarIdGetir();
+                makineler.RoleKanalNo = makineler.RoleCihazlarId.HasValue ? SeciliRoleKanalNoGetir() : null;
                 makineler.GuncelleyenId = currentInfo.KullaniciId;
                 makineler.GuncelleyenIp = currentInfo.Ip;
+
+                if (makineler.KanalKullanimdaMi(makineler.RoleCihazlarId, makineler.RoleKanalNo, makineler.Id))
+                {
+                    veritabaniIslemleri.GeriAl();
+                    Mesaj.Ver(Mesajlar.RoleKanalKullanimda, Mesaj.MesajTurleri.WARNING, Master);
+                    return;
+                }
 
                 bool bandDegisti = eskiBand != makineler.BandNo;
 
@@ -249,9 +300,104 @@ namespace AsyModbus.Pages
             if (mesaj != "")
             {
                 Mesaj.Ver(Mesajlar.ZorunluAlanlar(mesaj), Mesaj.MesajTurleri.WARNING, Master);
+                return false;
+            }
+
+            if (SeciliRoleCihazlarIdGetir().HasValue && !SeciliRoleKanalNoGetir().HasValue)
+            {
+                Mesaj.Ver(Mesajlar.RoleKanalSecilmedi, Mesaj.MesajTurleri.WARNING, Master);
+                return false;
             }
 
             return sonuc;
+        }
+
+        private void RoleCihazlariniDoldur(RoleCihazlar roleCihazlar)
+        {
+            DataTable tablo = roleCihazlar.TumunuGetir();
+            if (tablo == null)
+            {
+                throw new Exception("Role cihaz kayıtları getirilemedi.");
+            }
+
+            ddlRoleCihaz.Items.Clear();
+            ddlRoleCihaz.Items.Add(new ListItem("Seçiniz", "0"));
+
+            foreach (DataRow satir in tablo.Rows)
+            {
+                string ad = satir[RoleCihazlar.C_Sutun_ad] == DBNull.Value
+                    ? string.Empty
+                    : satir[RoleCihazlar.C_Sutun_ad].ToString();
+                string ip = satir[RoleCihazlar.C_Sutun_ip] == DBNull.Value
+                    ? string.Empty
+                    : satir[RoleCihazlar.C_Sutun_ip].ToString();
+                ddlRoleCihaz.Items.Add(new ListItem(ad + " - " + ip, satir[RoleCihazlar.C_Sutun_id].ToString()));
+            }
+        }
+
+        private void RoleKanallariniDoldur(VeritabaniIslemleri veritabaniIslemleri, int makineId, int? seciliKanalNo)
+        {
+            int? roleCihazlarId = SeciliRoleCihazlarIdGetir();
+            if (!roleCihazlarId.HasValue)
+            {
+                RoleKanallariniTemizle();
+                return;
+            }
+
+            RoleCihazlar roleCihazlar = new RoleCihazlar(veritabaniIslemleri);
+            roleCihazlar.Id = roleCihazlarId.Value;
+            if (!roleCihazlar.Doldur() || !roleCihazlar.KanalSayisi.HasValue)
+            {
+                RoleKanallariniTemizle();
+                return;
+            }
+
+            Makineler makineler = new Makineler(veritabaniIslemleri);
+            makineler.Id = makineId;
+            makineler.RoleCihazlarId = roleCihazlarId;
+            makineler.BosKanallariListele(ddlRoleKanal, roleCihazlar.KanalSayisi.Value);
+
+            if (seciliKanalNo.HasValue)
+            {
+                ListItem kanalItem = ddlRoleKanal.Items.FindByValue(seciliKanalNo.Value.ToString());
+                if (kanalItem != null)
+                {
+                    ddlRoleKanal.SelectedValue = kanalItem.Value;
+                }
+            }
+
+            if (ddlRoleKanal.Items.Count <= 1)
+            {
+                Mesaj.Ver(Mesajlar.RoleBosKanalKalmadi, Mesaj.MesajTurleri.WARNING, Master);
+            }
+        }
+
+        private void RoleKanallariniTemizle()
+        {
+            ddlRoleKanal.Items.Clear();
+            ddlRoleKanal.Items.Add(new ListItem("Seçiniz", "0"));
+        }
+
+        private int? SeciliRoleCihazlarIdGetir()
+        {
+            int deger;
+            if (!int.TryParse(ddlRoleCihaz.SelectedValue, out deger) || deger <= 0)
+            {
+                return null;
+            }
+
+            return deger;
+        }
+
+        private int? SeciliRoleKanalNoGetir()
+        {
+            int deger;
+            if (!int.TryParse(ddlRoleKanal.SelectedValue, out deger) || deger <= 0)
+            {
+                return null;
+            }
+
+            return deger;
         }
     }
 }

@@ -25,12 +25,20 @@ public class MakinelerLoglar : OrtakAlanlar, IOrtakMetotlar
     public const string C_Sp_SonKayitGetir = "dbo.SP_MakinelerLoglar_SON_KAYIT_GETIR";
 
     public const string C_Sutun_makineler_id = "makineler_id";
-    public const string C_Sutun_kaynak = "kaynak";
-    public const string C_Sutun_onceki_durum = "onceki_durum";
-    public const string C_Sutun_yeni_durum = "yeni_durum";
-    public const string C_Sutun_islem_tur = "islem_tur";
-    public const string C_Sutun_islem_sonuc = "islem_sonuc";
     public const string C_Sutun_detay = "detay";
+    public const string C_Sutun_kaynak_parametre_id = "kaynak_parametre_id";
+    public const string C_Sutun_onceki_durum_parametre_id = "onceki_durum_parametre_id";
+    public const string C_Sutun_yeni_durum_parametre_id = "yeni_durum_parametre_id";
+    public const string C_Sutun_islem_tur_parametre_id = "islem_tur_parametre_id";
+    public const string C_Sutun_islem_sonuc_parametre_id = "islem_sonuc_parametre_id";
+    public const string C_Sutun_kaynak_ad = "kaynak_ad";
+    public const string C_Sutun_kaynak_kod = "kaynak_kod";
+    public const string C_Sutun_onceki_durum_ad = "onceki_durum_ad";
+    public const string C_Sutun_onceki_durum_kod = "onceki_durum_kod";
+    public const string C_Sutun_yeni_durum_ad = "yeni_durum_ad";
+    public const string C_Sutun_yeni_durum_kod = "yeni_durum_kod";
+    public const string C_Sutun_islem_tur_ad = "islem_tur_ad";
+    public const string C_Sutun_islem_sonuc_ad = "islem_sonuc_ad";
 
     #endregion
 
@@ -43,46 +51,46 @@ public class MakinelerLoglar : OrtakAlanlar, IOrtakMetotlar
         set { makinelerId = value; }
     }
 
-    private string kaynak;
-    public string Kaynak
-    {
-        get { return kaynak; }
-        set { kaynak = value; }
-    }
-
-    private string oncekiDurum;
-    public string OncekiDurum
-    {
-        get { return oncekiDurum; }
-        set { oncekiDurum = value; }
-    }
-
-    private string yeniDurum;
-    public string YeniDurum
-    {
-        get { return yeniDurum; }
-        set { yeniDurum = value; }
-    }
-
-    private string islemTur;
-    public string IslemTur
-    {
-        get { return islemTur; }
-        set { islemTur = value; }
-    }
-
-    private string islemSonuc;
-    public string IslemSonuc
-    {
-        get { return islemSonuc; }
-        set { islemSonuc = value; }
-    }
-
     private string detay;
     public string Detay
     {
         get { return detay; }
         set { detay = value; }
+    }
+
+    private int? kaynakParametreId;
+    public int? KaynakParametreId
+    {
+        get { return kaynakParametreId; }
+        set { kaynakParametreId = value; }
+    }
+
+    private int? oncekiDurumParametreId;
+    public int? OncekiDurumParametreId
+    {
+        get { return oncekiDurumParametreId; }
+        set { oncekiDurumParametreId = value; }
+    }
+
+    private int? yeniDurumParametreId;
+    public int? YeniDurumParametreId
+    {
+        get { return yeniDurumParametreId; }
+        set { yeniDurumParametreId = value; }
+    }
+
+    private int? islemTurParametreId;
+    public int? IslemTurParametreId
+    {
+        get { return islemTurParametreId; }
+        set { islemTurParametreId = value; }
+    }
+
+    private int? islemSonucParametreId;
+    public int? IslemSonucParametreId
+    {
+        get { return islemSonucParametreId; }
+        set { islemSonucParametreId = value; }
     }
 
     #endregion
@@ -93,12 +101,12 @@ public class MakinelerLoglar : OrtakAlanlar, IOrtakMetotlar
     {
         VeritabaniIslem.SpAdi = C_Sp_Ekle;
         VeritabaniIslem.ParametreEkle(C_Sutun_makineler_id, MakinelerId);
-        VeritabaniIslem.ParametreEkle(C_Sutun_kaynak, Kaynak);
-        VeritabaniIslem.ParametreEkle(C_Sutun_onceki_durum, OncekiDurum);
-        VeritabaniIslem.ParametreEkle(C_Sutun_yeni_durum, YeniDurum);
-        VeritabaniIslem.ParametreEkle(C_Sutun_islem_tur, IslemTur);
-        VeritabaniIslem.ParametreEkle(C_Sutun_islem_sonuc, IslemSonuc);
         VeritabaniIslem.ParametreEkle(C_Sutun_detay, Detay);
+        VeritabaniIslem.ParametreEkle(C_Sutun_kaynak_parametre_id, NullDeger(KaynakParametreId));
+        VeritabaniIslem.ParametreEkle(C_Sutun_onceki_durum_parametre_id, NullDeger(OncekiDurumParametreId));
+        VeritabaniIslem.ParametreEkle(C_Sutun_yeni_durum_parametre_id, NullDeger(YeniDurumParametreId));
+        VeritabaniIslem.ParametreEkle(C_Sutun_islem_tur_parametre_id, NullDeger(IslemTurParametreId));
+        VeritabaniIslem.ParametreEkle(C_Sutun_islem_sonuc_parametre_id, NullDeger(IslemSonucParametreId));
         VeritabaniIslem.ParametreEkle(C_Sutun_aktif_mi, AktifMi);
         VeritabaniIslem.ParametreEkle(C_Sutun_ekleyen_id, EkleyenId);
         VeritabaniIslem.ParametreEkle(C_Sutun_ekleyen_ip, EkleyenIp);
@@ -138,14 +146,13 @@ public class MakinelerLoglar : OrtakAlanlar, IOrtakMetotlar
         }
 
         Id = Convert.ToInt32(VeriSatiri[C_Sutun_id]);
-
         MakinelerId = Convert.ToInt32(VeriSatiri[C_Sutun_makineler_id]);
-        Kaynak = VeriSatiri[C_Sutun_kaynak] == DBNull.Value ? "" : VeriSatiri[C_Sutun_kaynak].ToString();
-        OncekiDurum = VeriSatiri[C_Sutun_onceki_durum] == DBNull.Value ? "" : VeriSatiri[C_Sutun_onceki_durum].ToString();
-        YeniDurum = VeriSatiri[C_Sutun_yeni_durum] == DBNull.Value ? "" : VeriSatiri[C_Sutun_yeni_durum].ToString();
-        IslemTur = VeriSatiri[C_Sutun_islem_tur] == DBNull.Value ? "" : VeriSatiri[C_Sutun_islem_tur].ToString();
-        IslemSonuc = VeriSatiri[C_Sutun_islem_sonuc] == DBNull.Value ? "" : VeriSatiri[C_Sutun_islem_sonuc].ToString();
         Detay = VeriSatiri[C_Sutun_detay] == DBNull.Value ? "" : VeriSatiri[C_Sutun_detay].ToString();
+        KaynakParametreId = NullIntGetir(VeriSatiri[C_Sutun_kaynak_parametre_id]);
+        OncekiDurumParametreId = NullIntGetir(VeriSatiri[C_Sutun_onceki_durum_parametre_id]);
+        YeniDurumParametreId = NullIntGetir(VeriSatiri[C_Sutun_yeni_durum_parametre_id]);
+        IslemTurParametreId = NullIntGetir(VeriSatiri[C_Sutun_islem_tur_parametre_id]);
+        IslemSonucParametreId = NullIntGetir(VeriSatiri[C_Sutun_islem_sonuc_parametre_id]);
         AktifMi = VeriSatiri[C_Sutun_aktif_mi] == DBNull.Value ? false : Convert.ToBoolean(VeriSatiri[C_Sutun_aktif_mi]);
 
         if (VeriSatiri[C_Sutun_ekleyen_id] == DBNull.Value)
@@ -197,6 +204,26 @@ public class MakinelerLoglar : OrtakAlanlar, IOrtakMetotlar
         VeritabaniIslem.ParametreEkle(C_Sutun_makineler_id, MakinelerId);
         VeriSatiri = VeritabaniIslem.SatirGetir();
         return VeriSatiri;
+    }
+
+    private object NullDeger(int? deger)
+    {
+        if (deger.HasValue)
+        {
+            return deger.Value;
+        }
+
+        return DBNull.Value;
+    }
+
+    private int? NullIntGetir(object deger)
+    {
+        if (deger == null || deger == DBNull.Value)
+        {
+            return null;
+        }
+
+        return Convert.ToInt32(deger);
     }
 
     #endregion

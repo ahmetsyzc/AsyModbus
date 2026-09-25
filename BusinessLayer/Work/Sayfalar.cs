@@ -12,6 +12,7 @@
     public const string RolIslemleri ="RolIslemleri.aspx";
     public const string RolYetkileri ="RolYetkileri.aspx";
     public const string RoleCihazIslemleri ="RoleCihazIslemleri.aspx";
+    public const string ParametreIslemleri ="ParametreIslemleri.aspx";
     public const string ProfilDuzenle ="ProfilDuzenle.aspx";
     public const string Login ="Login.aspx";
     public const string SifreSifirlama ="SifreSifirlama.aspx";
@@ -32,7 +33,8 @@
             LogDetay,
             RolIslemleri,
             RolYetkileri,
-            RoleCihazIslemleri
+            RoleCihazIslemleri,
+            ParametreIslemleri
             };
         }
     }

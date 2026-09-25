@@ -394,4 +394,142 @@ public class Mesajlar
     {
         get { return "İşlem tamamlandı ancak log kaydı oluşturulamadı."; }
     }
+
+    #region RÖLE MESAJLARI
+
+    public static string MakineRoleBaglantisiEksik
+    {
+        get { return "Makineye röle cihazı veya röle kanalı atanmamış."; }
+    }
+
+    public static string RoleCihaziBulunamadi
+    {
+        get { return "Makineye bağlı röle cihazı bulunamadı."; }
+    }
+
+    public static string RoleBaglantiBilgileriEksik
+    {
+        get { return "Röle cihazının bağlantı bilgileri eksik."; }
+    }
+
+    public static string RoleTetiklemeHatasi
+    {
+        get { return "Röle cihazına durdurma komutu gönderilemedi."; }
+    }
+
+    #endregion
+
+    #region PARAMETRE MESAJLARI
+
+    public static string ParametreGrupAlanlariBos
+    {
+        get { return "Grup kodu ve grup adı boş bırakılamaz."; }
+    }
+
+    public static string ParametreGrupBasariylaEklendi
+    {
+        get { return "Parametre grubu başarıyla eklendi."; }
+    }
+
+    public static string ParametreGrupEklenemedi
+    {
+        get { return "Parametre grubu eklenemedi."; }
+    }
+
+    public static string ParametreGrupBasariylaGuncellendi
+    {
+        get { return "Parametre grubu başarıyla güncellendi."; }
+    }
+
+    public static string ParametreGrupGuncellenemedi
+    {
+        get { return "Parametre grubu güncellenemedi."; }
+    }
+
+    public static string ParametreGrupBasariylaSilindi
+    {
+        get { return "Parametre grubu başarıyla silindi."; }
+    }
+
+    public static string ParametreGrupSilinemedi
+    {
+        get { return "Parametre grubu silinemedi."; }
+    }
+
+    public static string ParametreGrupSistemKaydiSilinemez
+    {
+        get { return "Sistem parametre grubu silinemez."; }
+    }
+
+    public static string ParametreGrupAktifParametreVar
+    {
+        get { return "Bu gruba bağlı aktif parametreler bulunmaktadır."; }
+    }
+
+    public static string ParametreGrupKodZatenVar
+    {
+        get { return "Bu grup kodu zaten kullanılmaktadır."; }
+    }
+
+    public static string ParametreGrupBulunamadi
+    {
+        get { return "Parametre grubu bulunamadı."; }
+    }
+
+    public static string ParametreGrupSecilmedi
+    {
+        get { return "Önce bir parametre grubu seçiniz."; }
+    }
+
+    public static string ParametreAlanlariBos
+    {
+        get { return "Parametre kodu ve adı boş bırakılamaz."; }
+    }
+
+    public static string ParametreBasariylaEklendi
+    {
+        get { return "Parametre başarıyla eklendi."; }
+    }
+
+    public static string ParametreEklenemedi
+    {
+        get { return "Parametre eklenemedi."; }
+    }
+
+    public static string ParametreBasariylaGuncellendi
+    {
+        get { return "Parametre başarıyla güncellendi."; }
+    }
+
+    public static string ParametreGuncellenemedi
+    {
+        get { return "Parametre güncellenemedi."; }
+    }
+
+    public static string ParametreBasariylaSilindi
+    {
+        get { return "Parametre başarıyla silindi."; }
+    }
+
+    public static string ParametreSilinemedi
+    {
+        get { return "Parametre silinemedi."; }
+    }
+
+    public static string ParametreSistemKaydiSilinemez
+    {
+        get { return "Sistem parametresi silinemez."; }
+    }
+
+    public static string ParametreKodZatenVar
+    {
+        get { return "Bu parametre kodu seçili grupta zaten kullanılmaktadır."; }
+    }
+
+    public static string ParametreBulunamadi
+    {
+        get { return "Parametre bulunamadı."; }
+    }
+
+    #endregion
 }

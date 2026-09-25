@@ -88,6 +88,7 @@
     <Content Include="Pages\MakineEkle.aspx" />
     <Content Include="Pages\MakineListele.aspx" />
     <Content Include="Pages\ProfilDuzenle.aspx" />
+    <Content Include="Pages\ParametreIslemleri.aspx" />
     <Content Include="Pages\RoleCihazIslemleri.aspx" />
     <Content Include="Pages\RolIslemleri.aspx" />
     <Content Include="Pages\RolYetkileri.aspx" />
@@ -200,6 +201,13 @@
     </Compile>
     <Compile Include="Pages\ProfilDuzenle.aspx.designer.cs">
       <DependentUpon>ProfilDuzenle.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\ParametreIslemleri.aspx.cs">
+      <DependentUpon>ParametreIslemleri.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\ParametreIslemleri.aspx.designer.cs">
+      <DependentUpon>ParametreIslemleri.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\RoleCihazIslemleri.aspx.cs">
       <DependentUpon>RoleCihazIslemleri.aspx</DependentUpon>

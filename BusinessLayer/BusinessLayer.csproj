@@ -56,6 +56,8 @@
     <Compile Include="Entity\Loglar.cs" />
     <Compile Include="Entity\MakinelerLoglar.cs" />
     <Compile Include="Entity\Makineler.cs" />
+    <Compile Include="Entity\ParametreGruplari.cs" />
+    <Compile Include="Entity\Parametreler.cs" />
     <Compile Include="Entity\RoleCihazlar.cs" />
     <Compile Include="Entity\Roller.cs" />
     <Compile Include="Entity\RolYetkiler.cs" />
@@ -68,9 +70,12 @@
     <Compile Include="Work\Mesaj.cs" />
     <Compile Include="Work\Mesajlar.cs" />
     <Compile Include="Work\OrtakAlanlar.cs" />
+    <Compile Include="Work\RoleKontrol.cs" />
     <Compile Include="Work\RolYetkiSeeder.cs" />
     <Compile Include="Work\Sayfalar.cs" />
     <Compile Include="Work\Sessionlar.cs" />
+    <Compile Include="Work\SistemParametreGruplari.cs" />
+    <Compile Include="Work\SistemParametreKodlari.cs" />
     <Compile Include="Work\VeritabaniIslemleri.cs" />
   </ItemGroup>
   <ItemGroup>

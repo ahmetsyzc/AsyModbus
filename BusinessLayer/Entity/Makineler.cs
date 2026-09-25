@@ -39,7 +39,9 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
     public const string C_Sutun_band_no = "band_no";
     public const string C_Sutun_ip = "ip";
     public const string C_Sutun_mfg = "mfg";
-    public const string C_Sutun_durum = "durum";
+    public const string C_Sutun_durum_parametre_id = "durum_parametre_id";
+    public const string C_Sutun_durum_kod = "durum_kod";
+    public const string C_Sutun_durum_ad = "durum_ad";
     public const string C_Sutun_son_durum_tarih = "son_durum_tarih";
     public const string C_Sutun_sira_no = "sira_no";
     public const string C_Sutun_rolecihazlar_id = "rolecihazlar_id";
@@ -105,11 +107,11 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
         set { mfg = value; }
     }
 
-    private string durum;
-    public string Durum
+    private int? durumParametreId;
+    public int? DurumParametreId
     {
-        get { return durum; }
-        set { durum = value; }
+        get { return durumParametreId; }
+        set { durumParametreId = value; }
     }
 
     private DateTime? sonDurumTarihi;
@@ -222,7 +224,7 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
         Mfg = VeriSatiri[C_Sutun_mfg].ToString();
         RoleCihazlarId = NullIntGetir(VeriSatiri[C_Sutun_rolecihazlar_id]);
         RoleKanalNo = NullIntGetir(VeriSatiri[C_Sutun_role_kanal_no]);
-        Durum = VeriSatiri[C_Sutun_durum] == DBNull.Value ? "" : VeriSatiri[C_Sutun_durum].ToString();
+        DurumParametreId = NullIntGetir(VeriSatiri[C_Sutun_durum_parametre_id]);
 
         if (VeriSatiri[C_Sutun_son_durum_tarih] == DBNull.Value)
         {
@@ -280,7 +282,7 @@ public class Makineler : OrtakAlanlar, IOrtakMetotlar
     {
         VeritabaniIslem.SpAdi = C_Sp_DurumGuncelle;
         VeritabaniIslem.ParametreEkle(C_Sutun_id, Id);
-        VeritabaniIslem.ParametreEkle(C_Sutun_durum, Durum);
+        VeritabaniIslem.ParametreEkle(C_Sutun_durum_parametre_id, NullDeger(DurumParametreId));
         VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_id, GuncelleyenId);
         VeritabaniIslem.ParametreEkle(C_Sutun_guncelleyen_ip, GuncelleyenIp);
         return VeritabaniIslem.Calistir();

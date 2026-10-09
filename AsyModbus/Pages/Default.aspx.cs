@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web.UI;
@@ -9,6 +10,7 @@ namespace AsyModbus
     public partial class Default : System.Web.UI.Page
     {
         private DataTable dataTable;
+        private readonly Dictionary<int, string> makineKomutDurumlari = new Dictionary<int, string>();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -27,6 +29,14 @@ namespace AsyModbus
                 veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
                 Makineler makineler = new Makineler(veritabaniIslemleri);
                 dataTable = makineler.TumunuGetir();
+                MakineKomutlar makineKomutlar = new MakineKomutlar(veritabaniIslemleri);
+                DataTable aktifKomutlar = makineKomutlar.AktifleriGetir();
+                makineKomutDurumlari.Clear();
+                foreach (DataRow veriSatiri in aktifKomutlar.Rows)
+                {
+                    int makineId = Convert.ToInt32(veriSatiri[MakineKomutlar.C_Sutun_makineler_id]);
+                    makineKomutDurumlari[makineId] = veriSatiri[MakineKomutlar.C_Sutun_durum_kod].ToString();
+                }
                 DataView dataView = new DataView(dataTable);
                 // Bantların sıralanabilmesi için DataView oluşturulur.
                 DataView bantGorunumu = new DataView(dataTable);
@@ -115,8 +125,13 @@ namespace AsyModbus
             }
         }
 
-        protected string MakineEtiketMetniGetir(object roleCihazlarId, object durumAd, object durumKod)
+        protected string MakineEtiketMetniGetir(object makineId, object roleCihazlarId, object durumAd, object durumKod)
         {
+            if (AktifKomutVarMi(makineId))
+            {
+                return KomutDurumMetniGetir(makineId);
+            }
+
             if (!RoleSeciliMi(roleCihazlarId))
             {
                 return "Röle seçilmedi";
@@ -125,8 +140,13 @@ namespace AsyModbus
             return DurumMetniGetir(durumAd, durumKod);
         }
 
-        protected string MakineEtiketCssGetir(object roleCihazlarId, object durumKod)
+        protected string MakineEtiketCssGetir(object makineId, object roleCihazlarId, object durumKod)
         {
+            if (AktifKomutVarMi(makineId))
+            {
+                return "bg-warning text-dark";
+            }
+
             if (!RoleSeciliMi(roleCihazlarId))
             {
                 return "badge-role-yok";
@@ -135,14 +155,30 @@ namespace AsyModbus
             return DurumCssGetir(durumKod);
         }
 
-        protected bool DurdurButonuAktifMi(object roleCihazlarId, object durumKod)
+        protected bool DurdurButonuAktifMi(object makineId, object roleCihazlarId, object durumKod)
         {
-            if (!RoleSeciliMi(roleCihazlarId))
+            if (!RoleSeciliMi(roleCihazlarId) || AktifKomutVarMi(makineId))
             {
                 return false;
             }
 
             return DurumKodNormalize(durumKod) == SistemParametreKodlari.Calisiyor;
+        }
+
+        protected bool AktifKomutVarMi(object makineId)
+        {
+            return makineKomutDurumlari.ContainsKey(Convert.ToInt32(makineId));
+        }
+
+        protected string KomutDurumMetniGetir(object makineId)
+        {
+            string durumKod;
+            if (!makineKomutDurumlari.TryGetValue(Convert.ToInt32(makineId), out durumKod))
+            {
+                return string.Empty;
+            }
+            return durumKod == SistemParametreKodlari.Isleniyor
+                ? Mesajlar.MakineDurdurmaIslemeAlindi : Mesajlar.MakineDurdurmaBekleniyor;
         }
 
         private bool RoleSeciliMi(object roleCihazlarId)
@@ -175,18 +211,43 @@ namespace AsyModbus
 
         protected void btnDurdur_Click(object sender, EventArgs e)
         {
-            Button btnDurdur = (Button)sender;
-            int makineId = Convert.ToInt32(btnDurdur.CommandArgument);
             Sessionlar sessionlar = new Sessionlar();
             CurrentInfo currentInfo = sessionlar.Current._CurrentInfo;
+            if (currentInfo == null || !currentInfo.LoginYapildiMi || currentInfo.KullaniciId <= 0)
+            {
+                Response.Redirect("~/Pages/Login.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
+                return;
+            }
+
+            Button btnDurdur = sender as Button;
+            int makineId;
+            if (btnDurdur == null || !int.TryParse(btnDurdur.CommandArgument, out makineId) || makineId <= 0)
+            {
+                Mesaj.Ver(Mesajlar.MakineBulunamadi, Mesaj.MesajTurleri.FAIL, Master);
+                return;
+            }
+
             VeritabaniIslemleri veritabaniIslemleri = new VeritabaniIslemleri();
             try
             {
-                veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
+                // Talep ve otomatik uygulama logu birlikte kaydedilir.
+                veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMLI);
+                Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
+                kullanicilar.Id = currentInfo.KullaniciId;
+                Roller roller = new Roller(veritabaniIslemleri);
+                roller.Id = currentInfo.RolId;
+                // Roller.DOLDUR yalnizca aktif rolleri getirir; oturumdaki rol de guncel olmali.
+                if (!kullanicilar.Doldur() || !kullanicilar.AktifMi
+                    || kullanicilar.RollerId != currentInfo.RolId || !roller.Doldur())
+                {
+                    Mesaj.Ver(Mesajlar.YetkisizIslem, Mesaj.MesajTurleri.WARNING, Master);
+                    return;
+                }
+
                 Makineler makineler = new Makineler(veritabaniIslemleri);
                 makineler.Id = makineId;
-
-                if (!makineler.Doldur())
+                if (!makineler.Doldur() || !makineler.AktifMi)
                 {
                     Mesaj.Ver(Mesajlar.MakineBulunamadi, Mesaj.MesajTurleri.FAIL, Master);
                     return;
@@ -194,114 +255,77 @@ namespace AsyModbus
 
                 Parametreler parametreler = new Parametreler(veritabaniIslemleri);
                 int? calisiyorId = parametreler.IdGetir(SistemParametreGruplari.MakineDurumu, SistemParametreKodlari.Calisiyor);
-                int? durdurulduId = parametreler.IdGetir(SistemParametreGruplari.MakineDurumu, SistemParametreKodlari.Durduruldu);
-                int? personelId = parametreler.IdGetir(SistemParametreGruplari.IslemKaynagi, SistemParametreKodlari.Personel);
                 int? durdurmaId = parametreler.IdGetir(SistemParametreGruplari.IslemTuru, SistemParametreKodlari.Durdurma);
-                int? basariliId = parametreler.IdGetir(SistemParametreGruplari.IslemSonucu, SistemParametreKodlari.Basarili);
-                int? basarisizId = parametreler.IdGetir(SistemParametreGruplari.IslemSonucu, SistemParametreKodlari.Basarisiz);
-
-                if (!calisiyorId.HasValue || !durdurulduId.HasValue || !personelId.HasValue ||
-                    !durdurmaId.HasValue || !basariliId.HasValue || !basarisizId.HasValue)
+                if (!calisiyorId.HasValue || !durdurmaId.HasValue)
                 {
-                    Mesaj.Ver(Mesajlar.SistemselHata("Gerekli parametre kayıtları bulunamadı."), Mesaj.MesajTurleri.FAIL, Master);
+                    Mesaj.Ver(Mesajlar.SistemselHata(Mesajlar.KomutParametreleriEksik), Mesaj.MesajTurleri.FAIL, Master);
                     return;
                 }
-
-                if (!makineler.DurumParametreId.HasValue || makineler.DurumParametreId.Value != calisiyorId.Value)
+                if (makineler.DurumParametreId != calisiyorId)
                 {
                     Mesaj.Ver(Mesajlar.MakineCalismiyor, Mesaj.MesajTurleri.WARNING, Master);
                     return;
                 }
-                // Makineye röle cihazı ve kanal atanmış mı kontrol edilir.
                 if (!makineler.RoleCihazlarId.HasValue || !makineler.RoleKanalNo.HasValue)
                 {
                     Mesaj.Ver(Mesajlar.MakineRoleBaglantisiEksik, Mesaj.MesajTurleri.WARNING, Master);
                     return;
                 }
 
-                // Makinenin bağlı olduğu röle cihazı veritabanından alınır.
                 RoleCihazlar roleCihazlar = new RoleCihazlar(veritabaniIslemleri);
                 roleCihazlar.Id = makineler.RoleCihazlarId.Value;
-
+                // DOLDUR SP'si yalnizca aktif role cihazlarini getirir.
                 if (!roleCihazlar.Doldur())
                 {
                     Mesaj.Ver(Mesajlar.RoleCihaziBulunamadi, Mesaj.MesajTurleri.FAIL, Master);
                     return;
                 }
-
-                // Röle cihazının IP ve port bilgileri kontrol edilir.
-                if (string.IsNullOrEmpty(roleCihazlar.Ip) || !roleCihazlar.Port.HasValue || roleCihazlar.Port.Value <= 0)
+                System.Net.IPAddress roleIp;
+                if (!System.Net.IPAddress.TryParse(roleCihazlar.Ip, out roleIp)
+                    || !roleCihazlar.Port.HasValue || roleCihazlar.Port.Value <= 0 || roleCihazlar.Port.Value > 65535)
                 {
                     Mesaj.Ver(Mesajlar.RoleBaglantiBilgileriEksik, Mesaj.MesajTurleri.FAIL, Master);
                     return;
                 }
-
-                // HW-584 üzerindeki makineye atanmış kanal 2 saniye tetiklenir.
-                RoleKontrol roleKontrol = new RoleKontrol();
-
-                bool roleBasarili = roleKontrol.KanalTetikle( roleCihazlar.Ip, roleCihazlar.Port.Value, makineler.RoleKanalNo.Value );
-
-                // Röle işlemi başarısızsa makinenin durumu değiştirilmez; deneme MakinelerLoglar'a yazılır.
-                if (!roleBasarili)
+                if (!roleCihazlar.KanalSayisi.HasValue || roleCihazlar.KanalSayisi.Value <= 0
+                    || makineler.RoleKanalNo.Value <= 0 || makineler.RoleKanalNo.Value > roleCihazlar.KanalSayisi.Value)
                 {
-                    MakinelerLoglar hataLog = new MakinelerLoglar(veritabaniIslemleri);
-                    hataLog.MakinelerId = makineId;
-                    hataLog.KaynakParametreId = personelId;
-                    hataLog.OncekiDurumParametreId = makineler.DurumParametreId;
-                    hataLog.YeniDurumParametreId = makineler.DurumParametreId;
-                    hataLog.IslemTurParametreId = durdurmaId;
-                    hataLog.IslemSonucParametreId = basarisizId;
-                    hataLog.Detay = "Röle cihazına durdurma komutu gönderilemedi. Röle cihazı ID: "
-                        + roleCihazlar.Id
-                        + ", IP: " + roleCihazlar.Ip
-                        + ", Port: " + roleCihazlar.Port.Value
-                        + ", Kanal: " + makineler.RoleKanalNo.Value
-                        + ". Teknik hata: " + roleKontrol.SonHata;
-                    hataLog.AktifMi = true;
-                    hataLog.EkleyenId = currentInfo.KullaniciId;
-                    hataLog.EkleyenIp = currentInfo.Ip;
-                    hataLog.Ekle();
-
-                    Mesaj.Ver(Mesajlar.RoleTetiklemeHatasi, Mesaj.MesajTurleri.FAIL, Master);
+                    Mesaj.Ver(Mesajlar.RoleKanalGecersiz, Mesaj.MesajTurleri.WARNING, Master);
                     return;
                 }
 
-                int? oncekiDurumParametreId = makineler.DurumParametreId;
-                makineler.DurumParametreId = durdurulduId;
-                makineler.GuncelleyenId = currentInfo.KullaniciId;
-                makineler.GuncelleyenIp = currentInfo.Ip;
-
-                if (!makineler.DurumGuncelle())
+                MakineKomutlar makineKomutlar = new MakineKomutlar(veritabaniIslemleri);
+                makineKomutlar.MakinelerId = makineId;
+                makineKomutlar.IslemTurParametreId = durdurmaId.Value;
+                if (makineKomutlar.AktifKomutVarMi())
                 {
-                    Mesaj.Ver(Mesajlar.MakineDurdurmaHatasi, Mesaj.MesajTurleri.FAIL, Master);
+                    Mesaj.Ver(Mesajlar.MakineDurdurmaTalebiZatenVar, Mesaj.MesajTurleri.WARNING, Master);
                     return;
                 }
 
-                MakinelerLoglar makinelerLoglar = new MakinelerLoglar(veritabaniIslemleri);
-                makinelerLoglar.MakinelerId = makineId;
-                makinelerLoglar.KaynakParametreId = personelId;
-                makinelerLoglar.OncekiDurumParametreId = oncekiDurumParametreId;
-                makinelerLoglar.YeniDurumParametreId = durdurulduId;
-                makinelerLoglar.IslemTurParametreId = durdurmaId;
-                makinelerLoglar.IslemSonucParametreId = basariliId;
-                makinelerLoglar.Detay = "Makine web paneli üzerinden durdurma komutu aldı. Röle cihazı ID: "
-                    + roleCihazlar.Id
-                    + ", IP: " + roleCihazlar.Ip
-                    + ", Port: " + roleCihazlar.Port.Value
-                    + ", Kanal: " + makineler.RoleKanalNo.Value + ".";
-                makinelerLoglar.AktifMi = true;
-                makinelerLoglar.EkleyenId = currentInfo.KullaniciId;
-                makinelerLoglar.EkleyenIp = currentInfo.Ip;
-
-                if (!makinelerLoglar.Ekle())
+                makineKomutlar.Detay = Mesajlar.MakineDurdurmaTalebiDetay;
+                makineKomutlar.EkleyenId = currentInfo.KullaniciId;
+                makineKomutlar.EkleyenIp = currentInfo.Ip;
+                if (!makineKomutlar.Ekle())
                 {
-                    Mesaj.Ver(Mesajlar.MakineLoglamaHatasi, Mesaj.MesajTurleri.FAIL, Master);
-                    MakineleriGetir();
+                    Mesaj.Ver(Mesajlar.MakineDurdurmaTalebiOlusturulamadi, Mesaj.MesajTurleri.FAIL, Master);
                     return;
                 }
 
-                Mesaj.Ver(Mesajlar.MakineBasariylaDurduruldu, Mesaj.MesajTurleri.SUCCESS, Master);
-                MakineleriGetir();
+                veritabaniIslemleri.Uygula();
+                Mesaj.Ver(Mesajlar.MakineDurdurmaTalebiOlusturuldu, Mesaj.MesajTurleri.SUCCESS, Master);
+            }
+            catch (System.Data.SqlClient.SqlException ex)
+            {
+                // Iki eszamanli web isteginde son kontrolu EKLE SP'si yapar.
+                if (ex.Number == 51104)
+                {
+                    Mesaj.Ver(Mesajlar.MakineDurdurmaTalebiZatenVar, Mesaj.MesajTurleri.WARNING, Master);
+                }
+                else
+                {
+                    Mesaj.Ver(Mesajlar.SistemselHata(ex.Message), Mesaj.MesajTurleri.FAIL, Master);
+                }
             }
             catch (Exception ex)
             {
@@ -309,7 +333,9 @@ namespace AsyModbus
             }
             finally
             {
-                veritabaniIslemleri.Bitir();
+                try { veritabaniIslemleri.GeriAl(); }
+                finally { veritabaniIslemleri.Bitir(); }
+                MakineleriGetir();
             }
         }
 
@@ -376,24 +402,24 @@ namespace AsyModbus
                     {
                         lblDetayIslemiYapan.Text = "Sistem";
                     }
-                    else if (kaynakKod == SistemParametreKodlari.Personel)
+                    else if (kaynakKod == SistemParametreKodlari.Personel
+                        || kaynakKod == SistemParametreKodlari.Servis)
                     {
+                        // Servis işlemlerinde talep sahibinin kimliği operasyon logunda korunur.
+                        lblDetayIslemiYapan.Text = kaynakKod == SistemParametreKodlari.Servis
+                            ? Mesajlar.KomutTalepSahibiBulunamadi : "Personel";
                         if (ekleyenId > 0)
                         {
                             Kullanicilar kullanicilar = new Kullanicilar(veritabaniIslemleri);
                             kullanicilar.Id = ekleyenId;
                             if (kullanicilar.Doldur())
                             {
-                                lblDetayIslemiYapan.Text = kullanicilar.Ad + " " + kullanicilar.Soyad;
+                                string adSoyad = (kullanicilar.Ad + " " + kullanicilar.Soyad).Trim();
+                                if (!string.IsNullOrWhiteSpace(adSoyad))
+                                {
+                                    lblDetayIslemiYapan.Text = Server.HtmlEncode(adSoyad);
+                                }
                             }
-                            else
-                            {
-                                lblDetayIslemiYapan.Text = "Personel";
-                            }
-                        }
-                        else
-                        {
-                            lblDetayIslemiYapan.Text = "Personel";
                         }
                     }
                     else

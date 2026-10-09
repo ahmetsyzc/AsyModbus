@@ -348,6 +348,83 @@ public class Mesajlar
 
     #region Makine Durdurma Mesajları
 
+    public static string KomutTalepSahibiBulunamadi
+    {
+        get { return "Talebi oluşturan kullanıcı bilgisi bulunamadı."; }
+    }
+
+    public static string ServisKimligiGecersiz { get { return "Servis için geçerli bir IPv4 adresi belirtilmelidir."; } }
+    public static string KomutIslemTuruGecersiz { get { return "Servis yalnızca DURDURMA komutunu destekler."; } }
+    public static string RoleKomutuUygulandi { get { return "Durdurma komutu gönderildi."; } }
+    public static string KomutSonucuKaydedilemedi { get { return "Komut sonucu kaydedilemedi; fiziksel komut tekrar uygulanmayacak."; } }
+    public static string KomutOperasyonLoguKaydedilemedi { get { return "Operasyon logu kaydedilemedi; sonuç işlemi geri alınacak."; } }
+
+    public static string KomutIslemeAlindi(int komutId, int makineId)
+    {
+        return "Komut işleme alındı. Komut ID: " + komutId + ", Makine ID: " + makineId;
+    }
+
+    public static string MakineDurdurmaBekleniyor { get { return "Bekliyor"; } }
+    public static string MakineDurdurmaIslemeAlindi { get { return "İşleniyor"; } }
+
+    public static string KomutSahiplenilemedi { get { return "Komut işleme alınamadı."; } }
+
+    public static string KomutParametresiEksik(string grupKod, string kod)
+    {
+        return KomutParametreleriEksik + " " + grupKod + "/" + kod;
+    }
+
+    public static string KomutRoleDetayi(bool basarili, string sonHata, string ip, int port, int kanal)
+    {
+        return (basarili ? RoleKomutuUygulandi : RoleTetiklemeHatasi + " " + sonHata)
+            + " IP: " + ip + ", Port: " + port + ", Kanal: " + kanal + ".";
+    }
+
+    public static string KomutOperasyonDetayi(int komutId, string detay, string ekleyenIp)
+    {
+        return "Komut ID: " + komutId + ". " + detay + " Talep eden IP: " + ekleyenIp;
+    }
+
+    public static string KomutSonucu(int komutId, bool basarili, string detay)
+    {
+        return "Komut ID: " + komutId + ". " + (basarili ? "BAŞARILI. " : "BAŞARISIZ. ") + detay;
+    }
+
+    public static string KomutServisiHatasi(string detay)
+    {
+        return "Komut kontrolünde altyapı hatası oluştu. " + detay + " Formun timer'ı durdurulmalı; işleniyor durumunda kalan komutlar kontrol edilmelidir.";
+    }
+
+    public static string MakineDurdurmaTalebiOlusturuldu
+    {
+        get { return "Durdurma talebi oluşturuldu."; }
+    }
+
+    public static string MakineDurdurmaTalebiOlusturulamadi
+    {
+        get { return "Durdurma talebi oluşturulamadı."; }
+    }
+
+    public static string MakineDurdurmaTalebiZatenVar
+    {
+        get { return "Bu makine için bekleyen veya işlenen bir durdurma talebi zaten var."; }
+    }
+
+    public static string MakineDurdurmaTalebiDetay
+    {
+        get { return "Web panelinden durdurma talebi oluşturuldu. Servis işlemi bekleniyor."; }
+    }
+
+    public static string KomutParametreleriEksik
+    {
+        get { return "Gerekli komut parametre kayıtları bulunamadı."; }
+    }
+
+    public static string RoleKanalGecersiz
+    {
+        get { return "Makinenin röle kanalı, cihazın kanal aralığında olmalıdır."; }
+    }
+
     public static string MakineCalismiyor
     {
         get { return "Yalnızca çalışan makineler durdurulabilir."; }
@@ -532,4 +609,59 @@ public class Mesajlar
     }
 
     #endregion
+
+    #region Komut Servisi Form Mesajları
+
+    public static string KomutServisiPencereBasligi { get { return "AsyModbus • Komut Servisi"; } }
+    public static string KomutServisiKayitBasligi { get { return "İşlem Kayıtları"; } }
+    public static string KomutServisiBaslatButonu { get { return "Başlat"; } }
+    public static string KomutServisiDurdurButonu { get { return "Durdur"; } }
+
+    public static string KomutServisiKontrolEdiliyor
+    {
+        get { return "Kontrol ediliyor"; }
+    }
+
+    public static string KomutServisiCalisiyor
+    {
+        get { return "Çalışıyor"; }
+    }
+
+    public static string KomutServisiDurduruldu
+    {
+        get { return "Durduruldu"; }
+    }
+
+    public static string KomutServisiHataIleDurduruldu
+    {
+        get { return "Hata nedeniyle durduruldu"; }
+    }
+
+    public static string KomutServisiSonucKaydedildi
+    {
+        get { return "Komut sonucu kaydedildi."; }
+    }
+
+    public static string KomutServisiKontrolTamamlandi
+    {
+        get { return "Kontrol tamamlandı."; }
+    }
+
+    public static string KomutServisiKontrolBaslatildi
+    {
+        get { return "Kontrol başlatıldı."; }
+    }
+
+    public static string KomutServisiKontrolDurduruldu
+    {
+        get { return "Yeni kontroller durduruldu."; }
+    }
+
+    public static string KomutServisiKapaniyor
+    {
+        get { return "İşlem tamamlanıp kapanıyor"; }
+    }
+
+    #endregion
+
 }

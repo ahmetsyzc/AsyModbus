@@ -12,4 +12,8 @@ public static class SistemParametreKodlari
     public const string Sistem = "SISTEM";
 
     public const string Durdurma = "DURDURMA";
+    public const string Bekliyor = "BEKLIYOR";
+    public const string Isleniyor = "ISLENIYOR";
+    public const string Servis = "SERVIS";
+    public const string KomutKontrolSuresiSn = "KOMUT_KONTROL_SURESI_SN";
 }

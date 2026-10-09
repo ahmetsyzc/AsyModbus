@@ -64,8 +64,9 @@
                                                             Makine <%# Eval("makine_no") %>
                                                         </div>
 
-                                                        <span class='<%# "badge " + MakineEtiketCssGetir(Eval("rolecihazlar_id"), Eval("durum_kod")) %>'>
-                                                            <%# MakineEtiketMetniGetir(Eval("rolecihazlar_id"), Eval("durum_ad"), Eval("durum_kod")) %>
+                                                        <span class='<%# "badge makine-durum-etiketi " + MakineEtiketCssGetir(Eval("id"), Eval("rolecihazlar_id"), Eval("durum_kod")) %>'
+                                                            title='<%# System.Web.HttpUtility.HtmlAttributeEncode(DurumMetniGetir(Eval("durum_ad"), Eval("durum_kod"))) %>'>
+                                                            <%# MakineEtiketMetniGetir(Eval("id"), Eval("rolecihazlar_id"), Eval("durum_ad"), Eval("durum_kod")) %>
                                                         </span>
 
                                                     </div>
@@ -105,8 +106,8 @@
                                                                 Text="Durdur"
                                                                 CssClass="btn btn-danger btn-sm flex-grow-1"
                                                                 CommandArgument='<%# Eval("id") %>'
-                                                                Enabled='<%# DurdurButonuAktifMi(Eval("rolecihazlar_id"), Eval("durum_kod")) %>'
-                                                                OnClientClick="return confirm('Makineyi durdurmak istediğinize emin misiniz?');"
+                                                                Enabled='<%# DurdurButonuAktifMi(Eval("id"), Eval("rolecihazlar_id"), Eval("durum_kod")) %>'
+                                                                OnClientClick="return confirm('Makine için durdurma talebi oluşturmak istediğinize emin misiniz?');"
                                                                 OnClick="btnDurdur_Click" />
 
                                                         </div>

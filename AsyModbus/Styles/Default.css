@@ -49,3 +49,10 @@
         max-width: 50%;
     }
 }
+/* Dar makine kartinda durum metni kartin disina tasmaz. */
+.makine-durum-etiketi {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.25;
+}

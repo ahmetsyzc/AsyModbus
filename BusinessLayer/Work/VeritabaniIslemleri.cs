@@ -179,6 +179,18 @@ public class VeritabaniIslemleri
                 yeniKayitlar = LogIcinKayitGetir(parametreler);
             }
 
+            // Web disinda calisan uygulamalarda entity'nin audit bilgileri kullanilir.
+            int islemKullaniciId = 0;
+            string islemIp = string.Empty;
+            foreach (SqlParameter sqlParameter in parametreler)
+            {
+                if (sqlParameter.Value == null || sqlParameter.Value == DBNull.Value) continue;
+                if (sqlParameter.ParameterName == "@guncelleyen_id" || sqlParameter.ParameterName == "@ekleyen_id")
+                    islemKullaniciId = Convert.ToInt32(sqlParameter.Value);
+                if (sqlParameter.ParameterName == "@guncelleyen_ip" || sqlParameter.ParameterName == "@ekleyen_ip")
+                    islemIp = Convert.ToString(sqlParameter.Value);
+            }
+
             // Ana işlemin parametreleri temizlenir.
             // Loglar.Ekle() aynı VeritabaniIslemleri nesnesini kullanacağı için gereklidir.
             parametreler.Clear();
@@ -199,8 +211,8 @@ public class VeritabaniIslemleri
                 detay += LogKayitMetniOlustur(yeniKayitlar, Mesajlar.LogYeniKayit);
             }
 
-            int ekleyenId = 0;
-            string ekleyenIp = string.Empty;
+            int ekleyenId = islemKullaniciId;
+            string ekleyenIp = islemIp;
             string url = string.Empty;
 
             try
@@ -244,6 +256,8 @@ public class VeritabaniIslemleri
             }
             catch
             {
+                // Transaction icindeki ana islem log olmadan commit edilmemelidir.
+                if (sqlTransaction != null) throw;
                 return true;
             }
         }

@@ -2,7 +2,7 @@
 using System.Net;
 using System.Threading;
 
-public class RoleKontrol
+public class RoleKontrol : IRoleKontrol
 {
     // Rölenin ON kalacağı süre.
     private const int C_TetiklemeSuresi = 2000;

@@ -2,11 +2,11 @@
 
 AsyModbus; C#, ASP.NET Web Forms, ADO.NET ve Microsoft SQL Server kullanılarak geliştirilen web tabanlı bir makine yönetim, takip ve kontrol uygulamasıdır.
 
-Projenin temel amacı; tekstil makinelerinin merkezi bir web paneli üzerinden izlenmesi, güvenli şekilde durdurulması ve gerçekleşen makine hareketlerinin kayıt altına alınmasıdır.
+Projenin amacı; tekstil makinelerinin merkezi bir web paneli üzerinden izlenmesi, durdurma taleplerinin yönetilmesi ve makine hareketlerinin kayıt altına alınmasıdır.
 
-Sistem; web uygulaması, SQL Server veritabanı ve ağ üzerinden kontrol edilen röle cihazlarını bir araya getirerek yazılım ile saha ekipmanları arasında kontrollü bir yapı oluşturmayı amaçlamaktadır.
+Sistem; web uygulaması, SQL Server veritabanı ve HW-584 ağ röle cihazlarını bir araya getirerek yazılım ile saha ekipmanları arasında iletişim sağlar.
 
-Makine durumlarının gerçek zamanlı olarak otomatik okunması için gerekli saha ve haberleşme çalışmaları devam etmektedir. Makine durdurma işlemi ise HW-584 röle cihazları kullanılarak test edilmiş ve web uygulamasından fiziksel röle tetikleme işlemi gerçekleştirilmiştir.
+> 🚧 Proje geliştirme ve saha entegrasyonu aşamasındadır. Sistem yalnızca uzaktan durdurma işlemini desteklemektedir. Gerçek makine durumlarının otomatik okunması için çalışmalar devam etmektedir.
 
 ## 🚀 Mevcut Özellikler
 
@@ -28,8 +28,8 @@ Makine durumlarının gerçek zamanlı olarak otomatik okunması için gerekli s
 * Makinelerin bant numarasına göre dinamik olarak gruplandırılması
 * Bantların numarasına göre sıralanması
 * Makinelerin saha yerleşimine uygun şekilde 10’lu kart düzeninde gösterilmesi
-* Makine çalışma durumlarının merkezi panel üzerinden görüntülenmesi
-* Yalnızca çalışan makineler için durdurma işleminin aktif edilmesi
+* Sistemde kayıtlı makine durumlarının merkezi panel üzerinden görüntülenmesi
+* Yalnızca çalışan makineler için durdurma talebi oluşturulabilmesi
 * Makine detaylarının Bootstrap modal üzerinden görüntülenmesi
 * Son makine hareketi ve işlemi yapan kullanıcının görüntülenmesi
 * Makine hareketlerinin ayrı operasyon loglarında tutulması
@@ -45,28 +45,21 @@ Makine durumlarının gerçek zamanlı olarak otomatik okunması için gerekli s
 * Her makine için ayrı röle kanalı tanımlanabilmesi
 * Kullanılan kanalların yeni makine atamalarında gizlenmesi
 * Makine güncellenirken mevcut kanalının korunabilmesi
-* Web uygulamasından fiziksel röle tetikleme
-* Rölenin belirli süre aktif tutulup otomatik olarak bırakılması
+* Rölenin belirli süre tetiklenip otomatik olarak bırakılması
 * Röle bırakma işlemi başarısız olduğunda tekrar deneme
-* Röle işlemlerinde hata bilgisinin kayıt altına alınması
+* Röle işlemlerinde hata bilgilerinin kayıt altına alınması
 
-### Makine Durdurma Sistemi
+### Makine Komut Kuyruğu ve Servisi
 
-Makine kontrol paneli üzerinden yalnızca güvenli durdurma işlemi gerçekleştirilmektedir. Sistem üzerinden makinelerin uzaktan başlatılması desteklenmemektedir.
-
-Durdurma işlemi sırasında:
-
-1. Kullanıcının oturumu ve yetkisi kontrol edilir.
-2. Makinenin mevcut durumu kontrol edilir.
-3. Makineye atanmış röle cihazı ve kanal bilgileri alınır.
-4. İlgili HW-584 röle cihazına ağ üzerinden komut gönderilir.
-5. Röle kanalı yaklaşık 2 saniye boyunca tetiklenir.
-6. Süre sonunda röle tekrar normal konumuna alınır.
-7. İşlemin başarılı veya başarısız sonucu operasyon loguna kaydedilir.
-
-Rölenin normal konumuna dönememesi durumunda bırakma komutu tekrar gönderilmektedir.
-
-Bu yapı gerçek HW-584 cihazları üzerinde test edilmiş ve web uygulamasından röle tetikleme işlemi doğrulanmıştır.
+* Durdurma taleplerinin `MakineKomutlar` tablosunda tutulması
+* Web tarafındaki talep oluşturma işlemi ile komut işlemenin ayrılması
+* Bekleyen komutların `MakineKomutServisi.KontrolEt()` üzerinden işlenmesi
+* Aynı makine için mükerrer komut oluşturulmasının engellenmesi
+* Atomik sahiplenme ile aynı komutun eş zamanlı işlenmesinin önlenmesi
+* Komut sonucunun ve operasyon logunun transaction içerisinde birlikte kaydedilmesi
+* Hata bilgilerinin sonuç ve log kayıtlarına aktarılması
+* Devam eden işlemi gözeten güvenli kapanış yönetimi
+* Kontrol aralığının Form timerı üzerinden 5000 ms olarak yönetilmesi
 
 ### Makine Sıralama Sistemi
 
@@ -76,21 +69,20 @@ Bu yapı gerçek HW-584 cihazları üzerinde test edilmiş ve web uygulamasında
 * Makine sıralarının `sira_no` alanında saklanması
 * Makine numarasına göre varsayılan sıralamaya dönme
 * Sıralama işlemlerinde transaction ve rollback desteği
-* Sıralama sonrası ana matris ve modal verilerinin yenilenmesi
+* Sıralama sonrası ana panel ve modal verilerinin yenilenmesi
 * `NULL` sıra numaralarının listenin sonunda gösterilmesi
 * Sayısal olmayan makine numaralarının güvenli şekilde sıralanması
 * Toplu sıralama işleminin tek bir log kaydıyla kaydedilmesi
 
 ### Parametre Yönetimi
 
-Uygulama içerisinde kullanılan ortak ve tekrar eden değerlerin kod içerisine sabit olarak yazılması yerine merkezi olarak yönetilebilmesi için genel bir parametre altyapısı oluşturulmuştur.
+Uygulama genelinde kullanılan ortak değerler merkezi parametre altyapısı üzerinden yönetilmektedir.
 
-Parametre yapısı iki temel bölümden oluşmaktadır:
-
-* **Parametre Grupları** — Benzer parametrelerin kategorize edilmesini sağlar.
-* **Parametreler** — İlgili gruba ait kod ve değerlerin tutulmasını sağlar.
-
-Bu yapı sayesinde makine durumu, işlem türü ve işlem sonucu gibi sistem genelinde kullanılan değerler merkezi olarak yönetilebilmektedir.
+* Parametre grubu oluşturma ve yönetme
+* Parametre ekleme ve güncelleme
+* Parametreleri gruplarına göre listeleme
+* Parametre kodlarının merkezi olarak tanımlanması
+* Ortak parametre kodlarının uygulama genelinde kullanılması
 
 Örnek parametre grupları:
 
@@ -98,37 +90,24 @@ Bu yapı sayesinde makine durumu, işlem türü ve işlem sonucu gibi sistem gen
 * İşlem türleri
 * İşlem sonuçları
 
-Parametre yönetimi kapsamında:
-
-* Parametre grubu oluşturma ve yönetme
-* Parametre ekleme ve güncelleme
-* Parametreleri gruplarına göre listeleme
-* Sistem tarafından kullanılan parametre kodlarının merkezi olarak tanımlanması
-* Parametre kodlarının uygulama içerisinde ortak şekilde kullanılması
-* Sistem parametrelerinin kontrollü şekilde yönetilmesi
-
-işlemleri desteklenmektedir.
-
 ### Rol ve Yetkilendirme
 
 * Rol ekleme, güncelleme ve pasif silme
 * Sayfa ve işlem bazlı rol yetkilendirmesi
 * Getirme, ekleme, güncelleme ve silme yetkileri
-* Yetkiye göre menülerin gösterilmesi
-* Yetkiye göre sayfa butonlarının gösterilmesi
+* Yetkiye göre menü ve işlem butonlarının gösterilmesi
 * Yetkisiz doğrudan sayfa erişimlerinin engellenmesi
 * Pasif role sahip kullanıcıların girişinin engellenmesi
 * Oturum sırasında rolü pasif hâle getirilen kullanıcının sistemden çıkarılması
-* Yeni yönetim ekranlarının merkezi yetkilendirme sistemine dahil edilmesi
+* Yönetim ekranlarının merkezi yetkilendirme sistemine dahil edilmesi
 
 ### Ortak Altyapı
 
 * Stored procedure tabanlı veritabanı işlemleri
 * Merkezi ADO.NET bağlantı ve komut yönetimi
 * Transaction, commit ve rollback desteği
-* Otomatik uygulama loglama sistemi
+* Merkezi uygulama loglama sistemi
 * Makine hareketlerine özel operasyon logları
-* Merkezi parametre yönetimi
 * Tekrar kullanılabilir ASP.NET UserControl bileşenleri
 * İstemci taraflı arama ve sayfalama
 * Kayıt sayısı seçimi
@@ -143,263 +122,164 @@ işlemleri desteklenmektedir.
 * ADO.NET
 * Microsoft SQL Server
 * Stored Procedures
-* HTML
-* CSS
+* HTML ve CSS
 * Bootstrap
-* JavaScript
-* jQuery
+* JavaScript ve jQuery
 * Toastr
 * Font Awesome
-* TCP/IP tabanlı cihaz haberleşmesi
+* Ağ üzerinden cihaz haberleşmesi
 * Git ve GitHub
 * Visual Studio
 
 ## 🏗️ Proje Yapısı
 
-Proje; kullanıcı arayüzü, iş mantığı, veritabanı işlemleri, saha cihazları ve tekrar kullanılabilir bileşenlerin birbirinden ayrıldığı düzenli bir yapı üzerine kurulmuştur.
+| Bileşen | Görevi |
+| --- | --- |
+| **AsyModbus** | Web sayfaları ve kullanıcı arayüzü |
+| **BusinessLayer** | Entity sınıfları, iş kuralları ve veritabanı işlemleri |
+| **MasterPages** | Ortak sayfa düzeni, menü ve erişim kontrolleri |
+| **UserControls** | Tekrar kullanılabilir arayüz bileşenleri |
+| **Scripts** | JavaScript dosyaları ve veritabanı migration scriptleri |
+| **Styles** | Uygulamaya özel CSS dosyaları |
+| **SQL Server** | Veritabanı tabloları ve stored procedure’ler |
+| **HW-584** | Durdurma sinyalini tetikleyen ağ röle cihazları |
 
-Başlıca proje bileşenleri:
+## ⚙️ Makine Durdurma Akışı
 
-* **AsyModbus** — Web sayfaları ve kullanıcı arayüzü
-* **BusinessLayer** — Entity sınıfları, iş kuralları ve veritabanı işlemleri
-* **MasterPages** — Ortak sayfa düzeni, menü ve erişim kontrolleri
-* **UserControls** — Tekrar kullanılabilir arayüz bileşenleri
-* **Scripts** — İstemci taraflı JavaScript işlemleri ve veritabanı migration scriptleri
-* **Styles** — Uygulamaya özel responsive CSS dosyaları
-* **SQL Server** — Veritabanı tabloları ve stored procedure’ler
-* **HW-584** — Makinelerin güvenli durdurma sinyalinin fiziksel olarak tetiklenmesini sağlayan ağ röle cihazları
+Web paneli üzerinden oluşturulan durdurma talepleri komut kuyruğuna kaydedilir. Komut servisi bekleyen talepleri işleyerek ilgili röle kanalını tetikler.
 
-## ⚙️ Makine Kontrol Paneli
+1. Kullanıcının oturumu ve işlem yetkisi kontrol edilir.
+2. Makinenin mevcut durumu ve röle bağlantısı kontrol edilir.
+3. Durdurma talebi `MakineKomutlar` tablosuna kaydedilir.
+4. Servis, bekleyen komutu atomik olarak sahiplenir.
+5. İlgili röle kanalı yaklaşık 2 saniye boyunca tetiklenir.
+6. Röle normal konumuna alınır; bırakma işlemi başarısızsa tekrar denenir.
+7. Komut sonucu ve operasyon logu aynı transaction içerisinde kaydedilir.
 
-Ana sayfada aktif ve gerekli röle bağlantısı tanımlanmış makineler bant numaralarına göre otomatik olarak gruplandırılmaktadır.
+> Durdurma talebinin oluşturulması, makinenin fiziksel olarak durduğunu doğrulamaz. Komutun işlenme sonucu ayrıca kayıt altına alınır.
 
-Her makine kartında makineye ait temel bilgiler ve güncel çalışma durumu görüntülenmektedir.
+## 🧭 Makine Kontrol Paneli ve Sıralama
 
-Desteklenen temel durumlar:
+Aktif ve röle bağlantısı tanımlanmış makineler bantlara göre gruplandırılır. Makine kartlarında temel bilgiler ve sistemde kayıtlı çalışma durumu gösterilir.
 
-* **Çalışıyor** — Makine çalışmaktadır ve durdurma işlemi gerçekleştirilebilir.
-* **Durduruldu** — Makine durmaktadır ve durdurma butonu devre dışıdır.
-* **Bağlantı Yok** — Makineden güncel durum alınamamaktadır.
+Her bandın **Düzenle** butonu ile açılan modal üzerinden makineler sürüklenerek sıralanabilir.
 
-Sistem güvenliği nedeniyle web paneli üzerinden yalnızca makine durdurma işlemi desteklenmektedir. Makinelerin uzaktan başlatılması sistemin kapsamı dışındadır.
+* Yeni sıralama makine ID’leri üzerinden hazırlanır.
+* Her makinenin sırası `sira_no` alanına kaydedilir.
+* Güncellemeler transaction içerisinde gerçekleştirilir.
+* Bir güncelleme başarısız olursa değişiklikler rollback ile geri alınır.
+* İşlem tamamlandığında panel yeni sıralamayla yenilenir.
 
-Durdurma komutu, makineye atanmış röle cihazı ve kanal üzerinden fiziksel olarak tetiklenmektedir.
+## 🔐 Yetkilendirme Sistemi
 
-## 🧭 Bant ve Makine Sıralaması
+Her rol için **Getirme**, **Ekleme**, **Güncelleme** ve **Silme** yetkileri ayrı ayrı yönetilir.
 
-Makineler fiziksel saha düzenini temsil eden bantlara göre gösterilmektedir.
+Menüler ve işlem butonları kullanıcının yetkisine göre gösterilir. Yetkisiz URL erişimleri engellenir ve kritik işlemlerden önce sunucu tarafında yeniden yetki kontrolü yapılır.
 
-Her bandın başlığında bulunan **Düzenle** butonu ile sıralama modalı açılmaktadır. Kullanıcı makineleri sürükleyip bırakarak bant içerisindeki sıralamayı değiştirebilir.
-
-Yeni sıralama:
-
-* JavaScript tarafından makine ID’leri üzerinden hazırlanır.
-* HiddenField aracılığıyla sunucu tarafına gönderilir.
-* Her makinenin `sira_no` alanına kaydedilir.
-* İşlem transaction içerisinde gerçekleştirilir.
-* Bir güncelleme başarısız olursa tüm değişiklikler rollback ile geri alınır.
-* İşlem tamamlandığında ana ekran yeni sırayla tekrar oluşturulur.
-
-## 🔐 Rol ve Yetkilendirme Sistemi
-
-Uygulamada sayfa ve işlem bazlı rol yetkilendirme sistemi bulunmaktadır.
-
-Her rol için aşağıdaki yetkiler ayrı ayrı yönetilebilir:
-
-* **Getirme**
-* **Ekleme**
-* **Güncelleme**
-* **Silme**
-
-Menüler kullanıcının yetkisine göre oluşturulmakta, yetkisiz doğrudan URL erişimleri engellenmekte ve kritik işlemler gerçekleştirilmeden önce sunucu tarafında tekrar yetki kontrolü yapılmaktadır.
-
-Sayfa adları merkezi `Sayfalar` sınıfında tutulmaktadır. Yetki kontrolleri merkezi `IslemYetki` sınıfı üzerinden gerçekleştirilmektedir.
+Sayfa adları merkezi `Sayfalar` sınıfında, yetki kontrolleri ise `IslemYetki` sınıfında yönetilir.
 
 ## 🧩 Tekrar Kullanılabilir Bileşenler
 
-Tekrarlanan arayüz kodlarını azaltmak amacıyla ASP.NET UserControl bileşenleri kullanılmaktadır.
-
-Mevcut bileşenler:
-
 * Telefon numarası giriş bileşeni
-* Tekrar kullanılabilir veri listeleme bileşeni (`ucMyGrid`)
-* İstemci taraflı arama
+* Veri listeleme bileşeni (`ucMyGrid`)
+* İstemci taraflı arama ve sayfalama
 * Kayıt sayısı seçimi
-* İstemci taraflı sayfalama
 * Dinamik kolon oluşturma
 * Yetkiye göre detay butonu gösterme
 * Toplam kayıt sayısını gösterme
 
-## 🗄️ Veritabanı
+## 🗄️ Veritabanı ve Transaction Yönetimi
 
-Uygulamada Microsoft SQL Server kullanılmaktadır. Veritabanı işlemleri ağırlıklı olarak stored procedure’ler üzerinden gerçekleştirilmektedir.
-
-Stored procedure kullanılan başlıca işlemler:
-
-* Kullanıcı yönetimi
-* Kullanıcı giriş ve şifre işlemleri
-* Makine yönetimi
-* Makine durumu ve sıralama işlemleri
-* Makine operasyon logları
-* Röle cihaz yönetimi
-* Kullanılan röle kanallarının belirlenmesi
-* Rol ve yetki yönetimi
-* Parametre grubu ve parametre yönetimi
-* Genel uygulama logları
-
-ADO.NET, uygulama ile SQL Server arasındaki iletişimi sağlamaktadır. Bağlantı, komut, parametre ve transaction işlemleri merkezi `VeritabaniIslemleri` sınıfı üzerinden yönetilmektedir.
-
-## 🔄 Transaction Yönetimi
-
-Birbirine bağlı birden fazla veritabanı işleminin güvenli şekilde yürütülmesi için transaction desteği kullanılmaktadır.
+Veritabanı işlemleri ağırlıklı olarak stored procedure’ler üzerinden gerçekleştirilir. Bağlantı, komut, parametre ve transaction işlemleri merkezi `VeritabaniIslemleri` sınıfıyla yönetilir.
 
 Transaction kullanılan başlıca işlemler:
 
-* Yeni rol ve role ait sayfa yetkilerinin birlikte oluşturulması
+* Rol ve sayfa yetkilerinin birlikte oluşturulması
 * Rol ve bağlı yetki kayıtlarının birlikte pasif hâle getirilmesi
-* Bir role ait birden fazla yetkinin toplu olarak güncellenmesi
-* Bant içerisindeki makinelerin toplu olarak yeniden sıralanması
+* Bir role ait yetkilerin toplu güncellenmesi
+* Bant içerisindeki makinelerin yeniden sıralanması
 * Makinelerin varsayılan sıralamaya döndürülmesi
+* Komut sonucu ve makine operasyon logunun birlikte kaydedilmesi
 
-İşlemlerden biri başarısız olduğunda yapılan değişiklikler rollback ile geri alınmaktadır.
+İşlemlerden biri başarısız olduğunda ilgili veritabanı değişiklikleri rollback ile geri alınır.
 
 ## 📋 Log Sistemi
 
-Projede genel uygulama logları ve makine operasyon logları birbirinden ayrılmıştır.
-
 ### Genel Uygulama Logları
 
-Kullanıcıların uygulama içerisinde gerçekleştirdiği ekleme, güncelleme, silme, görüntüleme, giriş ve çıkış gibi işlemler merkezi olarak loglanmaktadır.
+Kullanıcıların ekleme, güncelleme, silme, görüntüleme, giriş ve çıkış işlemleri merkezi olarak kaydedilir.
 
 ### Makine Operasyon Logları
 
-Makine üzerinde gerçekleştirilen işlemler ayrıca operasyon loglarında tutulmaktadır.
-
-Bu kayıtlarda:
+Makine işlemlerine ait kayıtlarda aşağıdaki bilgiler tutulur:
 
 * İlgili makine
-* Önceki durum
-* Yeni durum
+* Önceki ve yeni durum
 * İşlem kaynağı
-* İşlem türü
-* İşlem sonucu
+* İşlem türü ve sonucu
 * İşlemi yapan kullanıcı
 * IP adresi
 * İşlem tarihi
 * İşlem detayı
 
-gibi bilgiler saklanmaktadır.
+Durdurma talepleri ve işlenme sonuçları `MakineKomutlar` üzerinden, makine hareketleri ise operasyon logları üzerinden takip edilir.
 
-Web üzerinden gerçekleştirilen röle tabanlı durdurma işlemlerinin başarılı veya başarısız sonuçları da bu yapıya kaydedilmektedir.
+## 🎨 Arayüz ve Bildirimler
 
-## 🎨 Kullanıcı Arayüzü
-
-Uygulama arayüzü Bootstrap kullanılarak responsive olacak şekilde hazırlanmıştır.
-
-Arayüz içerisinde:
-
-* Responsive sayfa düzenleri
-* Dinamik makine kontrol paneli
-* Bant bazlı makine gruplandırması
-* Makine detay modalları
-* Sürükle-bırak sıralama
-* Ortak MasterPage
-* Yetkiye göre dinamik menü
-* Tekrar kullanılabilir tablolar
-* Arama ve sayfalama
+* Bootstrap tabanlı responsive sayfa düzenleri
+* Bant bazlı makine kartları
+* Makine detay ve sıralama modalları
+* Yetkiye göre oluşturulan menüler
+* Ortak MasterPage yapısı
+* Tekrar kullanılabilir veri tabloları
 * Toastr bildirimleri
 
-kullanılmaktadır.
+Uygulama mesajları merkezi `Mesajlar` sınıfında tutulur. Başarı, uyarı, hata ve bilgilendirme mesajları Toastr üzerinden gösterilir.
 
-Projeye özel tasarım ihtiyaçlarında ayrı CSS dosyaları kullanılmaktadır.
+## 🧪 Test ve Doğrulama
 
-## 🔔 Mesaj ve Bildirim Sistemi
+* Önceki doğrudan web tetikleme akışı gerçek HW-584 cihazları üzerinde test edilmiştir.
+* Yeni komut kuyruğu ve servis akışı sahte röle kullanılarak 13 senaryo ile doğrulanmıştır.
+* Yeni akışın Form, gerçek röle ve makineyle uçtan uca saha testleri devam eden çalışmalar kapsamındadır.
 
-Uygulama mesajları merkezi `Mesajlar` sınıfında tutulmaktadır.
+## 📌 Geliştirme Durumu
 
-Desteklenen bildirim türleri:
+### Tamamlanan Temel Bölümler
 
-* Başarılı
-* Uyarı
-* Hata
-* Bilgilendirme
-
-Bildirimlerin kullanıcıya gösterilmesi için Toastr kullanılmaktadır.
-
-## 📌 Proje Durumu
-
-🚧 **Proje geliştirme ve saha entegrasyonu aşamasındadır.**
-
-Web uygulamasının temel yazılım altyapısının büyük bölümü tamamlanmıştır.
-
-Tamamlanan ana bölümler:
-
-* Kullanıcı yönetimi
-* Makine kayıt yönetimi
-* Makine kontrol paneli
-* Bant bazlı makine gruplandırması
-* Makine sıralama sistemi
-* Makine operasyon logları
-* Rol ve yetkilendirme
-* Oturum ve erişim kontrolü
-* Genel log sistemi
-* Röle cihaz yönetimi
-* Makine-röle kanal eşleştirmesi
-* HW-584 üzerinden röle tetikleme
-* Web üzerinden fiziksel durdurma testleri
-* Merkezi parametre altyapısı
-* Parametre yönetim ekranı
-* Merkezi mesaj sistemi
-* Transaction altyapısı
+* Kullanıcı ve makine yönetimi
+* Makine kontrol paneli ve bant bazlı gruplandırma
+* Sürükle-bırak makine sıralama
+* Rol ve işlem bazlı yetkilendirme
+* Oturum ve erişim kontrolleri
+* Röle cihaz yönetimi ve kanal eşleştirmesi
+* HW-584 röle tetikleme altyapısı
+* Makine komut kuyruğu ve komut servisi
+* Mükerrer komut kontrolü ve atomik sahiplenme
+* Komut sonucu ve operasyon logu için transaction desteği
+* Güvenli kapanış yönetimi
+* Genel uygulama ve makine operasyon logları
+* Merkezi parametre yönetimi
+* Merkezi mesaj ve bildirim sistemi
 * Responsive kullanıcı arayüzü
 
-Devam eden saha çalışmaları:
+### Devam Eden ve Planlanan Çalışmalar
 
-* Gerçek makine durumlarının otomatik olarak okunması
-* Makine ve pano bağlantılarının tamamlanması
-* Saha kablolamalarının tamamlanması
-* Ağ bağlantılarının kararlı hâle getirilmesi
-* Gerçek makinelerde durdurma senaryolarının genişletilmesi
-* Bağlantı kopması ve hata senaryolarının test edilmesi
-
-Sonraki geliştirme aşamasında:
-
-* Makinelerden periyodik olarak canlı durum okunması
+* Röle iletişiminin `AsyModbus.KomutForm` uygulamasına taşınması
+* Yeni komut akışının gerçek cihazlarla uçtan uca test edilmesi
+* Gerçek makine durumlarının periyodik olarak okunması
 * Okunan durumların sisteme aktarılması
 * Saha kaynaklı durum değişikliklerinin otomatik loglanması
+* Makine, pano ve saha kablolamalarının tamamlanması
 * Bağlantı kopması ve zaman aşımı yönetiminin geliştirilmesi
-* Gerçek saha testlerinin genişletilmesi
-* Hata yönetimi ve güvenlik kontrollerinin geliştirilmesi
-* Genel kod temizliği
-* Son kullanıcı testleri
+* Saha testlerinin genişletilmesi
+* Genel kod temizliği ve son kullanıcı testleri
 
 ## 📄 Dokümantasyon
 
-Projenin ayrıntılı gereksinimleri ve analiz dokümanı Türkçe olarak hazırlanmıştır.
+Projenin gereksinimleri ve analiz dokümanı Türkçe olarak hazırlanmıştır.
 
 * [Proje Analizi](docs/Proje-Analizi.md)
 
 ## 🎯 Projenin Amacı
 
-Bu proje yalnızca bir web uygulaması geliştirmek değil, aynı zamanda yazılım ile gerçek endüstriyel saha ekipmanları arasındaki entegrasyonu deneyimlemek amacıyla geliştirilmektedir.
-
-Proje kapsamında:
-
-* Backend geliştirme
-* Frontend geliştirme
-* Veritabanı tasarımı
-* ASP.NET Web Forms
-* ADO.NET
-* Nesne yönelimli programlama
-* Rol ve yetkilendirme sistemleri
-* Transaction yönetimi
-* Uygulama ve operasyon loglama
-* Merkezi parametre yönetimi
-* Tekrar kullanılabilir bileşen geliştirme
-* Responsive arayüz geliştirme
-* Ağ üzerinden cihaz haberleşmesi
-* Röle kontrolü
-* Endüstriyel sistem entegrasyonu
-* Temiz ve sürdürülebilir kod geliştirme
-
-konularında uygulamalı deneyim kazanılması hedeflenmektedir.
+Proje; web geliştirme, veritabanı tasarımı, rol bazlı yetkilendirme, transaction yönetimi, komut kuyruğu, operasyon loglama ve endüstriyel cihaz entegrasyonu konularında uygulamalı deneyim kazanmak amacıyla geliştirilmektedir.

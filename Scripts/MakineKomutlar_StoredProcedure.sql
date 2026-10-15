@@ -1,4 +1,4 @@
-﻿/* ASAMA 3: Once MakineKomutlar_Migrasyon.sql uygulanmalidir.
+/* ASAMA 3: Once MakineKomutlar_Migrasyon.sql ve MakineKomutlar_HazirIstek_Migrasyon.sql uygulanmalidir.
    sqlcmd veya SSMS SQLCMD Mode ile calistirilir.
    Hata durumunda baglanti kapanir ve acik DDL transaction geri alinir.
    EKLE / GUNCELLE row count dondurur: VeritabaniIslemleri.Calistir ile uyumludur.
@@ -14,6 +14,12 @@ GO
 CREATE OR ALTER PROCEDURE dbo.SP_MakineKomutlar_EKLE
     @makineler_id INT,
     @islem_tur_parametre_id INT,
+    @tetikleme_url NVARCHAR(2048),
+    @kapatma_url NVARCHAR(2048),
+    @hedef_rolecihaz_id INT,
+    @hedef_ip NVARCHAR(45),
+    @hedef_port INT,
+    @tetikleme_suresi_ms INT,
     @detay NVARCHAR(MAX) = NULL,
     @ekleyen_id INT = NULL,
     @ekleyen_ip NVARCHAR(20) = NULL
@@ -54,12 +60,22 @@ BEGIN
                      AND aktif_mi = 1 AND durum_parametre_id IN (@bekliyor, @isleniyor))
             THROW 51104, N'Makine icin bekleyen veya islenen bir durdurma talebi zaten var.', 1;
 
+        IF NULLIF(@tetikleme_url,N'') IS NULL OR NULLIF(@kapatma_url,N'') IS NULL
+           OR @tetikleme_suresi_ms IS NULL OR @tetikleme_suresi_ms NOT BETWEEN 1 AND 10000
+           OR @hedef_port IS NULL OR @hedef_port NOT BETWEEN 1 AND 65535
+           OR NOT EXISTS (SELECT 1 FROM dbo.RoleCihazlar R WITH (HOLDLOCK)
+              JOIN dbo.Makineler M WITH (HOLDLOCK) ON M.rolecihazlar_id=R.id
+              WHERE M.id=@makineler_id AND R.id=@hedef_rolecihaz_id AND R.aktif_mi=1
+                AND R.ip=@hedef_ip AND R.port=@hedef_port)
+            THROW 51109, N'Hazir komut veya kayitli hedef bilgisi gecersiz.', 1;
         SET NOCOUNT OFF;
         INSERT INTO dbo.MakineKomutlar
             (makineler_id, islem_tur_parametre_id, durum_parametre_id, deneme_sayisi,
-             detay, aktif_mi, ekleyen_id, ekleyen_ip, eklenme_tarih)
+             tetikleme_url, kapatma_url, hedef_rolecihaz_id, hedef_ip, hedef_port,
+             tetikleme_suresi_ms, detay, aktif_mi, ekleyen_id, ekleyen_ip, eklenme_tarih)
         VALUES (@makineler_id, @islem_tur_parametre_id, @bekliyor, 0,
-                @detay, 1, @ekleyen_id, @ekleyen_ip, GETDATE());
+                @tetikleme_url, @kapatma_url, @hedef_rolecihaz_id, @hedef_ip, @hedef_port,
+                @tetikleme_suresi_ms, @detay, 1, @ekleyen_id, @ekleyen_ip, GETDATE());
         IF @kendi_transaction = 1 COMMIT TRANSACTION;
     END TRY
     BEGIN CATCH
@@ -156,38 +172,16 @@ BEGIN
 END;
 GO
 
+-- Eski Form surumleri yeni komutlari IP/kanal hesaplayarak calistiramaz.
 CREATE OR ALTER PROCEDURE dbo.SP_MakineKomutlar_ISLEME_GUNCELLE
     @id INT,
     @guncelleyen_id INT = NULL,
     @guncelleyen_ip NVARCHAR(20) = NULL
 AS
 BEGIN
-    SET NOCOUNT ON;
-    SET XACT_ABORT ON;
-    IF @@TRANCOUNT = 0
-        THROW 51107, N'Sahiplenme BAGIMLI transaction icinde yapilmalidir.', 1;
-    DECLARE @bekliyor INT, @isleniyor INT;
-    SELECT @bekliyor=P.id FROM dbo.Parametreler P
-    JOIN dbo.ParametreGruplari G ON G.id=P.parametre_grup_id
-    WHERE G.kod=N'MAKINE_KOMUT_DURUM' AND P.kod=N'BEKLIYOR'
-      AND P.aktif_mi=1 AND G.aktif_mi=1;
-    SELECT @isleniyor=P.id FROM dbo.Parametreler P
-    JOIN dbo.ParametreGruplari G ON G.id=P.parametre_grup_id
-    WHERE G.kod=N'MAKINE_KOMUT_DURUM' AND P.kod=N'ISLENIYOR'
-      AND P.aktif_mi=1 AND G.aktif_mi=1;
-    IF @bekliyor IS NULL OR @isleniyor IS NULL
-        THROW 51103, N'Komut durum parametreleri bulunamadi.', 1;
-    SET NOCOUNT OFF;
-    UPDATE dbo.MakineKomutlar
-    SET durum_parametre_id=@isleniyor, deneme_sayisi=deneme_sayisi+1,
-        guncelleyen_id=@guncelleyen_id, guncelleyen_ip=@guncelleyen_ip,
-        guncellenme_tarih=GETDATE()
-    WHERE id=@id AND aktif_mi=1 AND durum_parametre_id=@bekliyor;
-    IF @@ROWCOUNT <> 1
-        THROW 51108, N'Komut bulunamadi veya BEKLIYOR durumunda degil.', 1;
+    THROW 51110, N'Eski komut tuketicisi desteklenmiyor. Hazir istek destekli Form surumunu kullanin.', 1;
 END;
 GO
-
 CREATE OR ALTER PROCEDURE dbo.SP_MakineKomutlar_GUNCELLE
     @id INT,
     @durum_parametre_id INT,
@@ -218,6 +212,48 @@ BEGIN
 END;
 GO
 
+CREATE OR ALTER PROCEDURE dbo.SP_MakineKomutlar_SAHIPLEN
+    @guncelleyen_ip NVARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+    IF @@TRANCOUNT=0 THROW 51107, N'Sahiplenme BAGIMLI transaction gerektirir.', 1;
+    DECLARE @bekliyor INT, @isleniyor INT;
+    SELECT @bekliyor=P.id FROM dbo.Parametreler P
+      JOIN dbo.ParametreGruplari G ON G.id=P.parametre_grup_id
+      WHERE G.kod=N'MAKINE_KOMUT_DURUM' AND P.kod=N'BEKLIYOR' AND P.aktif_mi=1 AND G.aktif_mi=1;
+    SELECT @isleniyor=P.id FROM dbo.Parametreler P
+      JOIN dbo.ParametreGruplari G ON G.id=P.parametre_grup_id
+      WHERE G.kod=N'MAKINE_KOMUT_DURUM' AND P.kod=N'ISLENIYOR' AND P.aktif_mi=1 AND G.aktif_mi=1;
+    IF @bekliyor IS NULL OR @isleniyor IS NULL THROW 51103, N'Komut durum parametreleri bulunamadi.', 1;
+    ;WITH Siradaki AS (
+      SELECT TOP (1) * FROM dbo.MakineKomutlar WITH (UPDLOCK,HOLDLOCK,ROWLOCK)
+      WHERE aktif_mi=1 AND durum_parametre_id=@bekliyor ORDER BY eklenme_tarih,id
+    )
+    UPDATE Siradaki SET durum_parametre_id=@isleniyor, deneme_sayisi=deneme_sayisi+1,
+      guncellenme_tarih=GETDATE(), guncelleyen_ip=@guncelleyen_ip
+    OUTPUT inserted.*;
+END;
+GO
+CREATE OR ALTER PROCEDURE dbo.SP_MakineKomutlar_SON_DURUMLARI_GETIR
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT M.id AS makineler_id, M.rolecihazlar_id,
+        MD.kod AS makine_durum_kod, MD.ad AS makine_durum_ad,
+        K.id AS komut_id, D.kod AS durum_kod,
+        CAST(CASE WHEN D.kod=N'ISLENIYOR'
+          AND (K.guncellenme_tarih IS NULL OR K.guncellenme_tarih < DATEADD(MINUTE,-2,GETDATE()))
+          THEN 1 ELSE 0 END AS BIT) AS belirsiz
+    FROM dbo.Makineler M
+    LEFT JOIN dbo.Parametreler MD ON MD.id=M.durum_parametre_id
+    OUTER APPLY (SELECT TOP (1) C.* FROM dbo.MakineKomutlar C
+        WHERE C.makineler_id=M.id AND C.aktif_mi=1 ORDER BY C.id DESC) K
+    LEFT JOIN dbo.Parametreler D ON D.id=K.durum_parametre_id
+    WHERE M.aktif_mi=1;
+END;
+GO
 IF OBJECT_ID(N'dbo.SP_MakineKomutlar_ISLEME_AL', N'P') IS NOT NULL
     DROP PROCEDURE dbo.SP_MakineKomutlar_ISLEME_AL;
 IF OBJECT_ID(N'dbo.SP_MakineKomutlar_SONUCLANDIR', N'P') IS NOT NULL

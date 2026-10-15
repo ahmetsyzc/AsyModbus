@@ -80,3 +80,44 @@ function makineSirasiniHazirla() {
         hiddenField.value = makineIdleri.join(",");
     }
 }
+
+// Salt okunur durum sorgusu; cihaz adresleri tarayiciya tasinmaz.
+(function () {
+    var sorguSuruyor = false;
+    async function komutDurumlariniYenile() {
+        if (sorguSuruyor || document.hidden) return;
+        sorguSuruyor = true;
+        try {
+            var yanit = await fetch('Default.aspx/KomutDurumlariniGetir', {
+                method: 'POST', credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json; charset=utf-8' }, body: '{}'
+            });
+            if (!yanit.ok) throw new Error('Durum sorgulanamadı');
+            var veri = await yanit.json();
+            if (!Array.isArray(veri.d)) throw new Error('Geçersiz durum yanıtı');
+            veri.d.forEach(function (kayit) {
+                var kart = document.querySelector('[data-komut-makine-id="' + kayit.MakineId + '"]');
+                if (!kart) return;
+                var bekliyor = kayit.Durum === 'BEKLIYOR' || kayit.Durum === 'ISLENIYOR';
+                var buton = kart.querySelector('input[id$="btnDurdur"]');
+                if (buton) buton.disabled = !kayit.DurdurAktif;
+                var etiket = kart.querySelector('.makine-durum-etiketi');
+                if (etiket && kayit.KomutId) {
+                    var belirsiz = kayit.Durum === 'BELIRSIZ';
+                    etiket.textContent = bekliyor ? (kayit.Durum === 'BEKLIYOR' ? 'Bekliyor' : 'İşleniyor')
+                        : belirsiz ? 'Sonuç belirsiz'
+                        : kayit.MakineCss === 'badge-role-yok' ? 'Röle seçilmedi' : kayit.MakineDurum;
+                    etiket.className = 'badge makine-durum-etiketi ' +
+                        (bekliyor || belirsiz ? 'bg-warning text-dark' : kayit.MakineCss);
+                    etiket.title = etiket.textContent;
+                }
+            });
+        } catch (hata) {
+            // Gecici sorgu hatasinda mevcut kart gorunumu korunur.
+        } finally { sorguSuruyor = false; }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        komutDurumlariniYenile();
+        window.setInterval(komutDurumlariniYenile, 5000);
+    });
+})();

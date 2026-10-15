@@ -347,7 +347,7 @@ public class VeritabaniIslemleri
         {
             foreach (DataColumn dataColumn in dataTable.Columns)
             {
-                if (dataColumn.ColumnName.ToLower() == "sifre")
+                if (dataColumn.ColumnName.ToLower() == "sifre" || dataColumn.ColumnName.ToLower() == "tetikleme_url" || dataColumn.ColumnName.ToLower() == "kapatma_url")
                 {
                     continue;
                 }
@@ -366,6 +366,15 @@ public class VeritabaniIslemleri
 
         SqlParameter sqlParameter = new SqlParameter("@" + parametreAdi, parametreDegeri);
         parametreler.Add(sqlParameter);
+    }
+
+    public void MetinParametreEkle(string parametreAdi, string deger, int uzunluk)
+    {
+        if (deger != null && deger.Length > uzunluk)
+            throw new ArgumentException("Alan uzunluğu aşıldı: " + parametreAdi);
+        var parametre = new SqlParameter("@" + parametreAdi, SqlDbType.NVarChar, uzunluk);
+        parametre.Value = deger == null ? (object)DBNull.Value : deger;
+        parametreler.Add(parametre);
     }
 
     public DataTable TabloGetir()

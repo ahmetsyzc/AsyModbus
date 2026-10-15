@@ -1,5 +1,6 @@
+﻿using System.Threading.Tasks;
 public interface IRoleKontrol
 {
     string SonHata { get; }
-    bool KanalTetikle(string ip, int port, int kanalNo);
+    Task<bool> KanalTetikleAsync(MakineKomutlar komut);
 }

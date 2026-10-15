@@ -51,7 +51,7 @@
 
                                         <ItemTemplate>
 
-                                            <div class="makine-kolon">
+                                            <div class="makine-kolon" data-komut-makine-id='<%# Eval("id") %>'>
 
                                                 <div class="card border-secondary h-100">
 

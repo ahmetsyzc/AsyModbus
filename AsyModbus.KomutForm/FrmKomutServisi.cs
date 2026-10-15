@@ -48,14 +48,8 @@ namespace AsyModbus.KomutForm
                     }
 
                     // Yeni kaydı listenin en başına (0. indekse) ekle
-                    lstLog.Items.Insert(0, e.Tarih.ToString("HH:mm:ss") + " - " + e.Mesaj);
+                    LogEkle(e.Tarih.ToString("HH:mm:ss") + " - " + e.Mesaj);
 
-                    // Ekrandaki mesaj sayısını sınırla.
-                    if (lstLog.Items.Count > 10)
-                    {
-                        // En eski kayıt artık en altta olduğu için son sıradakini sil
-                        lstLog.Items.RemoveAt(lstLog.Items.Count - 1);
-                    }
 
                     // Her zaman en üstü (yeni gelen mesajı) görünür tut.
                     lstLog.TopIndex = 0;
@@ -65,6 +59,13 @@ namespace AsyModbus.KomutForm
             {
                 // Form kapanırken ekran güncellemesi yapılamayabilir.
             }
+        }
+
+        private void LogEkle(string mesaj)
+        {
+            lstLog.Items.Insert(0, mesaj);
+            while (lstLog.Items.Count > 10) lstLog.Items.RemoveAt(lstLog.Items.Count - 1);
+            lstLog.TopIndex = 0;
         }
 
         private void btnBaslat_Click(object sender, EventArgs e)
@@ -78,7 +79,7 @@ namespace AsyModbus.KomutForm
             kontrolAcik = true;
             timerKomut.Start();
             lblDurum.Text = Mesajlar.KomutServisiCalisiyor;
-            lstLog.Items.Insert(0, Mesajlar.KomutServisiKontrolBaslatildi);
+            LogEkle(Mesajlar.KomutServisiKontrolBaslatildi);
         }
 
         private void btnDurdur_Click(object sender, EventArgs e)
@@ -88,7 +89,7 @@ namespace AsyModbus.KomutForm
             kontrolAcik = false;
             timerKomut.Stop();
             lblDurum.Text = Mesajlar.KomutServisiDurduruldu;
-            lstLog.Items.Insert(0, Mesajlar.KomutServisiKontrolDurduruldu);
+            LogEkle(Mesajlar.KomutServisiKontrolDurduruldu);
         }
 
         private async void timerKomut_Tick(object sender, EventArgs e)
@@ -115,7 +116,7 @@ namespace AsyModbus.KomutForm
                     kontrolAcik = false;
                     lblDurum.Text = Mesajlar.KomutServisiHataIleDurduruldu;
                     // Servisin hazırladığı hata detayını göster.
-                    lstLog.Items.Insert(0, makineKomutServisi.SonHata);
+                    LogEkle(makineKomutServisi.SonHata);
                 }
                 else
                 {
@@ -128,20 +129,14 @@ namespace AsyModbus.KomutForm
                         lblDurum.Text = Mesajlar.KomutServisiDurduruldu;
                     }
 
-                    // Ekrandaki mesaj sayısını sınırla.
-                    if (lstLog.Items.Count > 10)
-                    {
-                        // En eski kayıt artık en altta olduğu için son sıradakini sil
-                        lstLog.Items.RemoveAt(lstLog.Items.Count - 1);
-                    }
 
                     if (sonucKaydedildi)
                     {
-                        lstLog.Items.Insert(0, Mesajlar.KomutServisiSonucKaydedildi);
+                        LogEkle(Mesajlar.KomutServisiSonucKaydedildi);
                     }
                     else
                     {
-                        lstLog.Items.Insert(0, DateTime.Now.ToString("HH:mm:ss") + " - " + Mesajlar.KomutServisiKontrolTamamlandi);
+                        LogEkle(DateTime.Now.ToString("HH:mm:ss") + " - " + Mesajlar.KomutServisiKontrolTamamlandi);
                     }
                 }
             }
@@ -152,7 +147,7 @@ namespace AsyModbus.KomutForm
                 if (!kapaniyor)
                 {
                     lblDurum.Text = Mesajlar.KomutServisiHataIleDurduruldu;
-                    lstLog.Items.Insert(0, Mesajlar.SistemselHata(exception.Message));
+                    LogEkle(Mesajlar.SistemselHata(exception.Message));
                 }
             }
             finally
@@ -193,7 +188,7 @@ namespace AsyModbus.KomutForm
             }
             catch (Exception ex)
             {
-                lstLog.Items.Insert(0, Mesajlar.SistemselHata(ex.Message));
+                LogEkle(Mesajlar.SistemselHata(ex.Message));
             }
             finally
             {

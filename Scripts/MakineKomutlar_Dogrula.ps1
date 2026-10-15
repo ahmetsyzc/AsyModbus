@@ -1,4 +1,4 @@
-﻿# Yalnizca SQL kuyruk testleri. RoleKontrol cagrilmaz.
+# Yalnizca SQL kuyruk testleri. RoleKontrol cagrilmaz.
 # Her senaryo transaction icinde calisir ve sonunda geri alinir.
 # SQL Server IDENTITY sayaci rollback ile geri donmez; testler ID boslugu olusturabilir.
 $ErrorActionPreference = 'Stop'
@@ -24,11 +24,7 @@ function Get-TaskTable([string]$sql) {
 }
 
 function Get-TaskClaim {
-    $taskRows = Get-TaskTable 'EXEC dbo.SP_MakineKomutlar_SIRADAKI_GETIR'
-    if ($taskRows.Rows.Count -eq 0) { return ,$taskRows }
-    $taskId = [int]$taskRows.Rows[0].id
-    $null = Invoke-TaskSql "EXEC dbo.SP_MakineKomutlar_ISLEME_GUNCELLE @id=$taskId, @guncelleyen_ip=N'127.0.0.1'"
-    return ,(Get-TaskTable "EXEC dbo.SP_MakineKomutlar_DOLDUR @id=$taskId")
+    return ,(Get-TaskTable 'EXEC dbo.SP_MakineKomutlar_SAHIPLEN @guncelleyen_ip=N''127.0.0.1''')
 }
 
 function Invoke-TaskSql([string]$sql) {
@@ -73,7 +69,7 @@ try {
     $taskBefore = Get-TaskTable 'SELECT COUNT(*) AS adet FROM dbo.MakineKomutlar'
     Assert-Task ($taskBefore.Rows[0].adet -eq 0) 'Testler yalnizca bos komut kuyrugunda calistirilir.'
     $taskSetup = Get-TaskTable @'
-SELECT (SELECT TOP (1) id FROM dbo.Makineler WHERE aktif_mi = 1 ORDER BY id) AS makine_id,
+SELECT (SELECT TOP (1) M.id FROM dbo.Makineler M JOIN dbo.RoleCihazlar R ON R.id=M.rolecihazlar_id WHERE M.aktif_mi=1 AND R.aktif_mi=1 AND M.role_kanal_no BETWEEN 1 AND R.kanal_sayisi ORDER BY M.id) AS makine_id,
        (SELECT P.id FROM dbo.Parametreler P JOIN dbo.ParametreGruplari G ON G.id=P.parametre_grup_id
         WHERE G.kod=N'ISLEM_TURU' AND P.kod=N'DURDURMA' AND P.aktif_mi=1) AS tur_id,
        (SELECT P.id FROM dbo.Parametreler P JOIN dbo.ParametreGruplari G ON G.id=P.parametre_grup_id
@@ -89,7 +85,13 @@ SELECT (SELECT TOP (1) id FROM dbo.Makineler WHERE aktif_mi = 1 ORDER BY id) AS 
     $taskFailureId = [int]$taskSetup.Rows[0].basarisiz_id
     $taskWaitingId = [int]$taskSetup.Rows[0].bekliyor_id
     Assert-Task ($taskMachineId -gt 0 -and $taskTypeId -gt 0) 'Aktif test makinesi veya DURDURMA parametresi yok.'
-    $taskInsertSql = "EXEC dbo.SP_MakineKomutlar_EKLE @makineler_id=$taskMachineId, @islem_tur_parametre_id=$taskTypeId, @detay=N'Geri alinan SQL testi', @ekleyen_ip=N'SQL_TEST';"
+    $taskHedef = Get-TaskTable "SELECT R.id,R.ip,R.port,M.role_kanal_no FROM dbo.Makineler M JOIN dbo.RoleCihazlar R ON R.id=M.rolecihazlar_id WHERE M.id=$taskMachineId"
+    $taskRow = $taskHedef.Rows[0]
+    $taskOn = (New-Object System.UriBuilder('http', [string]$taskRow.ip, [int]$taskRow.port, (([int]$taskRow.role_kanal_no-1)*2).ToString('D2'))).Uri.AbsoluteUri.Replace("'", "''")
+    $taskOff = (New-Object System.UriBuilder('http', [string]$taskRow.ip, [int]$taskRow.port, (([int]$taskRow.role_kanal_no-1)*2+1).ToString('D2'))).Uri.AbsoluteUri.Replace("'", "''")
+    $taskIp = ([string]$taskRow.ip).Replace("'", "''")
+    $taskHazir = ", @tetikleme_url=N'$taskOn', @kapatma_url=N'$taskOff', @hedef_rolecihaz_id=$($taskRow.id), @hedef_ip=N'$taskIp', @hedef_port=$($taskRow.port), @tetikleme_suresi_ms=2000"
+    $taskInsertSql = "EXEC dbo.SP_MakineKomutlar_EKLE @makineler_id=$taskMachineId, @islem_tur_parametre_id=$taskTypeId, @detay=N'Geri alinan SQL testi', @ekleyen_ip=N'SQL_TEST'$taskHazir;"
 
     Test-Task 'Ekle / Doldur / Liste / BEKLIYOR ve row count' {
         $taskAffected = Invoke-TaskSql $taskInsertSql
@@ -150,10 +152,10 @@ SELECT (SELECT TOP (1) id FROM dbo.Makineler WHERE aktif_mi = 1 ORDER BY id) AS 
         Assert-TaskSqlError "EXEC dbo.SP_MakineKomutlar_GUNCELLE @id=$taskId, @durum_parametre_id=$taskWaitingId" 51105
     }
     Test-Task 'Olmayan makine engeli' {
-        Assert-TaskSqlError "EXEC dbo.SP_MakineKomutlar_EKLE @makineler_id=-1, @islem_tur_parametre_id=$taskTypeId" 51101
+        Assert-TaskSqlError "EXEC dbo.SP_MakineKomutlar_EKLE @makineler_id=-1, @islem_tur_parametre_id=$taskTypeId$taskHazir" 51101
     }
     Test-Task 'Yanlis islem turu grubu engeli' {
-        Assert-TaskSqlError "EXEC dbo.SP_MakineKomutlar_EKLE @makineler_id=$taskMachineId, @islem_tur_parametre_id=$taskSuccessId" 51102
+        Assert-TaskSqlError "EXEC dbo.SP_MakineKomutlar_EKLE @makineler_id=$taskMachineId, @islem_tur_parametre_id=$taskSuccessId$taskHazir" 51102
     }
     # Iki baglanti ayni komutu almaya calisir. Ilk transaction acikken
     # ikinci baglanti beklemeli; ilk test rollback olunca bos kuyruk gormelidir.

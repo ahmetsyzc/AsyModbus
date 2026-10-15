@@ -1,4 +1,4 @@
-# AsyModbus
+﻿# AsyModbus
 
 AsyModbus; C#, ASP.NET Web Forms, ADO.NET ve Microsoft SQL Server kullanılarak geliştirilen web tabanlı bir makine yönetim, takip ve kontrol uygulamasıdır.
 
@@ -403,3 +403,16 @@ Proje kapsamında:
 * Temiz ve sürdürülebilir kod geliştirme
 
 konularında uygulamalı deneyim kazanılması hedeflenmektedir.
+
+## Webde hazırlanan röle istekleri
+
+Web, mevcut `BusinessLayer` entity/SP yapısını kullanarak ON/OFF cihaz adreslerini
+`MakineKomutlar` kaydına yazar. Form, bu hazır adresleri doğrudan rölede çalıştırır.
+Web cihazla ağ iletişimi kurmaz; Form makine-röle-kanal eşleştirmesinden URL üretmez.
+Mevcut cihaz sözleşmesi HTTP GET ve HTTP 200 doğrulamasıdır; URL şeması HTTPS'e
+zorlanmaz. HTTPS destekli hazır adreslerde normal sertifika doğrulaması korunur.
+Mevcut cihaz modeli protokol seçimi alanı içermediğinden web hazırlayıcısı mevcut
+HTTP protokolünü kullanır. Başarı fiziksel makine duruşunun sensörle doğrulanması değildir.
+
+Geçiş, SQL sırası, testler ve kurtarma adımları:
+[Hazır istek geçiş rehberi](docs/Hazir-Istek-Gecis.md).

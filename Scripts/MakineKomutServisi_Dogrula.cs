@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Threading;
@@ -17,14 +17,14 @@ class MakineKomutServisiDogrula
         public int Port, Kanal;
         public ManualResetEvent Giris = new ManualResetEvent(false);
         public ManualResetEvent Devam = new ManualResetEvent(true);
-        public bool KanalTetikle(string ip, int port, int kanal)
+        public Task<bool> KanalTetikleAsync(MakineKomutlar komut)
         {
             Interlocked.Increment(ref Cagri);
-            Ip = ip; Port = port; Kanal = kanal;
+            Ip = komut.HedefIp; Port = komut.HedefPort; Kanal = int.Parse(new Uri(komut.TetiklemeUrl).AbsolutePath.Trim('/')) / 2 + 1;
             Giris.Set();
             if (!Devam.WaitOne(10000)) throw new Exception("Test senkronizasyon suresi asildi.");
             if (HataFirlat) throw new Exception("Kontrollu role exception");
-            return Basarili;
+            return Task.FromResult(Basarili);
         }
     }
 
@@ -49,7 +49,7 @@ class MakineKomutServisiDogrula
     }
     static void Talep()
     {
-        Sql("DECLARE @tur INT=" + Parametre("ISLEM_TURU", "DURDURMA") + "; EXEC dbo.SP_MakineKomutlar_EKLE @makineler_id=1,@islem_tur_parametre_id=@tur,@ekleyen_ip=N'TEST',@detay=N'Sahte role testi';");
+        Sql("DECLARE @tur INT=" + Parametre("ISLEM_TURU", "DURDURMA") + "; EXEC dbo.SP_MakineKomutlar_EKLE @makineler_id=1,@islem_tur_parametre_id=@tur,@ekleyen_id=1,@ekleyen_ip=N'TEST',@detay=N'Sahte role testi',@tetikleme_url=N'http://127.0.0.1:12345/04',@kapatma_url=N'http://127.0.0.1:12345/05',@hedef_rolecihaz_id=1,@hedef_ip=N'127.0.0.1',@hedef_port=12345,@tetikleme_suresi_ms=2000;");
     }
     static void Sonuc(string kod)
     {
@@ -73,7 +73,7 @@ class MakineKomutServisiDogrula
                     Sql("UPDATE dbo.Parametreler SET ad=N'"+deger+"' WHERE kod=N'KOMUT_KONTROL_SURESI_SN';");
                     var role = new SahteRole();
                     using(var servis = new MakineKomutServisi(role,"127.0.0.1")) {
-                        Kontrol(servis.KontrolEt() && role.Cagri==1 && !servis.AltyapiHatasiVar,"Eski sure parametresi komutu engelledi.");
+                        Kontrol(servis.KontrolEt() && role.Cagri==1 && !servis.AltyapiHatasiVar,"Eski sure parametresi komutu engelledi: " + servis.SonHata);
                         Sonuc("BASARILI");
                     }
                 }
@@ -100,7 +100,7 @@ class MakineKomutServisiDogrula
                     var makineKomutlar = new MakineKomutlar(veritabaniIslemleri);
                     var aktifKomutlar = makineKomutlar.AktifleriGetir();
                     Kontrol(aktifKomutlar.Rows.Count==1 && aktifKomutlar.Rows[0][MakineKomutlar.C_Sutun_durum_kod].ToString()=="BEKLIYOR", "Bekleyen kart durumu yanlis.");
-                    Kontrol(makineKomutlar.SiradakiGetir() && makineKomutlar.IslemeGuncelle(), "Komut alinamadi.");
+                    Kontrol(makineKomutlar.SahiplenGuncelle(), "Komut alinamadi.");
                     aktifKomutlar = makineKomutlar.AktifleriGetir();
                     Kontrol(aktifKomutlar.Rows.Count==1 && aktifKomutlar.Rows[0][MakineKomutlar.C_Sutun_durum_kod].ToString()=="ISLENIYOR", "Islenen kart durumu yanlis.");
                     makineKomutlar.DurumParametreId=Convert.ToInt32(Deger("SELECT "+Parametre("MAKINE_KOMUT_DURUM","BASARILI")));
@@ -114,14 +114,15 @@ class MakineKomutServisiDogrula
                 }
             });
             Test("Basari durum tarihi ve operasyon logu guncellenir", () => {
-                Talep(); Sql("UPDATE dbo.RoleCihazlar SET ip=N'127.0.0.2',port=23456; UPDATE dbo.Makineler SET role_kanal_no=7;");
+                Talep(); Sql("UPDATE dbo.Makineler SET role_kanal_no=7;");
                 var role = new SahteRole(); using (var servis = new MakineKomutServisi(role, "127.0.0.1")) {
                     servis.LogOlustu += (s,e) => { throw new Exception("Form log hatasi"); };
                     Kontrol(servis.KontrolEt(), "Komut islenmedi."); Sonuc("BASARILI");
+                    Kontrol(!Convert.ToString(Deger("SELECT detay FROM dbo.MakineKomutlar")).Contains("Talep eden:"),"Talep eden detayda tekrarlandi.");
                     Kontrol(Convert.ToInt32(Deger("SELECT COUNT(*) FROM dbo.Makineler WHERE son_durum_tarih>'20000101'"))==1,"Son durum tarihi guncellenmedi.");
                     Kontrol(Convert.ToInt32(Deger("SELECT COUNT(*) FROM dbo.MakinelerLoglar WHERE onceki_durum_parametre_id="+Parametre("MAKINE_DURUMU","CALISIYOR")+" AND yeni_durum_parametre_id="+Parametre("MAKINE_DURUMU","DURDURULDU")))==1,"Onceki/yeni durum logu yanlis.");
-                    Kontrol(Convert.ToInt32(Deger("SELECT COUNT(*) FROM dbo.MakineKomutlar WHERE detay LIKE N'Durdurma komutu gönderildi.%'"))==1,"Basari mesaji yanlis.");
-                    Kontrol(role.Cagri==1 && role.Ip=="127.0.0.2" && role.Port==23456 && role.Kanal==7, "Guncel role bilgisi okunmadi.");
+                    Kontrol(Convert.ToInt32(Deger("SELECT COUNT(*) FROM dbo.MakineKomutlar WHERE detay LIKE N'%Durdurma komutu gönderildi.%'"))==1,"Basari mesaji yanlis.");
+                    Kontrol(role.Cagri==1 && role.Ip=="127.0.0.1" && role.Port==12345 && role.Kanal==3, "Hazir hedef anlik goruntusu korunmadi.");
                     Kontrol(!servis.KontrolEt() && role.Cagri==1, "Komut yeniden uygulandi.");
                     Kontrol(Convert.ToInt32(Deger("SELECT durum_parametre_id FROM dbo.Makineler WHERE id=1"))==Convert.ToInt32(Deger("SELECT " + Parametre("MAKINE_DURUMU","DURDURULDU"))), "Makine durumu guncellenmedi.");
                 }
@@ -182,7 +183,7 @@ class MakineKomutServisiDogrula
                 try {
                     veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMLI);
                     var makineKomutlar = new MakineKomutlar(veritabaniIslemleri);
-                    Kontrol(makineKomutlar.SiradakiGetir() && makineKomutlar.IslemeGuncelle(),"Sahiplenilemedi.");
+                    Kontrol(makineKomutlar.SahiplenGuncelle(),"Sahiplenilemedi.");
                     veritabaniIslemleri.Uygula();
                 } finally { veritabaniIslemleri.Bitir(); }
                 var role=new SahteRole();
@@ -204,10 +205,10 @@ class MakineKomutServisiDogrula
                     Kontrol(servis.KontrolEt(),"Exception sonucu kaydedilmedi."); Sonuc("BASARISIZ");
                 }
             });
-            Test("Atanmamis role", () => {
+            Test("Atama kaldirildiginda hazir hedef korunur", () => {
                 Talep(); Sql("UPDATE dbo.Makineler SET rolecihazlar_id=NULL;");
                 var role=new SahteRole(); using(var servis=new MakineKomutServisi(role,"127.0.0.1")) {
-                    Kontrol(servis.KontrolEt() && role.Cagri==0,"Role cagri yapildi."); Sonuc("BASARISIZ");
+                    Kontrol(servis.KontrolEt() && role.Cagri==1,"Hazir hedef korunmadi."); Sonuc("BASARILI");
                 }
             });
             Test("Pasif role", () => {
@@ -216,10 +217,10 @@ class MakineKomutServisiDogrula
                     Kontrol(servis.KontrolEt() && role.Cagri==0,"Pasif role cagrildi."); Sonuc("BASARISIZ");
                 }
             });
-            Test("Gecersiz kanal", () => {
+            Test("Kanal degisse bile hazir kanal korunur", () => {
                 Talep(); Sql("UPDATE dbo.Makineler SET role_kanal_no=17;");
                 var role=new SahteRole(); using(var servis=new MakineKomutServisi(role,"127.0.0.1")) {
-                    Kontrol(servis.KontrolEt() && role.Cagri==0,"Gecersiz kanal cagrildi."); Sonuc("BASARISIZ");
+                    Kontrol(servis.KontrolEt() && role.Cagri==1 && role.Kanal==3,"Hazir kanal korunmadi."); Sonuc("BASARILI");
                 }
             });
             Test("Pasif makine", () => {
@@ -262,7 +263,53 @@ class MakineKomutServisiDogrula
                     Kontrol(!servis.KontrolEt() && role.Cagri==1,"Belirsiz komut yeniden uygulandi.");
                 }
             });
-            Temizle(); Console.WriteLine("20 servis ve parametre senaryosu gecti. Gercek roleye baglanilmadi."); return 0;
+            Test("Iki tuketici ayni kaydi bir kez calistirir", () => {
+                Talep(); var role = new SahteRole();
+                using (var a = new MakineKomutServisi(role,"127.0.0.1"))
+                using (var b = new MakineKomutServisi(role,"127.0.0.1")) {
+                    var x = Task.Run(()=>a.KontrolEt()); var y=Task.Run(()=>b.KontrolEt());
+                    Kontrol(Task.WaitAll(new Task[] {x,y},15000),"Tuketiciler tamamlanmadi");
+                    Kontrol(role.Cagri==1 && (x.Result || y.Result),"Cift tetikleme"); Sonuc("BASARILI");
+                }
+            });
+            Test("Eszamanli iki talep tek kayit olusturur", () => {
+                int eklenen=0, engellenen=0;
+                Action ekle=()=>{try { Talep(); Interlocked.Increment(ref eklenen); }
+                    catch(SqlException ex) { if(ex.Number!=51104) throw; Interlocked.Increment(ref engellenen); }};
+                Task.WaitAll(Task.Run(ekle),Task.Run(ekle));
+                Kontrol(eklenen==1 && engellenen==1,"Cift talep engellenmedi");
+            });
+            Test("Kayitli hedef degisirse ag istegi yapilmaz", () => {
+                Talep(); Sql("UPDATE dbo.RoleCihazlar SET ip=N'127.0.0.2',port=23456");
+                var role=new SahteRole(); using(var servis=new MakineKomutServisi(role,"127.0.0.1")) {
+                    Kontrol(servis.KontrolEt() && role.Cagri==0,"Yeni hedefe yonlendirildi"); Sonuc("BASARISIZ");
+                }
+            });
+            Test("Eksik hazir URL islenmez", () => {
+                Talep(); Sql("UPDATE dbo.MakineKomutlar SET tetikleme_url=NULL");
+                var role=new SahteRole(); using(var servis=new MakineKomutServisi(role,"127.0.0.1")) {
+                    Kontrol(servis.KontrolEt() && role.Cagri==0,"Eksik URL calisti"); Sonuc("BASARISIZ");
+                }
+            });
+            Test("Yarim kalan islem belirsiz gorunur ve yeniden tetiklenmez", () => {
+                Talep(); Sql("UPDATE dbo.MakineKomutlar SET durum_parametre_id="+Parametre("MAKINE_KOMUT_DURUM","ISLENIYOR")+", guncellenme_tarih=DATEADD(MINUTE,-5,GETDATE())");
+                var role=new SahteRole(); using(var servis=new MakineKomutServisi(role,"127.0.0.1")) {
+                    Kontrol(!servis.KontrolEt() && role.Cagri==0,"Yarim islem tetiklendi");
+                    var db=new VeritabaniIslemleri(); try {
+                        db.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
+                        var tablo=new MakineKomutlar(db).SonDurumlariGetir();
+                        Kontrol(Convert.ToBoolean(tablo.Rows[0]["belirsiz"]),"Belirsiz durum gorunmedi");
+                    } finally {db.Bitir();}
+                }
+            });
+            Test("Eski Form yeni komutu sahiplenemez", () => {
+                Talep(); bool engellendi=false;
+                try { Sql("EXEC dbo.SP_MakineKomutlar_ISLEME_GUNCELLE @id=1"); }
+                catch(SqlException ex) { if(ex.Number!=51110) throw; engellendi=true; }
+                Kontrol(engellendi,"Eski tuketici engellenmedi");
+                Kontrol(Convert.ToInt32(Deger("SELECT deneme_sayisi FROM dbo.MakineKomutlar"))==0,"Eski tuketici sahiplenmis");
+            });
+            Temizle(); Console.WriteLine("26 servis ve parametre senaryosu gecti. Gercek roleye baglanilmadi."); return 0;
         }
         catch(Exception ex) { Console.WriteLine(ex.ToString()); return 1; }
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -11,6 +11,48 @@ namespace AsyModbus
     {
         private DataTable dataTable;
         private readonly Dictionary<int, string> makineKomutDurumlari = new Dictionary<int, string>();
+
+        [System.Web.Services.WebMethod(EnableSession = true)]
+        public static object KomutDurumlariniGetir()
+        {
+            CurrentInfo bilgi = new Sessionlar().Current._CurrentInfo;
+            if (bilgi == null || !bilgi.LoginYapildiMi || bilgi.KullaniciId <= 0)
+                throw new System.Web.HttpException(401, "Oturum sona erdi.");
+            var db = new VeritabaniIslemleri();
+            try
+            {
+                db.Baslat(VeritabaniIslemleri.IslemTip.BAGIMSIZ);
+                var kullanici = new Kullanicilar(db) { Id = bilgi.KullaniciId };
+                var rol = new Roller(db) { Id = bilgi.RolId };
+                if (!kullanici.Doldur() || !kullanici.AktifMi || kullanici.RollerId != bilgi.RolId || !rol.Doldur())
+                    throw new System.Web.HttpException(403, "Yetkisiz işlem.");
+                var sonuc = new List<object>();
+                foreach (DataRow satir in new MakineKomutlar(db).SonDurumlariGetir().Rows)
+                {
+                    string durum = satir["durum_kod"].ToString();
+                    bool belirsiz = Convert.ToBoolean(satir["belirsiz"]);
+                    bool aktif = durum == SistemParametreKodlari.Bekliyor || durum == SistemParametreKodlari.Isleniyor;
+                    sonuc.Add(new {
+                        MakineId = Convert.ToInt32(satir["makineler_id"]),
+                        KomutId = satir["komut_id"] == DBNull.Value ? 0 : Convert.ToInt32(satir["komut_id"]),
+                        Durum = belirsiz ? "BELIRSIZ" : durum,
+                        Mesaj = belirsiz ? "Komut sonucu belirsiz; servis kaydını kontrol edin."
+                            : durum == "BASARILI" ? Mesajlar.RoleKomutuUygulandi
+                            : durum == "BASARISIZ" ? "Durdurma komutu başarısız; işlem kaydını kontrol edin."
+                            : durum == "BEKLIYOR" ? "Durdurma talebi bekliyor"
+                            : durum == "ISLENIYOR" ? "Durdurma komutu işleniyor" : string.Empty,
+                        DurdurAktif = !aktif && satir["makine_durum_kod"].ToString() == "CALISIYOR"
+                            && satir["rolecihazlar_id"] != DBNull.Value,
+                        MakineDurum = satir["makine_durum_ad"].ToString(),
+                        MakineCss = satir["rolecihazlar_id"] == DBNull.Value ? "badge-role-yok"
+                            : satir["makine_durum_kod"].ToString() == "CALISIYOR" ? "bg-success"
+                            : satir["makine_durum_kod"].ToString() == "DURDURULDU" ? "bg-danger" : "bg-secondary"
+                    });
+                }
+                return sonuc;
+            }
+            finally { db.Bitir(); }
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -303,6 +345,7 @@ namespace AsyModbus
                     return;
                 }
 
+                RoleKomutHazirlayici.Hazirla(makineKomutlar, roleCihazlar, makineler.RoleKanalNo.Value);
                 makineKomutlar.Detay = Mesajlar.MakineDurdurmaTalebiDetay;
                 makineKomutlar.EkleyenId = currentInfo.KullaniciId;
                 makineKomutlar.EkleyenIp = currentInfo.Ip;
@@ -441,6 +484,13 @@ namespace AsyModbus
                     lblDetayAciklama.Text = sonLog[MakinelerLoglar.C_Sutun_detay] == DBNull.Value
                         ? string.Empty
                         : sonLog[MakinelerLoglar.C_Sutun_detay].ToString();
+                    if (kaynakKod == SistemParametreKodlari.Servis)
+                    {
+                        // Eski kayitlarda da ust satirlardaki bilgiyi detayda tekrar gosterme.
+                        lblDetayAciklama.Text = lblDetayAciklama.Text
+                            .Replace("Makine ID: " + makineId + ". ", string.Empty)
+                            .Replace("Talep eden: " + Server.HtmlDecode(lblDetayIslemiYapan.Text) + ". ", string.Empty);
+                    }
                     if (sonLog[MakinelerLoglar.C_Sutun_eklenme_tarih] == DBNull.Value)
                     {
                         lblDetayIslemTarihi.Text = "-";

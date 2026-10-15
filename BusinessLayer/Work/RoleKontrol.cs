@@ -1,105 +1,133 @@
 ﻿using System;
 using System.Net;
+using System.Net.Sockets;
+using System.Net.Security;
+using System.Security.Authentication;
+using System.IO;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 public class RoleKontrol : IRoleKontrol
 {
-    // Rölenin ON kalacağı süre.
-    private const int C_TetiklemeSuresi = 2000;
-
-    // OFF komutu başarısız olursa kaç kere tekrar denenecek.
-    private const int C_KapatmaDenemeSayisi = 3;
-
+    private const int C_KapatmaDenemeSayisi = 3; // Toplam deneme; iki ek tekrar.
     public string SonHata { get; private set; }
 
-    public bool KanalTetikle(string ip, int port, int kanalNo)
+    public static void Dogrula(MakineKomutlar komut)
     {
-        SonHata = string.Empty;
-        // Gerekli bağlantı bilgilerinin geçerli olup olmadığı kontrol edilir.
-        if (string.IsNullOrEmpty(ip) || port <= 0 || kanalNo <= 0)
-        {
-            SonHata = "Röle bağlantı bilgileri geçersiz.";
-            return false;
-        }
-
-        // İlgili röle kanalı ON yapılır.
-        bool acildi = KanalAyarla(ip, port, kanalNo, false);
-
-        // ON komutu başarısızsa KanalAyarla içerisindeki teknik hata SonHata'da zaten bulunmaktadır.
-        if (!acildi)
-        {
-            return false;
-        }
-
-        // Röle 2 saniye ON konumunda tutulur.
-        Thread.Sleep(C_TetiklemeSuresi);
-
-        // OFF denemelerinde oluşan son teknik hatayı kaybetmemek için ayrı değişkende tutuyoruz.
-        string sonKapatmaHatasi = string.Empty;
-
-
-        // Röleyi tekrar OFF yapmak için 3 kez deneme yapılır.
-        for (int deneme = 1; deneme <= C_KapatmaDenemeSayisi; deneme++)
-        {
-            bool kapandi = KanalAyarla(ip, port, kanalNo, true);
-
-            // OFF işlemi başarılıysa tüm tetikleme başarılıdır.
-            if (kapandi)
-            {
-                return true;
-            }
-            // KanalAyarla başarısız olduğunda oluşturduğu teknik hata burada saklanır.
-            sonKapatmaHatasi = SonHata;
-
-            // Son deneme başarılı değilse 500 ms bekleyip tekrar deniyoruz.
-            if (deneme < C_KapatmaDenemeSayisi)
-            {
-                Thread.Sleep(500);
-            }
-        }
-
-
-        // Üç OFF denemesi de başarısız oldu. Hem bizim anlaşılır mesajımız hem de son teknik hata korunur.
-        SonHata = "Röle kapatma komutu gönderilemedi.";
-        if (!string.IsNullOrEmpty(sonKapatmaHatasi))
-        {
-            SonHata += " Teknik hata: " + sonKapatmaHatasi;
-        }
-        return false;
+        if (komut == null || komut.TetiklemeSuresiMs < 1 || komut.TetiklemeSuresiMs > 10000)
+            throw new InvalidOperationException("Tetikleme süresi 1–10000 ms aralığında olmalıdır.");
+        Uri on = AdresDogrula(komut.TetiklemeUrl, komut);
+        Uri off = AdresDogrula(komut.KapatmaUrl, komut);
+        if (on.Scheme != off.Scheme || on.AbsoluteUri == off.AbsoluteUri)
+            throw new InvalidOperationException("ON/OFF adresleri geçersiz.");
     }
 
-
-    private bool KanalAyarla(string ip, int port, int kanalNo, bool ac)
+    private static Uri AdresDogrula(string adres, MakineKomutlar komut)
     {
+        Uri uri;
+        IPAddress ip, hedef;
+        if (string.IsNullOrWhiteSpace(adres) || adres.Length > MakineKomutlar.C_UrlUzunlugu
+            || !Uri.TryCreate(adres, UriKind.Absolute, out uri)
+            || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)
+            || !string.IsNullOrEmpty(uri.UserInfo) || !string.IsNullOrEmpty(uri.Fragment)
+            || !string.IsNullOrEmpty(uri.Query)
+            || !IPAddress.TryParse(uri.Host.Trim('[', ']'), out ip)
+            || !IPAddress.TryParse(komut.HedefIp, out hedef) || !ip.Equals(hedef)
+            || uri.Port != komut.HedefPort)
+            throw new InvalidOperationException("Hazır röle adresi eksik veya izin verilen hedefle uyumsuz.");
+        return uri;
+    }
+
+    public async Task<bool> KanalTetikleAsync(MakineKomutlar komut)
+    {
+        SonHata = string.Empty;
+        try { Dogrula(komut); }
+        catch (Exception ex) { SonHata = ex.Message; return false; }
+        bool acildi = false, kapandi = false;
+        string onHata = string.Empty, offHata = string.Empty;
+        try
+        {
+            acildi = await IstekGonder(komut.TetiklemeUrl).ConfigureAwait(false);
+            onHata = SonHata;
+            // Yaniti kaybolan ON da uygulanmis olabilir; sureyi ve OFF temizligini koru.
+            await Task.Delay(komut.TetiklemeSuresiMs).ConfigureAwait(false);
+        }
+        finally
+        {
+            for (int deneme = 1; deneme <= C_KapatmaDenemeSayisi; deneme++)
+            {
+                kapandi = await IstekGonder(komut.KapatmaUrl).ConfigureAwait(false);
+                offHata = SonHata;
+                if (kapandi) break;
+                if (deneme < C_KapatmaDenemeSayisi) await Task.Delay(500).ConfigureAwait(false);
+            }
+        }
+        SonHata = (!acildi ? "ON komutu doğrulanamadı. " + onHata : string.Empty)
+            + (!kapandi ? " Kapatma komutu doğrulanamadı. " + offHata : string.Empty);
+        return acildi && kapandi;
+    }
+
+    private async Task<bool> IstekGonder(string adres)
+    {
+        // HttpWebRequest/HttpClient altindaki otomatik GET tekrarina izin verme.
+        // Mevcut cihaz sozlesmesi: govdesiz HTTP GET, yalniz HTTP 200 dogrulamasi.
         try
         {
             SonHata = string.Empty;
-            int komutNo = ((kanalNo - 1) * 2) + (ac ? 1 : 0);
-            string komut = komutNo.ToString("D2");
-            // Cihaza gönderilecek adres oluşturulur.
-            string adres = "http://" + ip + ":" + port + "/" + komut;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(adres);
-            request.Method = "GET";
-            // Cihazdan en fazla 3 saniye cevap beklenir.
-            request.Timeout = 3000;
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            var uri = new Uri(adres);
+            using (var client = new TcpClient())
+            using (var timeout = new CancellationTokenSource(3000))
+            using (timeout.Token.Register(client.Close))
             {
-                // Cihaz 200 OK döndürdüyse işlem başarılıdır.
-                if (response.StatusCode == HttpStatusCode.OK)
+                await client.ConnectAsync(IPAddress.Parse(uri.Host.Trim('[', ']')), uri.Port).ConfigureAwait(false);
+                using (Stream stream = await AkisGetir(client, uri).ConfigureAwait(false))
                 {
-                    return true;
+                    byte[] istek = Encoding.ASCII.GetBytes("GET " + uri.PathAndQuery
+                        + " HTTP/1.1\r\nHost: " + uri.Authority + "\r\nConnection: close\r\n\r\n");
+                    // Tek WriteAsync: kayip cevap halinde yeniden baglanma veya ON tekrari yok.
+                    await stream.WriteAsync(istek, 0, istek.Length, timeout.Token).ConfigureAwait(false);
+                    byte[] birBayt = new byte[1];
+                    var baslik = new StringBuilder();
+                    while (baslik.Length < 16384)
+                    {
+                        int okunan = await stream.ReadAsync(birBayt, 0, 1, timeout.Token).ConfigureAwait(false);
+                        if (okunan == 0) throw new IOException("Eksik HTTP yaniti");
+                        baslik.Append((char)birBayt[0]);
+                        int uzunluk = baslik.Length;
+                        if (uzunluk >= 4 && baslik[uzunluk-4]=='\r' && baslik[uzunluk-3]=='\n'
+                            && baslik[uzunluk-2]=='\r' && baslik[uzunluk-1]=='\n')
+                        {
+                            string ilkSatir = baslik.ToString().Split(new[] { "\r\n" }, StringSplitOptions.None)[0];
+                            string[] parcalar = ilkSatir.Split(' ');
+                            int kod;
+                            if (parcalar.Length < 2 || (parcalar[0]!="HTTP/1.1" && parcalar[0]!="HTTP/1.0")
+                                || !int.TryParse(parcalar[1], out kod)) throw new IOException("Gecersiz HTTP yaniti");
+                            if (kod == 200) return true;
+                            SonHata = "HTTP durum kodu: " + kod;
+                            return false; // 3xx dahil: Location izlenmez.
+                        }
+                    }
+                    throw new IOException("HTTP basligi siniri asildi");
                 }
-                // Cihaz cevap verdi fakat cevap başarılı değilse hata bilgisi kaydedilir.
-                SonHata = "Röle cihazı başarısız cevap verdi. HTTP Durum Kodu: " + (int)response.StatusCode;
-                return false;
             }
         }
-        catch (Exception ex)
+        catch (AuthenticationException) { SonHata = "HTTPS sertifikası veya TLS bağlantısı doğrulanamadı."; }
+        catch (Exception) { SonHata = "Röle yanıtı doğrulanamadı; ağ kesintisi, eksik yanıt veya 3000 ms zaman aşımı."; }
+        return false;
+    }
+
+    private static async Task<Stream> AkisGetir(TcpClient client, Uri uri)
+    {
+        if (uri.Scheme == Uri.UriSchemeHttp) return client.GetStream();
+        // Varsayilan sertifika/host dogrulamasi ve iptal yerine socket kapanisi korunur.
+        var tls = new SslStream(client.GetStream(), false);
+        try
         {
-            // Cihaza ulaşılamaması, timeout veya ağ hatası gibi
-            // durumlarda teknik hata bilgisi kaydedilir.
-            SonHata = ex.Message;
-            return false;
+            await tls.AuthenticateAsClientAsync(uri.Host.Trim('[', ']'), null,
+                SslProtocols.None, true).ConfigureAwait(false);
+            return tls;
         }
+        catch { tls.Dispose(); throw; }
     }
 }

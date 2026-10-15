@@ -48,7 +48,6 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +73,7 @@
     <Compile Include="Work\MakineKomutServisi.cs" />
     <Compile Include="Work\OrtakAlanlar.cs" />
     <Compile Include="Work\RoleKontrol.cs" />
+    <Compile Include="Work\RoleKomutHazirlayici.cs" />
     <Compile Include="Work\RolYetkiSeeder.cs" />
     <Compile Include="Work\Sayfalar.cs" />
     <Compile Include="Work\Sessionlar.cs" />

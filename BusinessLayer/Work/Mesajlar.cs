@@ -374,12 +374,6 @@ public class Mesajlar
         return KomutParametreleriEksik + " " + grupKod + "/" + kod;
     }
 
-    public static string KomutRoleDetayi(bool basarili, string sonHata, string ip, int port, int kanal)
-    {
-        return (basarili ? RoleKomutuUygulandi : RoleTetiklemeHatasi + " " + sonHata)
-            + " IP: " + ip + ", Port: " + port + ", Kanal: " + kanal + ".";
-    }
-
     public static string KomutOperasyonDetayi(int komutId, string detay, string ekleyenIp)
     {
         return "Komut ID: " + komutId + ". " + detay + " Talep eden IP: " + ekleyenIp;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Threading;
 
@@ -12,8 +12,6 @@ public class MakineKomutServisi : IDisposable
     private bool kapatildi;
     private int islemDevamEdiyor;
     private DateTime? sonKontrolZamani;
-    private int? sonKomutId;
-    private int? sonMakineId;
     private string sonHata = string.Empty;
 
     public MakineKomutServisi() : this(new RoleKontrol(), ServisIpGetir()) { }
@@ -33,8 +31,6 @@ public class MakineKomutServisi : IDisposable
     public bool AltyapiHatasiVar { get { lock (kilit) return altyapiHatasiVar; } }
     public bool IslemDevamEdiyor { get { return Interlocked.CompareExchange(ref islemDevamEdiyor, 0, 0) != 0; } }
     public DateTime? SonKontrolZamani { get { lock (kilit) return sonKontrolZamani; } }
-    public int? SonKomutId { get { lock (kilit) return sonKomutId; } }
-    public int? SonMakineId { get { lock (kilit) return sonMakineId; } }
     public string SonHata { get { lock (kilit) return sonHata; } }
 
     public event EventHandler<MakineKomutServisiLogEventArgs> LogOlustu;
@@ -63,12 +59,6 @@ public class MakineKomutServisi : IDisposable
                 makineKomutlar = KomutGetir();
             }
             if (makineKomutlar == null) return false;
-            lock (kilit)
-            {
-                sonKomutId = makineKomutlar.Id;
-                sonMakineId = makineKomutlar.MakinelerId;
-            }
-            DurumBildir(Mesajlar.KomutIslemeAlindi(makineKomutlar.Id, makineKomutlar.MakinelerId), false);
 
             KomutuUygula(makineKomutlar);
             return true;
@@ -123,12 +113,8 @@ public class MakineKomutServisi : IDisposable
             ParametreIdGetir(parametreler, SistemParametreGruplari.IslemSonucu, SistemParametreKodlari.Basarisiz);
 
             MakineKomutlar makineKomutlar = new MakineKomutlar(veritabaniIslemleri);
-            if (!makineKomutlar.SiradakiGetir()) return null;
             makineKomutlar.GuncelleyenIp = servisIp;
-            if (!makineKomutlar.IslemeGuncelle())
-            {
-                throw new InvalidOperationException(Mesajlar.KomutSahiplenilemedi);
-            }
+            if (!makineKomutlar.SahiplenGuncelle()) return null;
             veritabaniIslemleri.Uygula();
             return makineKomutlar;
         }
@@ -145,6 +131,7 @@ public class MakineKomutServisi : IDisposable
         Makineler makineler = new Makineler(veritabaniIslemleri);
         RoleCihazlar roleCihazlar = new RoleCihazlar(veritabaniIslemleri);
         Parametreler parametreler = new Parametreler(veritabaniIslemleri);
+        string talepEden = "Kullanıcı ID: " + makineKomutlar.EkleyenId;
         bool basarili = false;
         string detay;
         int? oncekiDurumParametreId = null;
@@ -159,6 +146,10 @@ public class MakineKomutServisi : IDisposable
                         SistemParametreGruplari.IslemTuru, SistemParametreKodlari.Durdurma);
                     if (makineKomutlar.IslemTurParametreId != durdurmaParametreId)
                         throw new InvalidOperationException(Mesajlar.KomutIslemTuruGecersiz);
+                    var kullanici = new Kullanicilar(veritabaniIslemleri) { Id = makineKomutlar.EkleyenId };
+                    if (kullanici.Doldur()) talepEden = (kullanici.Ad + " " + kullanici.Soyad).Trim();
+                    DurumBildir(Mesajlar.KomutIslemeAlindi(makineKomutlar.Id, makineKomutlar.MakinelerId)
+                        + ". Talep eden: " + talepEden, false);
                     makineler.Id = makineKomutlar.MakinelerId;
                     if (!makineler.Doldur() || !makineler.AktifMi)
                         throw new InvalidOperationException(Mesajlar.MakineBulunamadi);
@@ -167,36 +158,60 @@ public class MakineKomutServisi : IDisposable
                         SistemParametreGruplari.MakineDurumu, SistemParametreKodlari.Calisiyor);
                     if (makineler.DurumParametreId != calisiyorParametreId)
                         throw new InvalidOperationException(Mesajlar.MakineCalismiyor);
-                    if (!makineler.RoleCihazlarId.HasValue || !makineler.RoleKanalNo.HasValue)
-                        throw new InvalidOperationException(Mesajlar.MakineRoleBaglantisiEksik);
-                    roleCihazlar.Id = makineler.RoleCihazlarId.Value;
-                    if (!roleCihazlar.Doldur())
-                        throw new InvalidOperationException(Mesajlar.RoleCihaziBulunamadi);
-                    IPAddress roleIp;
-                    if (!IPAddress.TryParse(roleCihazlar.Ip, out roleIp)
-                        || !roleCihazlar.Port.HasValue || roleCihazlar.Port.Value <= 0
-                        || roleCihazlar.Port.Value > 65535)
-                        throw new InvalidOperationException(Mesajlar.RoleBaglantiBilgileriEksik);
-                    if (!roleCihazlar.KanalSayisi.HasValue || roleCihazlar.KanalSayisi.Value <= 0
-                        || makineler.RoleKanalNo.Value <= 0
-                        || makineler.RoleKanalNo.Value > roleCihazlar.KanalSayisi.Value)
-                        throw new InvalidOperationException(Mesajlar.RoleKanalGecersiz);
+                    RoleKontrol.Dogrula(makineKomutlar);
+                    // Hedef kayit dogrulanir; makine-role eslestirmesi yeniden hesaplanmaz.
+                    roleCihazlar.Id = makineKomutlar.HedefRoleCihazId;
+                    if (!roleCihazlar.Doldur()
+                        || roleCihazlar.Ip != makineKomutlar.HedefIp
+                        || roleCihazlar.Port != makineKomutlar.HedefPort)
+                        throw new InvalidOperationException("Komutun kayıtlı röle hedefi değişmiş veya pasif; komut başka cihaza yönlendirilmeyecek.");
                 }
                 finally { veritabaniIslemleri.Bitir(); }
 
                 // Fiziksel islem boyunca DB baglantisi ve transaction acik tutulmaz.
-                basarili = roleKontrol.KanalTetikle(roleCihazlar.Ip,
-                    roleCihazlar.Port.Value, makineler.RoleKanalNo.Value);
-                detay = Mesajlar.KomutRoleDetayi(basarili, roleKontrol.SonHata,
-                    roleCihazlar.Ip, roleCihazlar.Port.Value, makineler.RoleKanalNo.Value);
+                basarili = roleKontrol.KanalTetikleAsync(makineKomutlar).GetAwaiter().GetResult();
+                detay = basarili ? Mesajlar.RoleKomutuUygulandi : roleKontrol.SonHata;
             }
             catch (Exception exception)
             {
                 detay = Mesajlar.SistemselHata(exception.Message);
             }
 
+            // Yalnizca sonuc yazimi tekrarlanir; ON/OFF bu dongunun disindadir.
+            for (int deneme = 1; ; deneme++)
+            {
+                try { SonucuKaydet(makineKomutlar, basarili, detay, oncekiDurumParametreId); break; }
+                catch (System.Data.SqlClient.SqlException ex)
+                {
+                    if (deneme >= 3 || (ex.Number != -2 && ex.Number != 1205
+                        && ex.Number != 64 && ex.Number != 233 && ex.Number != 10054)) throw;
+                    Thread.Sleep(500);
+                }
+            }
+            if (!basarili) lock (kilit) sonHata = detay;
+            DurumBildir(Mesajlar.KomutSonucu(makineKomutlar.Id, basarili, detay)
+                + " Makine ID: " + makineKomutlar.MakinelerId + ". Talep eden: " + talepEden, !basarili);
+        }
+        finally
+        {
+            try { veritabaniIslemleri.GeriAl(); }
+            finally { veritabaniIslemleri.Bitir(); }
+        }
+    }
+
+    private void SonucuKaydet(MakineKomutlar makineKomutlar, bool basarili, string detay, int? oncekiDurumParametreId)
+    {
+        var veritabaniIslemleri = new VeritabaniIslemleri();
+        var parametreler = new Parametreler(veritabaniIslemleri);
+        try
+        {
             // Sonuc kaydi hatasi fiziksel islemin catch bloguna girmez, tekrar tetiklemez.
             veritabaniIslemleri.Baslat(VeritabaniIslemleri.IslemTip.BAGIMLI);
+            var mevcut = new MakineKomutlar(veritabaniIslemleri) { Id = makineKomutlar.Id };
+            int beklenenDurum = ParametreIdGetir(parametreler, SistemParametreGruplari.MakineKomutDurumu,
+                basarili ? SistemParametreKodlari.Basarili : SistemParametreKodlari.Basarisiz);
+            if (mevcut.Doldur() && mevcut.DurumParametreId == beklenenDurum && mevcut.Detay == detay)
+            { veritabaniIslemleri.Uygula(); return; }
             int? yeniDurumParametreId = oncekiDurumParametreId;
             if (basarili)
             {
@@ -236,8 +251,6 @@ public class MakineKomutServisi : IDisposable
             if (!makinelerLoglar.Ekle())
                 throw new InvalidOperationException(Mesajlar.KomutOperasyonLoguKaydedilemedi);
             veritabaniIslemleri.Uygula();
-            if (!basarili) lock (kilit) sonHata = detay;
-            DurumBildir(Mesajlar.KomutSonucu(makineKomutlar.Id, basarili, detay), !basarili);
         }
         finally
         {
@@ -245,7 +258,6 @@ public class MakineKomutServisi : IDisposable
             finally { veritabaniIslemleri.Bitir(); }
         }
     }
-
     private void DurumBildir(string mesaj, bool hataMi)
     {
         EventHandler<MakineKomutServisiLogEventArgs> olayIsleyici = LogOlustu;
